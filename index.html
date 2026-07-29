@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>小驴快跑 · Donkey Run</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 28px; padding: 40px 20px;
+    background: linear-gradient(180deg, #BEE7F2 0%, #E4F5E0 55%, #8CC63F 100%);
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  }
+  h1 {
+    font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+    font-size: clamp(40px, 7vw, 64px); color: #2F5D3A;
+    letter-spacing: 12px; text-indent: 12px;
+  }
+  header p { margin-top: 10px; font-size: 13px; letter-spacing: 4px; color: #4A6B52; text-align: center; }
+  .frame {
+    background: #FFFDF5; padding: 14px; border-radius: 18px; max-width: 940px; width: 100%;
+    box-shadow: 0 24px 60px rgba(47,93,58,.25), 0 4px 12px rgba(47,93,58,.15);
+  }
+  .frame img { display: block; width: 100%; height: auto; border-radius: 10px; }
+  footer { font-size: 12px; letter-spacing: 2px; color: #3E6B39; opacity: .8; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>小驴快跑</h1>
+    <p>GRASSLAND GALLOP · 纯 SVG 动画</p>
+  </header>
+  <div class="frame">
+    <img src="donkey.svg" alt="小驴在草原上欢快奔跑的循环动画" />
+  </div>
+  <footer>纯 SVG + SMIL 驱动 · 零脚本 · 无限循环</footer>
+</body>
+</html>
