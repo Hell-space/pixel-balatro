@@ -1,0 +1,409 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="960" height="540" role="img" aria-labelledby="t d">
+  <title id="t">夜晚：小车在公路上行驶</title>
+  <desc id="d">月夜郊外公路：星星眨眼、流星划过，红色小车开着大灯光束前行，路灯一盏盏掠过，农舍窗灯温暖，风车顶着红色航空灯旋转，草丛里萤火虫明明灭灭。</desc>
+
+  <defs>
+    <!-- 夜空 -->
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#060f22"/>
+      <stop offset=".55" stop-color="#0d2545"/>
+      <stop offset="1" stop-color="#17405f"/>
+    </linearGradient>
+    <radialGradient id="townGlow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#e8b06a" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#e8b06a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vign" cx=".5" cy=".45" r=".78">
+      <stop offset=".62" stop-color="#020409" stop-opacity="0"/>
+      <stop offset="1" stop-color="#020409" stop-opacity=".42"/>
+    </radialGradient>
+    <!-- 车灯光束 / 路灯光锥 / 流星 / 车窗暖光 -->
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff3c4" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#fff3c4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd98a" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#ffd98a" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shoot" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="winGlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd88f"/>
+      <stop offset="1" stop-color="#dfa048"/>
+    </linearGradient>
+
+    <!-- 夜色云朵 -->
+    <g id="nightCloud">
+      <ellipse cx="2" cy="10" rx="48" ry="11" fill="#0e2740"/>
+      <ellipse cx="-34" cy="4" rx="30" ry="14" fill="#16344f"/>
+      <ellipse cx="36" cy="3" rx="34" ry="15" fill="#16344f"/>
+      <ellipse cx="0" cy="-5" rx="40" ry="17" fill="#1b3c59"/>
+    </g>
+
+    <!-- 四角星光 -->
+    <path id="spark" d="M0 -6 L1.4 -1.4 L6 0 L1.4 1.4 L0 6 L-1.4 1.4 L-6 0 L-1.4 -1.4 Z" fill="#eaf3ff"/>
+
+    <!-- 路灯（光锥 + 地面光池 + 灯头微闪） -->
+    <g id="lampPost">
+      <polygon points="33,-95 47,-95 90,44 -6,44" fill="url(#cone)" opacity=".55"/>
+      <ellipse cx="42" cy="44" rx="62" ry="9" fill="#ffd98a" opacity=".1"/>
+      <rect x="-3" y="-118" width="6" height="118" fill="#1b2437"/>
+      <path d="M0 -114 Q22 -126 40 -104" stroke="#1b2437" stroke-width="5" fill="none"/>
+      <rect x="31" y="-106" width="18" height="9" rx="4" fill="#232e48"/>
+      <circle cx="40" cy="-94" r="13" fill="#ffd98a" opacity=".22">
+        <animate attributeName="opacity" values=".16;.3;.16" dur="3.4s" repeatCount="indefinite"/>
+      </circle>
+      <ellipse cx="40" cy="-95" rx="7" ry="4" fill="#ffe6b0"/>
+    </g>
+
+    <!-- 剪影树 / 灌木 / 草丛 / 路牌 -->
+    <g id="treeRound">
+      <rect x="-5" y="-42" width="10" height="42" fill="#16281f"/>
+      <circle cx="-16" cy="-42" r="16" fill="#0c3828"/>
+      <circle cx="16" cy="-42" r="16" fill="#0f4030"/>
+      <circle cx="0" cy="-54" r="24" fill="#0e4634"/>
+    </g>
+    <g id="treePine">
+      <rect x="-4" y="-26" width="8" height="26" fill="#14251f"/>
+      <polygon points="0,-56 -30,-14 30,-14" fill="#0b3a2b"/>
+      <polygon points="0,-74 -26,-32 26,-32" fill="#0d4231"/>
+      <polygon points="0,-92 -22,-52 22,-52" fill="#0f4a37"/>
+    </g>
+    <g id="bush">
+      <ellipse cx="-16" cy="-7" rx="16" ry="10" fill="#0d3b29"/>
+      <ellipse cx="6" cy="-10" rx="24" ry="13" fill="#10442f"/>
+    </g>
+    <g id="tuft">
+      <path d="M-6 0 L-7 -10 M0 0 L0 -13 M6 0 L7 -9" stroke="#155239" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </g>
+    <g id="sign">
+      <rect x="-3" y="-52" width="6" height="52" fill="#232e48"/>
+      <circle cy="-66" r="15" fill="#1d4a8f" stroke="#cbd6e8" stroke-width="2.5"/>
+      <path d="M-7 -66 H4 M4 -66 l-5 -5 M4 -66 l-5 5" stroke="#e8eef8" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+
+    <!-- 亮窗农舍 -->
+    <g id="house">
+      <rect x="14" y="-64" width="9" height="16" fill="#0a1626"/>
+      <rect x="-34" y="-44" width="68" height="44" fill="#0f1e33"/>
+      <polygon points="-42,-44 0,-72 42,-44" fill="#0a1626"/>
+      <rect x="-22" y="-30" width="14" height="14" fill="#ffcf6f">
+        <animate attributeName="opacity" values=".8;1;.8" dur="3.6s" repeatCount="indefinite"/>
+      </rect>
+      <rect x="8" y="-30" width="14" height="14" fill="#ffc85f">
+        <animate attributeName="opacity" values="1;.75;1" dur="4.4s" begin="-1.2s" repeatCount="indefinite"/>
+      </rect>
+    </g>
+
+    <!-- 风车（剪影 + 红色航空障碍灯闪烁） -->
+    <g id="windmill">
+      <polygon points="-7,0 7,0 3,-62 -3,-62" fill="#152238"/>
+      <rect x="-10" y="-3" width="20" height="4" fill="#101c30"/>
+      <g transform="translate(0,-64)">
+        <g>
+          <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="3s" repeatCount="indefinite"/>
+          <rect x="-2.5" y="-30" width="5" height="30" rx="2.5" fill="#202f49"/>
+          <rect x="-2.5" y="-30" width="5" height="30" rx="2.5" fill="#202f49" transform="rotate(120)"/>
+          <rect x="-2.5" y="-30" width="5" height="30" rx="2.5" fill="#202f49" transform="rotate(240)"/>
+        </g>
+        <circle r="4" fill="#1a2740"/>
+        <circle cy="-4" r="5.5" fill="#ff5252" opacity=".3">
+          <animate attributeName="opacity" values=".35;.04" keyTimes="0;.5" calcMode="discrete" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cy="-4" r="2.4" fill="#ff6252">
+          <animate attributeName="opacity" values="1;.15" keyTimes="0;.5" calcMode="discrete" dur="1.2s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+    </g>
+
+    <!-- 近景循环段（路灯、剪影树、路牌） -->
+    <g id="nearStrip">
+      <use href="#lampPost" transform="translate(120,428)"/>
+      <use href="#bush" transform="translate(258,428)"/>
+      <use href="#treeRound" transform="translate(346,428)"/>
+      <use href="#tuft" transform="translate(420,428)"/>
+      <use href="#sign" transform="translate(468,428)"/>
+      <use href="#bush" transform="translate(540,428) scale(.8)"/>
+      <use href="#lampPost" transform="translate(600,428)"/>
+      <use href="#treePine" transform="translate(706,428)"/>
+      <use href="#tuft" transform="translate(772,428)"/>
+      <use href="#bush" transform="translate(806,428)"/>
+      <use href="#treeRound" transform="translate(888,428) scale(.85)"/>
+    </g>
+
+    <!-- 中景循环段（农舍、风车，慢速视差） -->
+    <g id="midStrip">
+      <use href="#treeRound" transform="translate(60,414) scale(.45)"/>
+      <use href="#house" transform="translate(200,414)"/>
+      <use href="#bush" transform="translate(300,414) scale(.6)"/>
+      <use href="#windmill" transform="translate(452,414) scale(.9)"/>
+      <use href="#treeRound" transform="translate(620,414) scale(.5)"/>
+      <use href="#bush" transform="translate(730,414) scale(.6)"/>
+      <use href="#treePine" transform="translate(842,414) scale(.55)"/>
+      <use href="#bush" transform="translate(938,414) scale(.5)"/>
+    </g>
+  </defs>
+
+  <!-- ===== 夜空 ===== -->
+  <rect width="960" height="540" fill="url(#sky)"/>
+  <ellipse cx="480" cy="364" rx="430" ry="78" fill="url(#townGlow)"/>
+
+  <!-- 星星（错时眨眼） -->
+  <g fill="#dbe8ff">
+    <circle cx="60" cy="58" r="1.6"><animate attributeName="opacity" values=".25;1;.25" dur="2.6s" repeatCount="indefinite"/></circle>
+    <circle cx="130" cy="140" r="1.3"><animate attributeName="opacity" values=".9;.2;.9" dur="3.4s" repeatCount="indefinite"/></circle>
+    <circle cx="205" cy="44" r="1.8"><animate attributeName="opacity" values=".3;1;.3" dur="2.2s" begin="-.7s" repeatCount="indefinite"/></circle>
+    <circle cx="300" cy="108" r="1.4"><animate attributeName="opacity" values="1;.3;1" dur="4s" begin="-1.4s" repeatCount="indefinite"/></circle>
+    <circle cx="428" cy="168" r="1.3"><animate attributeName="opacity" values=".25;.95;.25" dur="3s" begin="-.4s" repeatCount="indefinite"/></circle>
+    <circle cx="472" cy="92" r="1.7"><animate attributeName="opacity" values=".9;.25;.9" dur="2.8s" begin="-2s" repeatCount="indefinite"/></circle>
+    <circle cx="528" cy="44" r="1.3"><animate attributeName="opacity" values=".3;1;.3" dur="3.7s" begin="-1s" repeatCount="indefinite"/></circle>
+    <circle cx="566" cy="142" r="1.5"><animate attributeName="opacity" values="1;.35;1" dur="2.4s" begin="-.2s" repeatCount="indefinite"/></circle>
+    <circle cx="642" cy="120" r="1.2"><animate attributeName="opacity" values=".3;.9;.3" dur="4.4s" begin="-2.6s" repeatCount="indefinite"/></circle>
+    <circle cx="912" cy="170" r="1.4"><animate attributeName="opacity" values=".9;.25;.9" dur="3.2s" begin="-.9s" repeatCount="indefinite"/></circle>
+    <circle cx="250" cy="190" r="1.2"><animate attributeName="opacity" values=".35;1;.35" dur="2.9s" begin="-1.7s" repeatCount="indefinite"/></circle>
+    <circle cx="500" cy="200" r="1.3"><animate attributeName="opacity" values=".95;.3;.95" dur="3.9s" begin="-.5s" repeatCount="indefinite"/></circle>
+    <use href="#spark" transform="translate(362,58)"><animate attributeName="opacity" values=".4;1;.4" dur="3.5s" repeatCount="indefinite"/></use>
+    <use href="#spark" transform="translate(642,64) scale(.8)"><animate attributeName="opacity" values="1;.35;1" dur="2.7s" begin="-1.1s" repeatCount="indefinite"/></use>
+    <use href="#spark" transform="translate(940,60) scale(.9)"><animate attributeName="opacity" values=".45;1;.45" dur="4.2s" begin="-2.2s" repeatCount="indefinite"/></use>
+  </g>
+
+  <!-- 流星（每 8 秒划过一次） -->
+  <g opacity="0">
+    <animateTransform attributeName="transform" type="translate" values="960 90;340 268;340 268" keyTimes="0;.13;1" dur="8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0;0;.9;0;0" keyTimes="0;.03;.07;.13;1" dur="8s" repeatCount="indefinite"/>
+    <line x1="0" y1="0" x2="56" y2="-16" stroke="url(#shoot)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle r="2" fill="#ffffff"/>
+  </g>
+
+  <!-- ===== 月亮 ===== -->
+  <g transform="translate(790,96)">
+    <circle r="72" fill="#f6f0d4" opacity=".08">
+      <animate attributeName="opacity" values=".06;.11;.06" dur="7s" repeatCount="indefinite"/>
+    </circle>
+    <circle r="52" fill="#f6f0d4" opacity=".12"/>
+    <circle r="40" fill="#f6f0d4"/>
+    <circle cx="-12" cy="-6" r="7" fill="#ddd4b2" opacity=".85"/>
+    <circle cx="10" cy="9" r="5" fill="#ddd4b2" opacity=".8"/>
+    <circle cx="7" cy="-17" r="4" fill="#e3dabb" opacity=".8"/>
+    <circle cx="-18" cy="14" r="3" fill="#e3dabb" opacity=".7"/>
+  </g>
+
+  <!-- 夜云（一朵会缓缓遮住月亮） -->
+  <g opacity=".92">
+    <animateTransform attributeName="transform" type="translate" from="1100 108" to="-300 108" dur="70s" begin="-30s" repeatCount="indefinite"/>
+    <use href="#nightCloud" transform="scale(1.15)"/>
+  </g>
+  <g opacity=".85">
+    <animateTransform attributeName="transform" type="translate" from="1100 172" to="-300 172" dur="55s" begin="-12s" repeatCount="indefinite"/>
+    <use href="#nightCloud" transform="scale(.7)"/>
+  </g>
+
+  <!-- 蝙蝠掠过 -->
+  <g stroke="#0a1422" stroke-width="3" fill="none" stroke-linecap="round">
+    <g>
+      <animateTransform attributeName="transform" type="translate" from="1000 152" to="-120 118" dur="24s" begin="-9s" repeatCount="indefinite"/>
+      <path d="M0 0 Q6 -8 12 0 Q18 -8 24 0">
+        <animate attributeName="d" dur=".45s" repeatCount="indefinite"
+          values="M0 0 Q6 -8 12 0 Q18 -8 24 0;M0 0 Q6 6 12 0 Q18 6 24 0;M0 0 Q6 -8 12 0 Q18 -8 24 0"/>
+      </path>
+    </g>
+    <g>
+      <animateTransform attributeName="transform" type="translate" from="1000 192" to="-120 170" dur="30s" begin="-21s" repeatCount="indefinite"/>
+      <g transform="scale(.72)">
+        <path d="M0 0 Q6 -8 12 0 Q18 -8 24 0">
+          <animate attributeName="d" dur=".4s" repeatCount="indefinite"
+            values="M0 0 Q6 -8 12 0 Q18 -8 24 0;M0 0 Q6 6 12 0 Q18 6 24 0;M0 0 Q6 -8 12 0 Q18 -8 24 0"/>
+        </path>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===== 剪影群山 ===== -->
+  <path d="M0 352 L110 236 L200 300 L300 210 L392 296 L470 250 L560 322 L648 238 L742 312 L836 262 L960 330 L960 352 Z" fill="#123350"/>
+  <path d="M0 386 L84 300 L170 352 L268 280 L356 342 L470 292 L580 352 L688 300 L788 356 L878 318 L960 360 L960 386 Z" fill="#0d2941"/>
+
+  <!-- 远处村落灯火 -->
+  <g fill="#ffcf6f">
+    <circle cx="98" cy="376" r="1.6" opacity=".75"><animate attributeName="opacity" values=".75;.4;.75" dur="5s" repeatCount="indefinite"/></circle>
+    <circle cx="122" cy="370" r="2" opacity=".85"/>
+    <circle cx="148" cy="378" r="1.5" opacity=".7"><animate attributeName="opacity" values=".7;.95;.7" dur="4s" begin="-2s" repeatCount="indefinite"/></circle>
+    <circle cx="742" cy="372" r="1.8" opacity=".8"/>
+    <circle cx="766" cy="380" r="1.4" opacity=".65"><animate attributeName="opacity" values=".65;.9;.65" dur="6s" begin="-1s" repeatCount="indefinite"/></circle>
+    <circle cx="790" cy="374" r="2" opacity=".8"/>
+  </g>
+
+  <!-- ===== 山丘草地 ===== -->
+  <path d="M0 428 Q120 366 300 392 Q470 416 600 386 Q760 356 960 400 L960 428 Z" fill="#155036"/>
+
+  <!-- 中景循环层（慢速） -->
+  <g>
+    <use href="#midStrip"/>
+    <use href="#midStrip" x="960"/>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-960 0" dur="13s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- 路缘草带 -->
+  <rect y="412" width="960" height="16" fill="#0d3a29"/>
+
+  <!-- ===== 公路 ===== -->
+  <rect y="428" width="960" height="112" fill="#262a3e"/>
+  <rect y="428" width="960" height="5" fill="#3a3f58"/>
+  <rect y="534" width="960" height="6" fill="#181b2c"/>
+  <rect y="440" width="960" height="4" fill="#97a1bf" opacity=".7"/>
+  <!-- 中央虚线：快速滚动 -->
+  <line x1="0" y1="505" x2="960" y2="505" stroke="#d8bc66" stroke-width="9" stroke-dasharray="64 46">
+    <animate attributeName="stroke-dashoffset" from="0" to="110" dur=".55s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- ===== 车后气流速度线 ===== -->
+  <g stroke="#a9c7ea" stroke-width="5" stroke-linecap="round">
+    <line x1="330" y1="424" x2="410" y2="424">
+      <animate attributeName="x1" values="330;140" dur=".5s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="410;220" dur=".5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;.5;0" dur=".5s" repeatCount="indefinite"/>
+    </line>
+    <line x1="320" y1="446" x2="392" y2="446">
+      <animate attributeName="x1" values="320;130" dur=".5s" begin="-.17s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="392;200" dur=".5s" begin="-.17s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;.45;0" dur=".5s" begin="-.17s" repeatCount="indefinite"/>
+    </line>
+    <line x1="330" y1="468" x2="414" y2="468">
+      <animate attributeName="x1" values="330;150" dur=".5s" begin="-.34s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="414;234" dur=".5s" begin="-.34s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;.5;0" dur=".5s" begin="-.34s" repeatCount="indefinite"/>
+    </line>
+  </g>
+
+  <!-- ===== 近景循环层（路灯与光池掠过路面） ===== -->
+  <g>
+    <use href="#nearStrip"/>
+    <use href="#nearStrip" x="960"/>
+    <animateTransform attributeName="transform" type="translate" from="0 0" to="-960 0" dur="4.8s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- ===== 萤火虫 ===== -->
+  <g>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="250 408;266 398;244 414;250 408" dur="7s" repeatCount="indefinite"/>
+      <circle r="5" fill="#ffe28a" opacity=".16"/><circle r="2" fill="#ffe9a8">
+        <animate attributeName="opacity" values="0;1;0" dur="2.1s" repeatCount="indefinite"/></circle>
+    </g>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="430 416;418 404;442 420;430 416" dur="8.5s" begin="-3s" repeatCount="indefinite"/>
+      <circle r="5" fill="#ffe28a" opacity=".16"/><circle r="2" fill="#ffe9a8">
+        <animate attributeName="opacity" values="0;1;0" dur="1.8s" begin="-.6s" repeatCount="indefinite"/></circle>
+    </g>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="604 404;620 412;596 398;604 404" dur="6.5s" begin="-1.5s" repeatCount="indefinite"/>
+      <circle r="5" fill="#ffe28a" opacity=".16"/><circle r="2" fill="#ffe9a8">
+        <animate attributeName="opacity" values="0;1;0" dur="2.5s" begin="-1.1s" repeatCount="indefinite"/></circle>
+    </g>
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="832 410;846 400;822 418;832 410" dur="9s" begin="-5s" repeatCount="indefinite"/>
+      <circle r="5" fill="#ffe28a" opacity=".16"/><circle r="2" fill="#ffe9a8">
+        <animate attributeName="opacity" values="0;1;0" dur="2s" begin="-.3s" repeatCount="indefinite"/></circle>
+    </g>
+  </g>
+
+  <!-- ===== 汽车 ===== -->
+  <ellipse cx="478" cy="481" rx="155" ry="8" fill="#04060d" opacity=".5">
+    <animate attributeName="rx" values="155;150;155" dur=".5s" repeatCount="indefinite"/>
+  </ellipse>
+
+  <!-- 排气管与尾气 -->
+  <rect x="320" y="447" width="14" height="7" rx="3" fill="#59627a"/>
+  <g fill="#93a0b4">
+    <circle cx="316" cy="450" r="3" opacity="0">
+      <animate attributeName="cx" values="316;278" dur=".9s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="450;438" dur=".9s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="3;11" dur=".9s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;.35;0" dur=".9s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="316" cy="450" r="3" opacity="0">
+      <animate attributeName="cx" values="316;278" dur=".9s" begin="-.3s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="450;440" dur=".9s" begin="-.3s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="3;11" dur=".9s" begin="-.3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;.35;0" dur=".9s" begin="-.3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="316" cy="450" r="3" opacity="0">
+      <animate attributeName="cx" values="316;278" dur=".9s" begin="-.6s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="450;436" dur=".9s" begin="-.6s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="3;11" dur=".9s" begin="-.6s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;.35;0" dur=".9s" begin="-.6s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- 车身（整体轻微颠簸） -->
+  <g>
+    <animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur=".5s" repeatCount="indefinite"/>
+
+    <!-- 大灯光束 + 前方路面光池 -->
+    <polygon points="618,414 800,378 800,474 618,440" fill="url(#beam)">
+      <animate attributeName="opacity" values=".75;1;.75" dur="3s" repeatCount="indefinite"/>
+    </polygon>
+    <ellipse cx="706" cy="476" rx="90" ry="12" fill="#fff0bd" opacity=".13">
+      <animate attributeName="opacity" values=".1;.18;.1" dur="3s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- 车厢 -->
+    <path d="M406 414 L426 368 Q430 360 440 360 L514 360 Q524 360 529 368 L550 414 Z" fill="#cf3d3d" stroke="#8f2626" stroke-width="2"/>
+    <!-- 仪表暖光车窗 + 司机剪影 -->
+    <path d="M433 370 L422 406 L472 406 L472 370 Z" fill="url(#winGlow)">
+      <animate attributeName="opacity" values=".9;1;.9" dur="5s" repeatCount="indefinite"/>
+    </path>
+    <path d="M484 370 L484 406 L538 406 L524 370 Z" fill="url(#winGlow)">
+      <animate attributeName="opacity" values="1;.88;1" dur="4.2s" begin="-1.6s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="505" cy="391" r="7" fill="#33261a"/>
+    <path d="M494 406 Q505 396 516 406 Z" fill="#33261a"/>
+    <!-- 车身主体 -->
+    <rect x="330" y="410" width="290" height="46" rx="20" fill="#cf3d3d"/>
+    <rect x="340" y="444" width="270" height="10" rx="5" fill="#a32e2e"/>
+    <path d="M432 364 Q477 356 522 364" stroke="#a9c2ea" stroke-width="3" opacity=".35" fill="none" stroke-linecap="round"/>
+    <!-- 车门缝与门把手 -->
+    <path d="M478 412 V452" stroke="#8f2626" stroke-width="2" opacity=".8"/>
+    <rect x="488" y="420" width="16" height="5" rx="2.5" fill="#8f2626"/>
+    <!-- 车头灯 / 尾灯（尾灯带红光晕） -->
+    <circle cx="612" cy="428" r="7" fill="#fff0bd" stroke="#ffd98a" stroke-width="2"/>
+    <circle cx="333" cy="426" r="11" fill="#ff4433" opacity=".3">
+      <animate attributeName="opacity" values=".2;.48;.2" dur="1.5s" repeatCount="indefinite"/>
+    </circle>
+    <rect x="329" y="420" width="9" height="13" rx="3" fill="#ff5c49"/>
+  </g>
+
+  <!-- 车轮（贴地，轮毂飞转） -->
+  <g transform="translate(398,450)">
+    <circle r="28" fill="#14182a"/>
+    <circle r="15" fill="#d6dde9"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur=".6s" repeatCount="indefinite"/>
+      <circle r="24" fill="none" stroke="#0a0d18" stroke-width="3" stroke-dasharray="5 7"/>
+      <g stroke="#8b95ad" stroke-width="4" stroke-linecap="round">
+        <line y1="-11" y2="11"/><line x1="-11" x2="11"/>
+        <line x1="-7.8" y1="-7.8" x2="7.8" y2="7.8"/>
+        <line x1="-7.8" y1="7.8" x2="7.8" y2="-7.8"/>
+      </g>
+    </g>
+    <circle r="4.5" fill="#5b6580"/>
+  </g>
+  <g transform="translate(560,450)">
+    <circle r="28" fill="#14182a"/>
+    <circle r="15" fill="#d6dde9"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur=".6s" repeatCount="indefinite"/>
+      <circle r="24" fill="none" stroke="#0a0d18" stroke-width="3" stroke-dasharray="5 7"/>
+      <g stroke="#8b95ad" stroke-width="4" stroke-linecap="round">
+        <line y1="-11" y2="11"/><line x1="-11" x2="11"/>
+        <line x1="-7.8" y1="-7.8" x2="7.8" y2="7.8"/>
+        <line x1="-7.8" y1="7.8" x2="7.8" y2="-7.8"/>
+      </g>
+    </g>
+    <circle r="4.5" fill="#5b6580"/>
+  </g>
+
+  <!-- 暗角，收拢夜色 -->
+  <rect width="960" height="540" fill="url(#vign)"/>
+</svg>
