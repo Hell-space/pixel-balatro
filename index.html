@@ -1,39 +1,161 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>小驴快跑 · Donkey Run</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>SVG 动画放映室</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 28px; padding: 40px 20px;
-    background: linear-gradient(180deg, #BEE7F2 0%, #E4F5E0 55%, #8CC63F 100%);
-    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  :root{
+    --bg:#14231A; --panel:#1D3427; --line:#2E4D3A;
+    --paper:#E9E4D2; --muted:#9DB3A0;
+    --gold:#E8B84B; --grass:#8FBF77; --screen:#F4F1E4;
+    --mono:'SFMono-Regular',Consolas,'Courier New',monospace;
+    --disp:'STKaiti','KaiTi','BiauKai','Noto Serif SC',serif;
+    --body:'PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif;
   }
-  h1 {
-    font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-    font-size: clamp(40px, 7vw, 64px); color: #2F5D3A;
-    letter-spacing: 12px; text-indent: 12px;
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--paper); font-family:var(--body); min-height:100vh;
+    background-image:
+      radial-gradient(1100px 500px at 85% -10%, rgba(232,184,75,.10), transparent 60%),
+      radial-gradient(900px 480px at -10% 0%, rgba(143,191,119,.09), transparent 55%),
+      radial-gradient(rgba(233,228,210,.045) 1px, transparent 1px);
+    background-size:auto,auto,26px 26px;
   }
-  header p { margin-top: 10px; font-size: 13px; letter-spacing: 4px; color: #4A6B52; text-align: center; }
-  .frame {
-    background: #FFFDF5; padding: 14px; border-radius: 18px; max-width: 940px; width: 100%;
-    box-shadow: 0 24px 60px rgba(47,93,58,.25), 0 4px 12px rgba(47,93,58,.15);
-  }
-  .frame img { display: block; width: 100%; height: auto; border-radius: 10px; }
-  footer { font-size: 12px; letter-spacing: 2px; color: #3E6B39; opacity: .8; }
+  .wrap{max-width:1180px;margin:0 auto;padding:44px 28px 60px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--gold);margin-bottom:10px}
+  h1{font-family:var(--disp);font-size:clamp(38px,6vw,58px);font-weight:700;letter-spacing:6px;line-height:1.1}
+  h1 em{font-style:normal;color:var(--gold)}
+  .sub{margin-top:10px;color:var(--muted);font-size:14px;letter-spacing:1px}
+  .stats{font-family:var(--mono);text-align:right;border:1px solid var(--line);padding:12px 16px;border-radius:8px;background:rgba(29,52,39,.6)}
+  .stats b{display:block;font-size:30px;color:var(--gold)}
+  .stats span{font-size:11px;letter-spacing:2px;color:var(--muted)}
+  .ticker{margin:30px 0 34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;white-space:nowrap}
+  .ticker:hover .track{animation-play-state:paused}
+  .track{display:inline-block;padding:9px 0;font-family:var(--mono);font-size:12px;letter-spacing:2px;color:var(--muted);animation:roll 26s linear infinite}
+  .track i{font-style:normal;color:var(--gold);margin:0 14px}
+  @keyframes roll{to{transform:translateX(-50%)}}
+  .bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:8px}
+  .bar h2{font-family:var(--disp);font-size:22px;letter-spacing:4px}
+  .bar small{font-family:var(--mono);color:var(--muted);font-size:12px}
+  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    animation:rise .55s both;transition:transform .35s,border-color .35s,box-shadow .35s}
+  .card:hover{transform:translateY(-5px);border-color:var(--gold);
+    box-shadow:0 18px 40px rgba(0,0,0,.4),0 0 0 1px rgba(232,184,75,.25)}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  .screen{display:block;background:var(--screen);aspect-ratio:9/5;overflow:hidden;border-bottom:1px solid var(--line)}
+  .screen img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+  .card:hover .screen img{transform:scale(1.03)}
+  .meta{display:flex;align-items:center;gap:10px;padding:12px 14px}
+  .name{font-family:var(--mono);font-size:13px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .size{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .btn{font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--paper);background:none;
+    border:1px solid var(--line);border-radius:4px;padding:5px 9px;cursor:pointer;text-decoration:none;
+    transition:border-color .25s,color .25s}
+  .btn:hover{border-color:var(--gold);color:var(--gold)}
+  .btn.ok{border-color:var(--grass);color:var(--grass)}
+  #status{padding:60px 0;text-align:center;color:var(--muted);font-size:14px;line-height:2}
+  .reel{width:34px;height:34px;margin:0 auto 16px;border:3px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  footer{margin-top:46px;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--muted);line-height:1.9}
+  footer b{color:var(--gold)}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 </style>
 </head>
 <body>
+<div class="wrap">
   <header>
-    <h1>小驴快跑</h1>
-    <p>GRASSLAND GALLOP · 纯 SVG 动画</p>
+    <div>
+      <div class="eyebrow">GITHUB PAGES · AUTO INDEX</div>
+      <h1>SVG 动画<em>放映室</em></h1>
+      <p class="sub">仓库里的每一部 .svg，都在此自动上映</p>
+    </div>
+    <div class="stats"><b id="count">–</b><span>部作品 · 实时读取</span></div>
   </header>
-  <div class="frame">
-    <img src="donkey.svg" alt="小驴在草原上欢快奔跑的循环动画" />
-  </div>
-  <footer>纯 SVG + SMIL 驱动 · 零脚本 · 无限循环</footer>
+
+  <div class="ticker"><div class="track" id="track">正在等候影片入库<i>◆</i>纯 SVG + SMIL<i>◆</i>零脚本<i>◆</i>无限循环<i>◆</i></div></div>
+
+  <div class="bar"><h2>全部作品</h2><small>点击画面全屏播放 · 复制链接可直接分享</small></div>
+
+  <div id="grid"></div>
+  <div id="status"><div class="reel"></div>正在从 GitHub 拉取作品列表…</div>
+
+  <footer>
+    用法：修改脚本顶部的 <b>USER / REPO</b> 两个常量，与本文件一起上传到仓库根目录，开启 Pages 即可。<br/>
+    之后每次 push 新的 .svg，刷新本页自动收录，无需改动任何代码。
+  </footer>
+</div>
+
+<script>
+/* ============ 只需改这里 ============ */
+const USER   = 'your-github-username';   // 你的 GitHub 用户名
+const REPO   = 'your-repo-name';         // 仓库名
+const FOLDER = '';                       // 可选：svg 放在子文件夹就填，如 'works'
+const MANUAL = [];                       // 备用：API 限流时手动登记，如 ['donkey.svg']
+/* =================================== */
+
+const grid = document.getElementById('grid'), status = document.getElementById('status'),
+      count = document.getElementById('count'), track = document.getElementById('track');
+const base = location.href.replace(/\/[^/]*$/, '/');
+const kb = n => n == null ? '' : (n/1024 >= 100 ? Math.round(n/1024) : (n/1024).toFixed(1)) + ' KB';
+
+function addCard(name, size, i){
+  const url = base + encodeURIComponent(name);
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.style.animationDelay = (i * 70) + 'ms';
+  card.innerHTML = `
+    <a class="screen" href="${url}" target="_blank" rel="noopener" title="全屏播放 ${name}">
+      <img src="${url}" alt="${name}" loading="lazy"/>
+    </a>
+    <div class="meta">
+      <span class="name" title="${name}">${name}</span>
+      <span class="size">${kb(size)}</span>
+      <a class="btn" href="${url}" target="_blank" rel="noopener">全屏 ↗</a>
+      <button class="btn copy" data-url="${url}">复制链接</button>
+    </div>`;
+  grid.appendChild(card);
+}
+
+grid.addEventListener('click', e => {
+  const btn = e.target.closest('.copy'); if(!btn) return;
+  const done = () => { btn.textContent = '已复制 ✓'; btn.classList.add('ok');
+    setTimeout(() => { btn.textContent = '复制链接'; btn.classList.remove('ok'); }, 1300); };
+  navigator.clipboard ? navigator.clipboard.writeText(btn.dataset.url).then(done)
+                      : (prompt('复制此链接：', btn.dataset.url), done());
+});
+
+function setTicker(names){
+  const one = (names.length ? names : ['等待上映']).map(n => n + '<i>◆</i>').join('')
+            + '纯 SVG + SMIL<i>◆</i>零脚本<i>◆</i>无限循环<i>◆</i>';
+  track.innerHTML = one + one;   // 复制一份实现无缝滚动
+}
+
+(async function init(){
+  let items = null;
+  if (MANUAL.length){
+    items = MANUAL.map(n => ({ name:n, size:null }));
+  } else {
+    try{
+      const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FOLDER}`);
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      items = (await res.json())
+        .filter(f => f.type === 'file' && /\.svg$/i.test(f.name))
+        .sort((a,b) => a.name.localeCompare(b.name))
+        .map(f => ({ name:f.name, size:f.size }));
+    }catch(err){
+      status.innerHTML = `⚠ 拉取失败（${err.message}）。可能是 API 限流，稍后刷新即可；<br/>或在脚本顶部 <b>MANUAL</b> 数组里手动登记文件名。`;
+      return;
+    }
+  }
+  status.style.display = 'none';
+  count.textContent = items.length;
+  if(!items.length){ status.style.display = 'block'; status.textContent = '仓库里还没有 .svg 文件——上传一部试试。'; return; }
+  items.forEach((f,i) => addCard(f.name, f.size, i));
+  setTicker(items.map(f => f.name));
+})();
+</script>
 </body>
 </html>
