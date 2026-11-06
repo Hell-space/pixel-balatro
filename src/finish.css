@@ -27,6 +27,18 @@
 .suitText {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .card .st,.card .st2 {line-height:1}.card .st .suitIcon,.card .st2 .suitIcon {display:block}
 .card .st .suitIcon {width:.72em;height:.72em}.card .st2 .suitIcon {width:.9em;height:.9em}
+.card .enhancements {position:absolute;left:3px;right:3px;bottom:3px;display:flex;gap:2px}
+.card .enhancements .en {position:static;padding:0 2px;font-size:9px;line-height:12px;white-space:nowrap}
+.card.hasBadges .st {display:none}
+.card .en.w {top:3px;bottom:auto;left:50%;transform:translateX(-50%);font:9px/12px var(--ui);padding:0 2px}
+.packBlocked {margin-top:8px;color:#ffd4aa;font-size:12px}
+#packCards .pk:disabled {cursor:default;opacity:.65}
+#ovPack .box {display:flex;flex-direction:column;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px)}
+#packCards {min-height:0;overflow:auto}
+#packCards[data-type=standard] {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#packCards[data-type=standard] .pk {width:100%;min-width:0;padding:6px 4px}
+#packCards[data-type=standard] .card {max-width:100%}
+#ovPack .box>.pxbtn {flex-shrink:0}
 .card.dealt {animation:cardDeal .26s var(--ease) backwards;animation-delay:var(--deal-delay,0ms)}
 @keyframes cardDeal {from{transform:translate(16px,-25px) rotate(7deg) scale(.92);opacity:.2}to{opacity:1}}
 .facePip {border-color:currentColor;outline:1px solid #b29e6e55;outline-offset:3px;background:linear-gradient(140deg,#fff5,transparent)}
@@ -112,6 +124,11 @@
   .ownedHero {gap:12px;margin-bottom:10px}.ownedHero h2 {font-size:20px}
 }
 @media(min-width:580px) and (max-height:440px) {
+  .card .enhancements {left:2px;right:2px;bottom:2px;gap:1px}
+  .card .enhancements .en {font-size:8px;line-height:10px;padding:0 1px}
+  #ovPack .box {padding:10px 14px}
+  #packTitle {font-size:20px;margin:0 0 4px}#packHint {margin:2px 0}
+  #packCards {margin:6px 0}#ovPack .box>.pxbtn {margin-top:4px;padding-block:6px}
   #ovShop .shopItem .ic {width:44px;padding:1px 0;font-size:25px}
   #ovShop .shopItem .pr {padding:2px 9px}
   .ownedHero {margin:0 0 8px}.ownedHero #ownedArt {height:48px;width:40px;font-size:25px}

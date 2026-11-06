@@ -243,7 +243,7 @@ function evalHand(cards) {
   }
   const contains = {
     pair: groups[0].c >= 2, trips: groups[0].c >= 3, quads: groups[0].c >= 4,
-    twopair: (groups[0].c >= 2 && groups[1] && groups[1].c >= 2) || groups[0].c >= 4,
+    twopair: groups.filter(g => g.c >= 2).length >= 2,
     straight: isStraight, flush: isFlush,
   };
   let key, scoring;

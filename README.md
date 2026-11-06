@@ -4,9 +4,16 @@
 
 **在线游戏：https://hell-space.github.io/pixel-balatro/**
 
-**Android 下载：[GitHub Release v1.3.1](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.3.1)** · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.3.1/PixelBalatro-1.3.1-android.apk)
+**Android 下载：[GitHub Release v1.3.2](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.3.2)** · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.3.2/PixelBalatro-1.3.2-android.apk)
 
-## 1.3.1
+## 1.3.2
+
+- 标准包三张均带不同基础强化，旧包缺失的强化会补齐；保留原候选点数和花色，取消退款不重抽。
+- 绿色小丑、跑者、顺风车的成长在本手生效，顺风车打人头牌立即清零；四条和五条不再误触发“两对”。
+- 塔罗正确检查使用条件，缺少目标时可直接返回选牌；蜡封避免无效消耗，灵魂保持稀有品质。
+- “万能牌”改称“百搭花色牌”，只替代花色、点数不变；筹码和加法倍率在牌面独立显示，横屏开包可同时比较三张。
+
+## 游戏内容
 
 - 修复商店详情被商店遮挡、隐藏卖出按钮仍能响应的层级错误；只允许可见顶层处理操作。
 - 商店按小丑、消耗牌、卡包、优惠券切换，持有牌与底部操作保持可见，手机常用横竖屏无需整页上下滚动。
@@ -39,13 +46,13 @@
 
 菜单包含牌型表、剩余牌库、图鉴、计分明细、音乐/音效开关，以及 1×/2×/4×/立即四档计分速度。键盘支持 Tab 聚焦、Enter 出牌和 X 弃牌。
 
-Android 用户可在 GitHub 手机端打开仓库的 Releases → v1.3.1 → Assets，下载 `PixelBalatro-1.3.1-android.apk`。已有 1.3.0 直接覆盖安装，不要先卸载。Release 同时提供离线 HTML 和 SHA-256 校验文件。
+Android 用户可在 GitHub 手机端打开仓库的 Releases → v1.3.2 → Assets，下载 `PixelBalatro-1.3.2-android.apk`。已有 1.3.0 / 1.3.1 直接覆盖安装，不要先卸载。Release 同时提供离线 HTML 和 SHA-256 校验文件。
 
-本地交付文件为 `outputs/PixelBalatro-1.3.1-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
+本地交付文件为 `outputs/PixelBalatro-1.3.2-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
 
 ## 存档与兼容
 
-单人进度自动保存，标题页可继续游戏。1.3.1 兼容 1.1/1.2/1.3.0 存档，旧局保留既有出牌/弃牌次数、经济和持有牌；新内容从新的候选池进入。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽。
+单人进度自动保存，标题页可继续游戏。1.3.2 兼容 1.1/1.2/1.3.0/1.3.1 存档，旧局保留既有出牌/弃牌次数、经济和持有牌；新内容从新的候选池进入。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽；旧标准包尚未选取的普通候选会补上强化。
 
 计分动画中途退出会恢复到该次出牌前的稳定状态。设置和通关记录独立保存，不因开新局清除。清除网站或应用数据会丢失存档；同签名 APK 覆盖更新保留数据。
 
@@ -89,9 +96,10 @@ python tests/browser_extended.py --browser "浏览器可执行文件"
 python tests/browser_content.py --browser "浏览器可执行文件"
 python tests/browser_shop.py --browser "浏览器可执行文件" --output-dir .qa/browser-shop
 python tests/browser_motion.py --browser "浏览器可执行文件" --output-dir .qa/browser-motion
+python tests/browser_gameplay.py --browser "浏览器可执行文件" --mode fixed --output-dir .qa/browser-gameplay
 ```
 
-本轮实际验证范围和限制见 [1.3.1 验证记录](docs/verification-1.3.1.md)，内容与平衡版本的完整记录见 [1.3.0 验证记录](docs/verification.md)。
+本轮实际验证范围和限制见 [1.3.2 验证记录](docs/verification-1.3.2.md)。历史记录：[1.3.1 商店与视觉](docs/verification-1.3.1.md)、[1.3.0 内容与平衡](docs/verification.md)。
 
 ## 目录
 

@@ -209,6 +209,7 @@ function buyPack(i) {
   const cost=shopPrice(p.price);
   if(S.money<cost) return msg('钱不够！',1);
   if(!p.options) p.options=packOptions(p.id);
+  if(p.id==='standard') ensurePackEnhancements(p.options);
   S.money-=cost; p.sold=true;
   S.pack={index:i,type:p.id,cost,options:p.options};
   sfxCash(); renderShop(); openPackUI(); persistRun();
@@ -216,14 +217,23 @@ function buyPack(i) {
 function availablePlanets() {
   return PLANETS.filter(p=>!['five','flushhouse','flushfive'].includes(p.key) || S.playCounts[p.key]>0);
 }
-function randCard() {
+const CARD_ENHANCEMENTS=['bonus','multB','wild','steel','glass','goldc'];
+function addCardEnhancement(card,key) {
+  card[key]=key==='bonus'?30:key==='multB'?4:true;
+}
+function ensurePackEnhancements(options) {
+  // Repair previously rolled, unchosen packs without rerolling cards or consuming RNG.
+  const used=new Set(options.flatMap(c=>CARD_ENHANCEMENTS.filter(k=>c[k])));
+  options.forEach((c,i)=>{
+    if(CARD_ENHANCEMENTS.some(k=>c[k])) return;
+    const key=CARD_ENHANCEMENTS.find(k=>!used.has(k))||CARD_ENHANCEMENTS[i%CARD_ENHANCEMENTS.length];
+    addCardEnhancement(c,key);used.add(key);
+  });
+}
+function randCard(enhancement=randOf(CARD_ENHANCEMENTS)) {
   const c = { id: ++cid, suit: Math.floor(Math.random() * 4), rank: 2 + Math.floor(Math.random() * 13),
     bonus: 0, multB: 0, wild: false, steel: false, glass: false, goldc: false, ed: 0, seal: null };
-  const r = Math.random();
-  if (r < 0.55) {
-    const k = randOf(['bonus', 'multB', 'wild', 'steel', 'glass', 'goldc']);
-    if (k === 'bonus') c.bonus = 30; else if (k === 'multB') c.multB = 4; else c[k] = true;
-  }
+  addCardEnhancement(c,enhancement);
   if (Math.random() < 0.2) c.seal = Math.random() < 0.5 ? 'red' : 'gold';
   if (Math.random() < 0.15) c.ed = 1 + Math.floor(Math.random() * 3);
   return c;
@@ -237,7 +247,7 @@ function packOptions(type) {
     const b=rollJokerItem(false,[a.id]);
     return [a,b];
   }
-  if(type==='standard') return [randCard(),randCard(),randCard()];
+  if(type==='standard') return shuffle(CARD_ENHANCEMENTS.slice()).slice(0,3).map(key=>randCard(key));
   return unique(SPECTRALS,2);
 }
 function openPackUI() {
@@ -246,9 +256,11 @@ function openPackUI() {
   const definition=PACKS.find(p=>p.id===pack.type);
   $('packTitle').textContent=definition.ic+' '+definition.name;
   $('packHint').textContent=definition.desc;
-  const box=$('packCards'); box.replaceChildren();
+  const box=$('packCards'); box.replaceChildren();box.dataset.type=pack.type;
   pack.options.forEach((option,i)=>{
     const button=document.createElement('button'); button.className='pk shopItem';
+    const issue=packChoiceIssue(pack,option);
+    button.disabled=!!issue;
     if(pack.type==='standard') {
       button.append(cardEl(option));
       const desc=document.createElement('div'); desc.className='pkds';
@@ -258,6 +270,10 @@ function openPackUI() {
         '</div><div class="pkds">'+(pack.type==='celestial'?HANDS[option.key].name+' 升 1 级':option.desc)+
         (option.ed?'<br>'+EDNAME[option.ed]:'')+'</div>';
     }
+    if(issue) {
+      const reason=document.createElement('div');reason.className='packBlocked';reason.textContent=issue;
+      button.append(reason);
+    }
     button.onclick=()=>pickPack(i);
     box.append(button);
   });
@@ -266,6 +282,8 @@ function openPackUI() {
 function pickPack(i) {
   const pack=S.pack, option=pack?.options[i];
   if(!option) return;
+  const issue=packChoiceIssue(pack,option);
+  if(issue) return msg(issue,1);
   if(pack.type==='arcana') {
     if(S.cons.length>=S.consSlots) return msg('消耗牌槽位已满，可取消并整理后重开。',1);
     S.cons.push({...option,kind:'tarot',price:3});
@@ -287,13 +305,30 @@ function closePack(picked=false) {
   S.pack=null;
   hideTip(); hide('ovPack'); renderShop(); persistRun();
 }
+function spectralIssue(sp) {
+  if(sp.id==='soul') {
+    if(S.jokers.length>=S.jokerSlots) return '小丑槽位已满';
+    if(!JDEFS.some(j=>j.rar===2&&!S.jokers.some(owned=>owned.id===j.id))) return '已拥有全部稀有小丑';
+  }
+  if(['talis','dejavu'].includes(sp.id)) {
+    const seal=sp.id==='talis'?'gold':'red';
+    if(!S.deckAll.some(c=>c.seal!==seal)) return '没有可添加此蜡封的牌';
+  }
+  return '';
+}
+function packChoiceIssue(pack,option) {
+  if(pack.type==='arcana'&&S.cons.length>=S.consSlots) return '消耗牌槽位已满';
+  if(pack.type==='buffoon'&&S.jokers.length>=S.jokerSlots) return '小丑槽位已满';
+  return pack.type==='spectral'?spectralIssue(option):'';
+}
 function useSpectral(sp) {
+  const issue=spectralIssue(sp);
+  if(issue) {msg(issue,1);return false;}
   switch (sp.id) {
     case 'soul': {
       if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满！', 1); return false; }
       const owned = new Set(S.jokers.map(j => j.id));
-      let pool = JDEFS.filter(j => j.rar === 2 && !owned.has(j.id));
-      if (!pool.length) pool = JDEFS.filter(j => !owned.has(j.id));
+      const pool = JDEFS.filter(j => j.rar === 2 && !owned.has(j.id));
       if(!pool.length) return false;
       const def = randOf(pool);
       addJoker({ ...def });
@@ -307,9 +342,10 @@ function useSpectral(sp) {
       msg('🕳️ 黑洞：所有牌型等级 +1！');
       return true;
     case 'talis': case 'dejavu': {
-      const c = randOf(S.deckAll);
+      const seal=sp.id==='talis'?'gold':'red';
+      const c = randOf(S.deckAll.filter(c=>c.seal!==seal));
       if(!c) { msg('牌组中没有可强化的牌。',1); return false; }
-      c.seal = sp.id === 'talis' ? 'gold' : 'red';
+      c.seal = seal;
       msg(sp.ic + ' ' + rankName(c.rank) + (c.wild ? '🌈' : SUITS[c.suit]) + ' 获得了' + (sp.id === 'talis' ? '金' : '红') + '蜡封！');
       return true;
     }
@@ -318,11 +354,30 @@ function useSpectral(sp) {
 }
 
 // ================= 消耗牌 =================
+const CONSUMABLE_TARGETS={magician:[1,2],empress:[1,2],lovers:[1,1],death:[2,2],tower:[1,2],
+  devil:[1,1],chariot:[1,1],justice:[1,1],sun:[1,3],world:[1,3],star:[1,3],mooncard:[1,3],strength:[1,2]};
+function consumableUseState(item) {
+  if(S.busy||!['play','shop','select'].includes(S.screen)) return {ok:false,label:'当前无法使用'};
+  if(item.kind==='planet') return {ok:true,label:'使用'};
+  const need=CONSUMABLE_TARGETS[item.id];
+  if(need) {
+    if(S.screen!=='play') return {ok:false,label:'需在对局中选牌'};
+    const [lo,hi]=need,count=S.hand.filter(c=>c.sel).length;
+    if(count<lo||count>hi) return {ok:false,select:true,label:'选择 '+(lo===hi?lo:lo+'–'+hi)+' 张手牌'};
+  }
+  if(item.id==='judge'&&S.jokers.length>=S.jokerSlots) return {ok:false,label:'小丑槽位已满'};
+  if(item.id==='judge'&&!JDEFS.some(j=>!S.jokers.some(owned=>owned.id===j.id))) return {ok:false,label:'已拥有全部小丑'};
+  if(item.id==='hermit'&&S.money<=0) return {ok:false,label:'至少需要 $1'};
+  if(item.id==='temperance'&&!S.jokers.length) return {ok:false,label:'需要持有小丑'};
+  return {ok:true,label:'使用'};
+}
 let consLock = 0;
 function useCons(i) {
   if (S.busy || !['play','shop','select'].includes(S.screen)) return;
   const t = S.cons[i];
   if (!t || Date.now() - consLock < 300) return;  // 防止双击连用两张
+  const availability=consumableUseState(t);
+  if(!availability.ok) return msg(availability.label,1);
   consLock = Date.now();
   if (t.kind === 'planet') {
     S.levels[t.key]++;
@@ -333,18 +388,7 @@ function useCons(i) {
     renderCons(); updatePreview(); if (S.shop) renderShop(); persistRun();
     return;
   }
-  // 塔罗：id -> [最少选牌, 最多选牌]
-  const NEED = { magician:[1,2], empress:[1,2], lovers:[1,1], death:[2,2], tower:[1,2],
-                 devil:[1,1], chariot:[1,1], justice:[1,1], sun:[1,3], world:[1,3],
-                 star:[1,3],mooncard:[1,3],strength:[1,2] };
   const sel = S.hand.filter(c => c.sel);
-  if (NEED[t.id]) {
-    if (S.screen !== 'play') { msg('这张塔罗牌需要在对局中选中手牌后使用', 1); return; }
-    const [lo, hi] = NEED[t.id];
-    if (sel.length < lo || sel.length > hi) {
-      msg(t.name + '：请先选中' + (lo === hi ? '恰好 ' + lo : ' ' + lo + '~' + hi) + ' 张牌', 1); return;
-    }
-  }
   const clearEnh = c => { c.bonus = 0; c.multB = 0; c.steel = c.glass = c.goldc = false; };
   switch (t.id) {
     case 'magician': sel.forEach(c => c.bonus += 30); break;

@@ -4,11 +4,11 @@
 
 ## 安装
 
-交付文件：`outputs/PixelBalatro-1.3.1-android.apk`。传到手机后从文件管理器打开，按系统提示允许该文件管理器安装应用。包名 `io.github.hellspace.pixelbalatro`，版本 1.3.1 / versionCode 10301。
+交付文件：`outputs/PixelBalatro-1.3.2-android.apk`。传到手机后从文件管理器打开，按系统提示允许该文件管理器安装应用。包名 `io.github.hellspace.pixelbalatro`，版本 1.3.2 / versionCode 10302。
 
-手机端下载：[Release v1.3.1](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.3.1) → Assets → `PixelBalatro-1.3.1-android.apk`，或[直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.3.1/PixelBalatro-1.3.1-android.apk)。选择 APK 安装包；GitHub 自动提供的 Source code ZIP/TAR 是源码归档。
+手机端下载：[Release v1.3.2](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.3.2) → Assets → `PixelBalatro-1.3.2-android.apk`，或[直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.3.2/PixelBalatro-1.3.2-android.apk)。选择 APK 安装包；GitHub 自动提供的 Source code ZIP/TAR 是源码归档。
 
-已经安装 1.3.0 的设备直接覆盖安装，使用同一签名，保留原有进度和设置；不要先卸载旧版。1.3.1 修复商店弹窗遮挡、重排手机商店，并更新界面和动画。
+已经安装 1.3.0 / 1.3.1 的设备直接覆盖安装，使用同一签名，保留原有进度和设置；不要先卸载旧版。1.3.2 修复强化包、成长计分、塔罗/蜡封无效操作，并改善手机开包比较和强化标记。
 
 最低 Android 8（API 26），使用系统 Android WebView 渲染；本轮实际验证 Android 9 / WebView 91.0.4472.114。APK 不含架构限定的原生库。若系统网页组件太旧，应先更新系统 WebView。
 
@@ -32,4 +32,4 @@ python -X utf8 scripts/build-android.py --sdk "你的 Android SDK 目录" --java
 
 ## 实机覆盖范围
 
-本轮使用独立雷电实例、非活动 Windows 桌面，没有使用或修改已有模拟器游戏数据。商店与视觉更新见 [1.3.1 验证记录](verification-1.3.1.md)，内容、平衡及首次离线检查见 [1.3.0 验证记录](verification.md)。实体手机、Android 15/16 的系统栏和手势返回仍需要相应设备验证；SDK 36 编译成功不等于这些系统已实际测试。
+本轮复用独立雷电测试实例、非活动 Windows 桌面，没有使用或修改用户的其他模拟器游戏数据。当前玩法修复见 [1.3.2 验证记录](verification-1.3.2.md)；历史商店与视觉更新见 [1.3.1 验证记录](verification-1.3.1.md)，内容、平衡及首次离线检查见 [1.3.0 验证记录](verification.md)。实体手机、Android 15/16 的系统栏和手势返回仍需要相应设备验证；SDK 36 编译成功不等于这些系统已实际测试。

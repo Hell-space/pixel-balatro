@@ -31,13 +31,15 @@ function hideTip() { tipEl().style.display='none'; }
 document.addEventListener('pointerdown',hideTip,true);
 const EDNAME = ['', '✨ 闪箔 (+50 筹码)', '📽️ 全息 (+10 倍率)', '🌈 多彩 (×1.5 倍率)'];
 function cardTipHTML(c) {
-  let h = '<span class="tn">' + rankName(c.rank) + ' ' + (c.wild ? '🌈 万能' : SUITS[c.suit]) + '</span><br>筹码 ' + (chipVal(c) + c.bonus);
+  let h = '<span class="tn">' + rankName(c.rank) + ' ' + (c.wild ? '🌈 百搭花色' : SUITS[c.suit]) + '</span><br>筹码 ' + (chipVal(c) + c.bonus);
+  if (c.wild) h += '<br>视为所有花色，点数不变';
+  if (c.bonus) h += '<br>奖励：计分时 +' + c.bonus + ' 筹码';
   if (c.multB) h += '<br>计分时 +' + c.multB + ' 倍率';
   if (c.steel) h += '<br>🛡️ 钢铁：留在手中 ×1.5 倍率';
   if (c.glass) h += '<br>🏺 玻璃：计分 ×2 倍率，25% 碎裂';
   if (c.goldc) h += '<br>💰 黄金：计分时 +$3';
   if (c.ed) h += '<br>' + EDNAME[c.ed];
-  if (c.seal === 'red') h += '<br>🔴 红蜡封：计分时重复触发';
+  if (c.seal === 'red') h += '<br>🔴 红蜡封：重复触发计分或留手效果';
   if (c.seal === 'gold') h += '<br>🟡 金蜡封：计分时 +$3';
   if (isDebuffed(c)) h += '<br><span class="rc2">⚠️ 被 Boss 禁用！</span>';
   return h;
@@ -74,8 +76,9 @@ function cardEl(c, interactive = false) {
   if (c.justDealt) { d.classList.add('dealt'); c.justDealt = false; }
   let en = '';
   if (c.bonus) en += '<span class="en b">+' + c.bonus + '</span>';
-  else if (c.multB) en += '<span class="en m">×倍</span>';
-  if (c.wild) en += '<span class="en w">万</span>';
+  if (c.multB) en += '<span class="en m">+' + c.multB + '</span>';
+  if (en) { en='<span class="enhancements">'+en+'</span>';d.classList.add('hasBadges'); }
+  if (c.wild) en += '<span class="en w">花</span>';
   if (c.seal) en += '<span class="seal ' + c.seal + '"></span>';
   if (c.ed) en += '<span class="edfx ' + ['', 'f', 'h', 'p'][c.ed] + '"></span>';
   d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2" aria-hidden="true">' + cornerSuit(c) + '</span>' +
@@ -90,7 +93,7 @@ function renderHand() {
   S.hand.forEach(c => {
     const el = cardEl(c, true);
     if(el.classList.contains('dealt')) el.style.setProperty('--deal-delay',(row.children.length*22)+'ms');
-    el.setAttribute('aria-label', (c.wild?'万能':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank));
+    el.setAttribute('aria-label', (c.wild?'百搭花色，点数':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank));
     el.setAttribute('aria-pressed',String(!!c.sel)); el.disabled=S.busy;
     el.onclick = () => {
       if (S.busy) return;
@@ -122,8 +125,11 @@ function updatePreview() {
     $('prevMult').textContent = lo.mult===hi.mult?fmtM(lo.mult):fmtM(lo.mult)+'–'+fmtM(hi.mult);
     $('scoreEstimate').textContent=(lo.total===hi.total?fmt(lo.total):fmt(lo.total)+'–'+fmt(hi.total))+' 分';
   }
-  const forbidden=S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key);
-  if(forbidden)$('scoreEstimate').textContent='本盲注已打出此牌型';
+  const repeated=S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key);
+  const needFive=S.boss?.id==='psychic'&&sel.length!==5;
+  const forbidden=repeated||needFive;
+  if(!S.busy&&repeated)$('scoreEstimate').textContent='本盲注已打出此牌型';
+  else if(!S.busy&&needFive)$('scoreEstimate').textContent='需选满 5 张牌';
   $('btnPlay').disabled = S.busy || !sel.length || S.handsLeft <= 0 || forbidden;
   $('btnDiscard').disabled = S.busy || !sel.length || S.discLeft <= 0;
 }

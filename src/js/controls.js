@@ -87,9 +87,9 @@ function renderOwned() {
   $('ownedArt').textContent=item.ic; $('ownedArt').dataset.kind=kind;
   $('ownedDesc').innerHTML=kind==='joker'?'<span class="ownedRarity">'+RARNAME[item.rar||0]+(item.ed?' · '+EDNAME[item.ed]:'')+'</span><p>'+jokerDesc(item)+'</p>':
     (item.kind==='planet'?HANDS[item.key].name+' 牌型升 1 级':item.desc);
-  const needsHand=kind==='cons'&&['magician','empress','lovers','death','tower','devil','chariot','justice','sun','world'].includes(item.id);
-  $('useOwned').hidden=kind!=='cons'; $('useOwned').disabled=needsHand&&S.screen!=='play';
-  $('useOwned').textContent=needsHand&&S.screen!=='play'?'需在对局中选牌':'使用';
+  const availability=kind==='cons'?consumableUseState(item):{ok:false,label:'使用'};
+  $('useOwned').hidden=kind!=='cons'; $('useOwned').disabled=!availability.ok&&!availability.select;
+  $('useOwned').textContent=availability.label;
   $('sellOwned').textContent=(sellConfirm?'确认卖出 $':'卖出 $')+sellPrice(item);
   $('sellOwned').classList.toggle('confirmSale',sellConfirm);
   const i=S.jokers.indexOf(item);
@@ -100,6 +100,8 @@ function useOwned() {
   if(!owned||S.busy||owned.kind!=='cons') return;
   const index=S.cons.indexOf(owned.item);
   if(index<0) return;
+  const availability=consumableUseState(owned.item);
+  if(availability.select) {hide('ovOwned');msg(availability.label);return;}
   useCons(index);
   if(!S.cons.includes(owned.item)) hide('ovOwned');
 }

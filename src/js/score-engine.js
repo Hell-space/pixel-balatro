@@ -1,4 +1,11 @@
 // Pure scoring: animation, previews and tests consume the same calculation.
+function jokerStateForHand(joker, hand, cards) {
+  const value=joker.state||0;
+  if(joker.id==='green') return value+1;
+  if(joker.id==='runner') return value+(hand.contains.straight?15:0);
+  if(joker.id==='bus') return cards.some(c=>c.rank>=11&&c.rank<=13)?0:value+1;
+  return value;
+}
 function scoreHand(state, cards, random = Math.random) {
   const hand = evalHand(cards);
   if (!hand.key) return {hand, chips:0, mult:0, total:0, money:0, events:[]};
@@ -61,8 +68,9 @@ function scoreHand(state, cards, random = Math.random) {
       case 'devious': if(hand.contains.straight) c=100; break;
       case 'crafty': if(hand.contains.flush) c=80; break;
       case 'half': if(cards.length<=3) m=20; break;
-      case 'ice': case 'runner': c=j.state||0; break;
-      case 'green': case 'bus': m=j.state||0; break;
+      case 'ice': c=j.state||0; break;
+      case 'runner': c=jokerStateForHand(j,hand,cards); break;
+      case 'green': case 'bus': m=jokerStateForHand(j,hand,cards); break;
       case 'abstract': m=state.jokers.length*3; break;
       case 'trio': if(hand.contains.trips) x=3; break;
       case 'family': if(hand.contains.quads) x=4; break;

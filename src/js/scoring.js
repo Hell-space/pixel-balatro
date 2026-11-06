@@ -110,11 +110,8 @@ async function doPlay() {
     if (j.id === 'ice') { j.state -= 5; if (j.state <= 0) { msg('🍦 冰淇淋融化消失了…', 1); return false; } }
     return true;
   });
-  const faced = sel.some(c => c.rank >= 11 && c.rank <= 13);
   S.jokers.forEach(j => {
-    if (j.id === 'green') j.state++;
-    if (j.id === 'runner' && ev.contains.straight) j.state += 15;
-    if (j.id === 'bus') j.state = faced ? 0 : j.state + 1;
+    if (['green','runner','bus'].includes(j.id)) j.state=jokerStateForHand(j,ev,sel);
   });
 
   renderStats();

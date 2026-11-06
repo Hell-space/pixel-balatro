@@ -37,8 +37,8 @@ const JDEFS = [
   { id:'crafty',  ic:'🛠️', name:'灵巧小丑', price:5, rar:0, desc:'牌型含同花 +80 筹码' },
   { id:'half',    ic:'🌗', name:'半张小丑', price:5, rar:0, desc:'打出的牌 ≤3 张时 +20 倍率' },
   { id:'ice',     ic:'🍦', name:'冰淇淋',   price:5, rar:0, desc:'+100 筹码，每出一手牌融化 -5', state:100 },
-  { id:'green',   ic:'🟢', name:'绿色小丑', price:5, rar:0, desc:'每出一手牌 +1 倍率，弃牌时清零', state:0 },
-  { id:'runner',  ic:'🏃', name:'跑者',     price:5, rar:0, desc:'打出顺子后永久 +15 筹码', state:0 },
+  { id:'green',   ic:'🟢', name:'绿色小丑', price:5, rar:0, desc:'每出一手牌累计 +1 倍率（本手生效），弃牌时清零', state:0 },
+  { id:'runner',  ic:'🏃', name:'跑者',     price:5, rar:0, desc:'打出顺子时永久 +15 筹码（本手生效）', state:0 },
   { id:'photo',   ic:'📷', name:'摄影师',   price:6, rar:1, desc:'第一张计分的人头牌(J/Q/K) ×2 倍率' },
   { id:'abstract',ic:'🎨', name:'抽象小丑', price:6, rar:0, desc:'每持有 1 张小丑牌 +3 倍率' },
   { id:'bounty',  ic:'💰', name:'赏金猎人', price:4, rar:0, desc:'击败盲注时，每剩余 1 次弃牌获得 $2（上限 $6）' },
@@ -59,7 +59,7 @@ const JDEFS = [
   { id:'gros',     ic:'🍌', name:'大香蕉',     price:5, rar:0, desc:'+15 倍率，每次盲注结束有 1/6 概率烂掉' },
   { id:'stencil',  ic:'🖼️', name:'小丑模板',   price:7, rar:1, desc:'每个空小丑槽位 ×1 倍率(自身也算空位)' },
   { id:'nova',     ic:'💥', name:'超新星',     price:6, rar:0, desc:'+当前牌型本局的打出次数 倍率' },
-  { id:'bus',      ic:'🚌', name:'顺风车',     price:5, rar:0, desc:'连续打出不含人头牌的手牌，每次 +1 倍率；打出人头牌清零', state:0 },
+  { id:'bus',      ic:'🚌', name:'顺风车',     price:5, rar:0, desc:'打出不含 J/Q/K 的手牌时累计 +1 倍率（本手生效）；打出人头牌立即清零', state:0 },
   { id:'constel',  ic:'✨', name:'星群',       price:7, rar:1, desc:'每使用过一张星球牌 ×0.1 倍率(累计)' },
   { id:'holog',    ic:'📽️', name:'全息影像',   price:7, rar:1, desc:'每往牌组加入一张牌 ×0.25 倍率(累计)' },
   { id:'baseball', ic:'⚾', name:'棒球卡',     price:8, rar:2, desc:'每张其他罕见(绿框)小丑 ×1.5 倍率' },
@@ -86,7 +86,7 @@ const PLANETS = [
 const TAROTS = [
   { id:'magician', ic:'🎩', name:'魔术师', desc:'选中的最多 2 张牌永久 +30 筹码' },
   { id:'empress',  ic:'👑', name:'女皇',   desc:'选中的最多 2 张牌变为倍率牌(+4 倍率)' },
-  { id:'lovers',   ic:'💞', name:'恋人',   desc:'选中的 1 张牌变为万能牌(视为所有花色)' },
+  { id:'lovers',   ic:'💞', name:'恋人',   desc:'选中的 1 张牌变为百搭花色牌（视为所有花色，点数不变）' },
   { id:'death',    ic:'💀', name:'死神',   desc:'选中 2 张牌：左侧牌变成右侧牌的复制' },
   { id:'tower',    ic:'🗼', name:'高塔',   desc:'摧毁选中的最多 2 张牌(永久移出牌组)' },
   { id:'hermit',   ic:'🏮', name:'隐士',   desc:'金钱翻倍(最多 +$20)' },
@@ -106,7 +106,7 @@ const SPECTRALS = [
   { id:'soul',   ic:'👻', name:'灵魂',   desc:'获得一张随机稀有小丑牌(需有空位)' },
   { id:'bhole',  ic:'🕳️', name:'黑洞',   desc:'所有牌型等级 +1' },
   { id:'talis',  ic:'🥇', name:'护符',   desc:'随机一张牌组中的牌获得金蜡封(计分 +$3)' },
-  { id:'dejavu', ic:'🔴', name:'既视感', desc:'随机一张牌组中的牌获得红蜡封(计分时重复触发)' },
+  { id:'dejavu', ic:'🔴', name:'既视感', desc:'随机一张牌组中的牌获得红蜡封（重复触发计分或留手效果）' },
 ];
 const VOUCHERS = [
   { id:'grabber',  ic:'🖐️', name:'抓取器',     desc:'每个盲注 +1 出牌次数' },

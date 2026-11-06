@@ -77,6 +77,9 @@ function normalizeRunState(input) {
     s.pack.options=s.shop.packs[s.pack.index].options;
     if(!s.pack.options?.length) throw Error('候选缺失');
   }
+  s.shop?.packs.forEach((p,i)=>{
+    if(p.id==='standard'&&p.options&&(!p.sold||s.pack?.index===i)) ensurePackEnhancements(p.options);
+  });
   s.busy=false; s.sellId=null;
   return s;
 }
