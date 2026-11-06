@@ -55,3 +55,11 @@ Android 离线测试切断了模拟器 ADB 网络，定时脚本完成后只重�
 `npm test` 18 组通过；浏览器三尺寸商店/满槽/卡包/确认出售/续局检查及实际动画中间帧检查通过，独立预期、预览和实分一致。回归脚本兼容旧版无分类页面；完整构建阶段对应关系、夹具与实际输入边界见 `docs/verification-1.3.1.md`。
 
 最终 APK 为 1.3.1 / 10301，70,174 字节，内置 180,518 字节 HTML；签名 v2/v3、zipalign 和 HTML 一致性通过，证书沿用 1.3.0。Android 9 / WebView 91 实际覆盖保留 UID、原进度和手牌；正常首盲、购买、打开/取消详情、两步出售、横竖屏四分类及冷启动保存通过。原始证据在忽略的 `.qa/v131/`，交付包位于 `outputs/PixelBalatro-1.3.1-android.apk`。未测试用户实体手机、Android 15/16 或扬声器听感。
+
+## 1.3.1 GitHub Release（2026-11-06，已完成）
+
+用户要求从 GitHub 手机端直接下载游戏。以已验证的游戏提交 `e9a93424db176df1be2e0a7feeb6140baa7a7799` 发布正式版 `v1.3.1` 并设为 Latest，上传现有 APK、离线 HTML 及 SHA-256 校验文件，没有重新构建或更换签名。README 和 Android 说明已补充 Release 页面与 APK 直链。
+
+发布地址：https://github.com/Hell-space/pixel-balatro/releases/tag/v1.3.1 。三个附件在未登录状态下均可下载，APK 与 HTML 下载字节和原先验证的产物一致；标签指向已验证的游戏提交。原始下载证据为忽略的 `.qa/release-download-verification.json`。
+
+连接器无 Release 写入接口，浏览器通道也不可用，因此使用临时 Actions 分支完成发布。工作流将安装包载荷与运行脚本分离，以满足运行脚本长度限制；先校验、上传完整草稿附件，再正式发布，完成后删除临时分支，主分支未加入载荷或临时工作流。首次校验发现本地校验文本采用 CRLF、发布附件采用 LF；校验值一致，已将本地副本统一为 LF 并重新验证。Actions 运行 `42245417068` 成功，远端仅保留原有 main 分支。

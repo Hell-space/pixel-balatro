@@ -6,6 +6,8 @@
 
 交付文件：`outputs/PixelBalatro-1.3.1-android.apk`。传到手机后从文件管理器打开，按系统提示允许该文件管理器安装应用。包名 `io.github.hellspace.pixelbalatro`，版本 1.3.1 / versionCode 10301。
 
+手机端下载：[Release v1.3.1](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.3.1) → Assets → `PixelBalatro-1.3.1-android.apk`，或[直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.3.1/PixelBalatro-1.3.1-android.apk)。选择 APK 安装包；GitHub 自动提供的 Source code ZIP/TAR 是源码归档。
+
 已经安装 1.3.0 的设备直接覆盖安装，使用同一签名，保留原有进度和设置；不要先卸载旧版。1.3.1 修复商店弹窗遮挡、重排手机商店，并更新界面和动画。
 
 最低 Android 8（API 26），使用系统 Android WebView 渲染；本轮实际验证 Android 9 / WebView 91.0.4472.114。APK 不含架构限定的原生库。若系统网页组件太旧，应先更新系统 WebView。

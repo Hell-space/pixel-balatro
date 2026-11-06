@@ -4,6 +4,8 @@
 
 **在线游戏：https://hell-space.github.io/pixel-balatro/**
 
+**Android 下载：[GitHub Release v1.3.1](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.3.1)** · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.3.1/PixelBalatro-1.3.1-android.apk)
+
 ## 1.3.1
 
 - 修复商店详情被商店遮挡、隐藏卖出按钮仍能响应的层级错误；只允许可见顶层处理操作。
@@ -37,7 +39,9 @@
 
 菜单包含牌型表、剩余牌库、图鉴、计分明细、音乐/音效开关，以及 1×/2×/4×/立即四档计分速度。键盘支持 Tab 聚焦、Enter 出牌和 X 弃牌。
 
-Android 交付文件为 `outputs/PixelBalatro-1.3.1-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
+Android 用户可在 GitHub 手机端打开仓库的 Releases → v1.3.1 → Assets，下载 `PixelBalatro-1.3.1-android.apk`。已有 1.3.0 直接覆盖安装，不要先卸载。Release 同时提供离线 HTML 和 SHA-256 校验文件。
+
+本地交付文件为 `outputs/PixelBalatro-1.3.1-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
 
 ## 存档与兼容
 
