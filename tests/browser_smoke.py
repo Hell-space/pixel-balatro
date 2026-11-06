@@ -138,6 +138,19 @@ def activate(locator, mobile):
         locator.click(timeout=10000)
 
 
+def select_shop_tab(page, tab, mobile):
+    """Use the category control when present; pre-tab builds show every item."""
+    selector = {"cards": "#shopTabCards", "cons": "#shopTabCons",
+                "packs": "#shopTabPacks", "voucher": "#shopTabVoucher"}[tab]
+    button = page.locator(selector)
+    if not button.count():
+        return False
+    require(button.is_visible() and button.is_enabled(), f"Shop tab {tab} is not reachable")
+    activate(button, mobile)
+    require(button.get_attribute("aria-selected") == "true", f"Shop tab {tab} was not selected")
+    return True
+
+
 def shown(locator):
     return locator.count() > 0 and locator.first.is_visible()
 
@@ -375,7 +388,9 @@ def play_best_first_blind(page, mobile):
     activate(page.locator("#btnPlay"), mobile)
     page.wait_for_function("""before => {
       const n = Number(document.querySelector('#scoreVal').textContent.replace(/[^0-9]/g, ''));
-      return n > before;
+      // Animated scoring now updates the visible total before finishing the
+      // play and refilling the hand; a refresh is safe only once it settles.
+      return n > before && S && !S.busy;
     }""", arg=score_before, timeout=20000)
     score_after = read_number(page, "#scoreVal")
     require(score_after - score_before == expected,
@@ -385,6 +400,7 @@ def play_best_first_blind(page, mobile):
 
 
 def verify_shop_purchase(page, mobile):
+    select_shop_tab(page, "cards", mobile)
     money_before = read_number(page, "#shopMoney")
     slots_before = read_number(page, "#shopSlots")
     candidates = page.locator("#shopItems .shopItem")
@@ -435,7 +451,8 @@ def check_shop_swipe(page):
 
 
 def purchase_scrolled_consumable(page):
-    """Buy a visible item after a touch swipe without locator auto-scrolling."""
+    """Buy a visible consumable by touch, after a swipe or category selection."""
+    select_shop_tab(page, "cons", True)
     before_money = read_number(page, "#shopMoney")
     before_slots = read_number(page, "#shopCons")
     items = page.locator("#shopItems .shopItem")
@@ -447,12 +464,12 @@ def purchase_scrolled_consumable(page):
             name = item.locator(".nm").inner_text()
             touch_at(page, pos["x"], pos["y"])
             require(read_number(page, "#shopMoney") == before_money - cost,
-                    "Touch purchase after scrolling did not deduct the price")
+                    "Touch purchase did not deduct the price")
             require(read_number(page, "#shopCons") == before_slots + 1,
-                    "Touch purchase after scrolling did not fill a consumable slot")
+                    "Touch purchase did not fill a consumable slot")
             require("sold" in items.nth(i).get_attribute("class"), "Purchased item not marked sold")
             return {"name": name, "price": cost, "scrollTop": page.locator('#ovShop .box').evaluate('el => el.scrollTop')}
-    raise AssertionError("No affordable consumable had a reachable center after touch scrolling")
+    raise AssertionError("No affordable consumable had a reachable touch center")
 
 
 def gameplay_case(browser, base_url, profile_name, spec, output, seed):
@@ -512,7 +529,10 @@ def gameplay_case(browser, base_url, profile_name, spec, output, seed):
                 pos = center_hit(page.locator(selector))
                 require(pos["visible"], f"Sticky shop action is not touchable after scrolling: {selector}: {pos}")
             if profile_name == "short":
-                require(result["shop_swipe"]["needed"], "Short shop unexpectedly did not need scrolling")
+                if page.locator("#shopTabCons").count():
+                    require(not result["shop_swipe"]["needed"], "Tabbed shop unexpectedly needs vertical scrolling")
+                else:
+                    require(result["shop_swipe"]["needed"], "Short shop unexpectedly did not need scrolling")
                 result["scrolled_purchase"] = purchase_scrolled_consumable(page)
                 screenshot(page, output, profile_name + "-shop-scrolled-purchase")
         shop_snapshot = [page.locator(s).inner_text() for s in ("#shopMoney", "#shopSlots", "#shopCons")]

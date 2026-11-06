@@ -4,7 +4,11 @@
 
 **在线游戏：https://hell-space.github.io/pixel-balatro/**
 
-## 1.3.0
+## 1.3.1
+
+- 修复商店详情被商店遮挡、隐藏卖出按钮仍能响应的层级错误；只允许可见顶层处理操作。
+- 商店按小丑、消耗牌、卡包、优惠券切换，持有牌与底部操作保持可见，手机常用横竖屏无需整页上下滚动。
+- 统一纸牌、绿毡、黄铜边框和计分区域，新增出牌移动、弃牌离场、筹码计分、购买入槽等反馈；支持减少动态和立即计分。
 
 - 5 种起始牌组、白/红/金 3 种难度，8 个底注后可继续无尽模式。
 - 49 张小丑、17 张塔罗、12 张星球、14 种 Boss，另有幻灵牌、卡包、优惠券和跳关标签。
@@ -33,11 +37,11 @@
 
 菜单包含牌型表、剩余牌库、图鉴、计分明细、音乐/音效开关，以及 1×/2×/4×/立即四档计分速度。键盘支持 Tab 聚焦、Enter 出牌和 X 弃牌。
 
-Android 交付文件为 `outputs/PixelBalatro-1.3.0-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
+Android 交付文件为 `outputs/PixelBalatro-1.3.1-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
 
 ## 存档与兼容
 
-单人进度自动保存，标题页可继续游戏。1.3.0 兼容 1.1/1.2 存档，旧局保留既有出牌/弃牌次数、经济和持有牌；新内容从新的候选池进入。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽。
+单人进度自动保存，标题页可继续游戏。1.3.1 兼容 1.1/1.2/1.3.0 存档，旧局保留既有出牌/弃牌次数、经济和持有牌；新内容从新的候选池进入。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽。
 
 计分动画中途退出会恢复到该次出牌前的稳定状态。设置和通关记录独立保存，不因开新局清除。清除网站或应用数据会丢失存档；同签名 APK 覆盖更新保留数据。
 
@@ -79,9 +83,11 @@ npm run balance -- 24 red white
 python tests/browser_smoke.py --browser "浏览器可执行文件"
 python tests/browser_extended.py --browser "浏览器可执行文件"
 python tests/browser_content.py --browser "浏览器可执行文件"
+python tests/browser_shop.py --browser "浏览器可执行文件" --output-dir .qa/browser-shop
+python tests/browser_motion.py --browser "浏览器可执行文件" --output-dir .qa/browser-motion
 ```
 
-实际验证范围和限制见 [验证记录](docs/verification.md)。
+本轮实际验证范围和限制见 [1.3.1 验证记录](docs/verification-1.3.1.md)，内容与平衡版本的完整记录见 [1.3.0 验证记录](docs/verification.md)。
 
 ## 目录
 

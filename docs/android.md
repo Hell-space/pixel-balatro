@@ -4,7 +4,9 @@
 
 ## 安装
 
-交付文件：`outputs/PixelBalatro-1.3.0-android.apk`。传到手机后从文件管理器打开，按系统提示允许该文件管理器安装应用。包名 `io.github.hellspace.pixelbalatro`，版本 1.3.0 / versionCode 10300。
+交付文件：`outputs/PixelBalatro-1.3.1-android.apk`。传到手机后从文件管理器打开，按系统提示允许该文件管理器安装应用。包名 `io.github.hellspace.pixelbalatro`，版本 1.3.1 / versionCode 10301。
+
+已经安装 1.3.0 的设备直接覆盖安装，使用同一签名，保留原有进度和设置；不要先卸载旧版。1.3.1 修复商店弹窗遮挡、重排手机商店，并更新界面和动画。
 
 最低 Android 8（API 26），使用系统 Android WebView 渲染；本轮实际验证 Android 9 / WebView 91.0.4472.114。APK 不含架构限定的原生库。若系统网页组件太旧，应先更新系统 WebView。
 
@@ -28,4 +30,4 @@ python -X utf8 scripts/build-android.py --sdk "你的 Android SDK 目录" --java
 
 ## 实机覆盖范围
 
-本轮使用独立雷电实例、非活动 Windows 桌面，没有使用或修改已有模拟器游戏数据。实际测试与版本对应关系见 [验证记录](verification.md)。实体手机、Android 15/16 的系统栏和手势返回仍需要相应设备验证；SDK 36 编译成功不等于这些系统已实际测试。
+本轮使用独立雷电实例、非活动 Windows 桌面，没有使用或修改已有模拟器游戏数据。商店与视觉更新见 [1.3.1 验证记录](verification-1.3.1.md)，内容、平衡及首次离线检查见 [1.3.0 验证记录](verification.md)。实体手机、Android 15/16 的系统栏和手势返回仍需要相应设备验证；SDK 36 编译成功不等于这些系统已实际测试。

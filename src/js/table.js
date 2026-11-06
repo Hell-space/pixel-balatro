@@ -57,6 +57,7 @@ PIPS[7]=[...PIPS[6],[50,31]]; PIPS[8]=[...PIPS[7],[50,69]];
 PIPS[9]=[...PIPS[4],[18,37],[82,37],[18,63],[82,63],[50,50]];
 PIPS[10]=[...PIPS[9].slice(0,8),[50,25],[50,75]];
 function suitSVG(c){return '<svg class="suitIcon" viewBox="0 0 24 24" aria-hidden="true"><use href="#suit'+(c.wild?'Wild':c.suit)+'"/></svg>';}
+function cornerSuit(c){return suitSVG(c)+'<span class="suitText">'+(c.wild?'✦':SUITS[c.suit])+'</span>';}
 function facePrint(c) {
   const suit=suitSVG(c), r=c.rank;
   if(r>10 && r<14) return '<span class="facePip" aria-hidden="true">'+rankName(r)+'<small>'+suit+' '+suit+'</small></span>';
@@ -65,6 +66,7 @@ function facePrint(c) {
 }
 function cardEl(c, interactive = false) {
   const d = document.createElement(interactive ? 'button' : 'div');
+  d.dataset.cardId=String(c.id);
   d.className = 'card ' + (RED(c.suit) ? 'red' : 'blk') + (c.wild ? ' wild' : '') +
     (c.steel ? ' steel' : '') + (c.glass ? ' glass' : '') + (c.goldc ? ' goldc' : '') +
     (isDebuffed(c) ? ' debuff' : '');
@@ -76,8 +78,8 @@ function cardEl(c, interactive = false) {
   if (c.wild) en += '<span class="en w">万</span>';
   if (c.seal) en += '<span class="seal ' + c.seal + '"></span>';
   if (c.ed) en += '<span class="edfx ' + ['', 'f', 'h', 'p'][c.ed] + '"></span>';
-  d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2">' + (c.wild ? '✦' : SUITS[c.suit]+'\uFE0E') + '</span>' +
-    '<span class="st">' + (c.wild ? '✦' : SUITS[c.suit]+'\uFE0E') + '</span>' + facePrint(c) + en;
+  d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2" aria-hidden="true">' + cornerSuit(c) + '</span>' +
+    '<span class="st" aria-hidden="true">' + cornerSuit(c) + '</span>' + facePrint(c) + en;
   bindTip(d, () => cardTipHTML(c));
   return d;
 }
@@ -87,6 +89,7 @@ function renderHand() {
   row.innerHTML = '';
   S.hand.forEach(c => {
     const el = cardEl(c, true);
+    if(el.classList.contains('dealt')) el.style.setProperty('--deal-delay',(row.children.length*22)+'ms');
     el.setAttribute('aria-label', (c.wild?'万能':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank));
     el.setAttribute('aria-pressed',String(!!c.sel)); el.disabled=S.busy;
     el.onclick = () => {
@@ -125,6 +128,7 @@ function updatePreview() {
   $('btnDiscard').disabled = S.busy || !sel.length || S.discLeft <= 0;
 }
 function renderStats() {
+  $('game').classList.toggle('isScoring',!!S.busy);
   $('handsVal').textContent = S.handsLeft;
   $('discVal').textContent = S.discLeft;
   $('moneyVal').textContent = '$' + S.money;

@@ -1,4 +1,5 @@
 function popAt(wrap, txt, col) {
+  scoreFeedback(wrap);
   const s = document.createElement('span');
   s.className = 'scorepop';
   s.style.color = col || '#57e6ff';
@@ -18,8 +19,11 @@ function jokerPop(j, txt) {
 }
 function fmtM(m) { return m % 1 ? (Math.round(m * 100) / 100) : m; }
 function setCalc(c, m) {
+  const changedC=$('prevChips').textContent!==fmt(c),changedM=$('prevMult').textContent!==String(fmtM(m));
   $('prevChips').textContent = fmt(c);
   $('prevMult').textContent = fmtM(m);
+  if(changedC) feedback($('prevChips'),[{transform:'scale(1.14)'},{transform:'scale(1)'}],160,true);
+  if(changedM) feedback($('prevMult'),[{transform:'scale(1.14)'},{transform:'scale(1)'}],160,true);
 }
 async function doPlay() {
   if (!S || S.screen !== 'play' || S.busy || S.handsLeft <= 0 || MP.over) return;
@@ -29,6 +33,7 @@ async function doPlay() {
   if(S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key))return msg('👁️ 独眼：本盲注不能重复打出同一种牌型。',1);
   persistRun();
   const activeRun=S;
+  const origins=handPositions();
   const result=scoreHand({...S,handsLeft:S.handsLeft-1},sel);
   S.busy = true; S.sellId = null;
   S.handsLeft--; S.totHands++;
@@ -59,7 +64,8 @@ async function doPlay() {
     wraps.set(c.id, w);
   });
   renderHand();
-  await sleep(400);
+  animatePlayed(origins);
+  await sleep(300);
 
   for (const event of result.events) {
     if (S!==activeRun || MP.over) return;
@@ -87,7 +93,8 @@ async function doPlay() {
   tp.style.display = 'block';
   sfxUp();
   S.score += total;
-  await sleep(900);
+  renderStats(); totalFeedback();
+  await sleep(650);
   if (S!==activeRun || MP.over) return;
   tp.style.display = 'none';
   prow.innerHTML = '';
@@ -135,6 +142,7 @@ function doDiscard() {
   if (!S || S.screen !== 'play' || S.busy || S.discLeft <= 0 || MP.over) return;
   const sel = S.hand.filter(c => c.sel);
   if (!sel.length) { msg('请先选择要弃掉的牌', 1); return; }
+  animateDiscard(sel);
   S.discLeft--;
   S.hand = S.hand.filter(c => !c.sel);
   S.jokers.forEach(j => { if (j.id === 'green' && j.state) { j.state = 0; jokerPop(j, '清零!'); } });

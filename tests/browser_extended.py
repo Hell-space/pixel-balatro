@@ -31,7 +31,7 @@ from browser_smoke import (
     ROOT, PROFILES, activate, assert_reachable, assert_viewport, cards_on_screen,
     context_for, loss_checkpoint_case, play_best_first_blind, read_number,
     reload_and_resume, request_new_solo, require, score_unmodified_hand, screenshot, shown, start_blind,
-    swipe_up_within, touch_at, verify_shop_purchase, watch_page,
+    select_shop_tab, swipe_up_within, touch_at, verify_shop_purchase, watch_page,
 )
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -117,6 +117,7 @@ def pack_cancel(browser, url, out, seed):
     errors = watch_page(page)
     try:
         plays = enter_shop(page, url, False)
+        select_shop_tab(page, "packs", False)
         before = read_number(page, "#shopMoney")
         packs = page.locator("#shopPacks .shopItem")
         choices = []
@@ -152,6 +153,7 @@ def pack_cancel(browser, url, out, seed):
         page.locator('#ovPack button[onclick="closePack()"]',).click()
         require(read_number(page, "#shopMoney") == before, "repeated cancellation changed the money")
         reload_and_resume(page, False, "#ovShop")
+        select_shop_tab(page, "packs", False)
         require(not page.locator("#shopPacks .shopItem").nth(idx).is_disabled(),
                 "cancelled pack became sold after refresh")
         return {"status": "passed", "fixture": "normal play", "plays": plays, **state}
@@ -168,6 +170,7 @@ def pack_persistence(browser, url, out, seed):
     errors = watch_page(page)
     try:
         enter_shop(page, url, False)
+        select_shop_tab(page, "packs", False)
         before = read_number(page, "#shopMoney")
         packs = page.locator("#shopPacks .shopItem")
         index = next((i for i in range(packs.count())
@@ -196,8 +199,10 @@ def pack_persistence(browser, url, out, seed):
         page.locator("#packCards button").first.click()
         page.locator("#ovPack").wait_for(state="hidden")
         require(read_number(page, "#shopMoney") == remaining, "choosing an item refunded the purchase")
+        select_shop_tab(page, "packs", False)
         require(page.locator("#shopPacks .shopItem").nth(index).is_disabled(), "chosen pack was not sold")
         reload_and_resume(page, False, "#ovShop")
+        select_shop_tab(page, "packs", False)
         require(read_number(page, "#shopMoney") == remaining and
                 page.locator("#shopPacks .shopItem").nth(index).is_disabled(),
                 "completed pack purchase changed after refresh")
@@ -236,6 +241,7 @@ def shop_full_slots(browser, url, out, seed):
                 page.evaluate("() => S.levels.high") == before_level + 1,
                 "planet action did not free a slot and upgrade high-card level")
         money = read_number(page, "#shopMoney")
+        select_shop_tab(page, "cons", False)
         item = page.locator("#shopItems .shopItem").nth(2)
         cost = int(re.search(r"\d+", item.locator(".pr").inner_text()).group())
         require(cost <= money, f"fixture has no money for a subsequent purchase: {money}, cost={cost}")
@@ -836,6 +842,7 @@ def capture_v2_shop(browser, url, out, seed, fixture_path):
     try:
         plays = enter_shop(page, url, False)
         joker = verify_shop_purchase(page, False)
+        select_shop_tab(page, "cons", False)
         item = page.locator("#shopItems .shopItem").nth(2)
         money = read_number(page, "#shopMoney")
         price = int(re.search(r"\d+", item.locator(".pr").inner_text()).group())
@@ -1286,6 +1293,7 @@ def corrupt_pack_recovery(browser, url, out, seed):
         errors = watch_page(page)
         try:
             enter_shop(page, url, False)
+            select_shop_tab(page, "packs", False)
             page.locator("#shopPacks .shopItem").first.click()
             page.locator("#ovPack").wait_for(state="visible")
             choices = page.locator("#packCards").inner_text()
@@ -1605,17 +1613,20 @@ def final_card_visual(browser, url, out, seed, width, height):
             Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));
           return [...document.querySelectorAll('#handRow .card')].map(card=>{
             const outer=rect(card), corners=[...card.querySelectorAll('.rk,.st,.st2')].map(rect);
-            const pips=[...card.querySelectorAll('.suitIcon')].map(rect);
+            const pips=[...card.querySelectorAll('.pips .suitIcon,.facePip .suitIcon')].map(rect);
+            const cornerIcons=[...card.querySelectorAll('.st .suitIcon,.st2 .suitIcon')].map(rect);
             return {outer,corners,pips,clipped:pips.some(p=>p.left<outer.left-1||p.right>outer.right+1||
               p.top<outer.top-1||p.bottom>outer.bottom+1),
+              missingOrClippedCorners:cornerIcons.length!==2||cornerIcons.some(p=>p.left<outer.left-1||
+                p.right>outer.right+1||p.top<outer.top-1||p.bottom>outer.bottom+1),
               collision:pips.some(p=>corners.some(c=>overlap(p,c)>1)),
               overlappingPips:pips.some((p,i)=>pips.slice(i+1).some(q=>
                 overlap(p,q)>.15*Math.min(p.width*p.height,q.width*q.height)))};
           });
         }""")
-        problems = [{"index":i,"clipped":g["clipped"],"corner_collision":g["collision"],
+        problems = [{"index":i,"clipped":g["clipped"],"corners_clipped":g["missingOrClippedCorners"],"corner_collision":g["collision"],
                      "overlapping_pips":g["overlappingPips"]} for i,g in enumerate(geometry)
-                    if not g["pips"] or g["clipped"] or g["collision"] or g["overlappingPips"]]
+                    if not g["pips"] or g["clipped"] or g["missingOrClippedCorners"] or g["collision"] or g["overlappingPips"]]
         require(len(geometry)==8 and not problems,
                 f"card symbols clipped or visibly overlapping at {width}x{height}: {problems}")
         screenshot(page,out,f"final-{width}x{height}-selected")

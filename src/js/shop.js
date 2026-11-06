@@ -1,3 +1,18 @@
+let shopTab='cards';
+const SHOP_TABS=[['cards','shopTabCards','shopItems'],['cons','shopTabCons','shopItems'],['packs','shopTabPacks','shopPacks'],['voucher','shopTabVoucher','shopVouch']];
+function selectShopTab(tab) {
+  const selected=SHOP_TABS.find(([key])=>key===tab);
+  if(!selected) return;
+  shopTab=tab; hideTip();
+  for(const panel of new Set(SHOP_TABS.map(x=>x[2]))) $(panel).hidden=panel!==selected[2];
+  $(selected[2]).setAttribute('aria-labelledby',selected[1]);
+  for(const [key,button] of SHOP_TABS) {
+    $(button).setAttribute('aria-selected',String(key===tab));
+    $(button).tabIndex=key===tab?0:-1;
+  }
+  for(const [i,item] of [...$('shopItems').children].entries()) item.hidden=tab==='cons'?i<2:i>=2;
+  $('rerollBtn').hidden=!['cards','cons'].includes(tab);
+}
 const PACKS = [
   { id:'arcana',   ic:'🔮', name:'秘术包', price:4, desc:'3 选 1 塔罗牌，放入消耗槽' },
   { id:'celestial',ic:'🌌', name:'天体包', price:4, desc:'3 选 1 星球牌，立即使用' },
@@ -60,6 +75,7 @@ function openShop() {
   const pp = shuffle(PACKS.slice());
   S.shop.packs = [{ ...pp[0], sold: false }, { ...pp[1], sold: false }];
   S.screen = 'shop';
+  shopTab='cards';
   renderShop();
   show('ovShop');
   mpSendState();
@@ -67,7 +83,7 @@ function openShop() {
 function shopItemEl(it, price, extraCls, tipFn, onBuy) {
   const d = document.createElement('button');
   d.disabled=!!it.sold;
-  d.className = 'shopItem' + (extraCls || '') + (it.sold ? ' sold' : '') + (S.money < price ? ' noafford' : '');
+  d.className = 'shopItem' + (extraCls || '') + (it.kind?' stock-'+it.kind:'') + (it.sold ? ' sold' : '') + (S.money < price ? ' noafford' : '');
   d.style.position = 'relative';
   d.innerHTML = '<div class="ic">' + it.ic + '</div><div class="nm">' + it.name + '</div>' +
     '<div class="ds">' + (it.descShow || it.desc || '') + '</div>' +
@@ -79,7 +95,9 @@ function shopItemEl(it, price, extraCls, tipFn, onBuy) {
 }
 function renderShop() {
   hideTip();
+  const changedMoney=$('shopMoney').textContent!=='$'+S.money;
   $('shopMoney').textContent = '$' + S.money;
+  if(changedMoney) moneyFeedback();
   $('shopSlots').textContent = S.jokers.length + '/' + S.jokerSlots;
   $('shopCons').textContent = S.cons.length + '/' + S.consSlots;
   $('rerollBtn').textContent = '🎲 刷新 $' + S.shop.rerollCost;
@@ -110,6 +128,7 @@ function renderShop() {
       (S.anteVoucher ? '本底注的优惠券已购买 ✔' : '优惠券已全部收集！') + '</p>';
   }
   renderInventory($('shopOwned'));
+  selectShopTab(shopTab);
   renderJokers(); renderCons(); renderStats();
 }
 function buyJoker(i) {
@@ -118,12 +137,14 @@ function buyJoker(i) {
   const p = shopPrice(j.price);
   if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满，点击持有的小丑可查看并卖出。', 1); return; }
   if (S.money < p) { msg('钱不够！', 1); return; }
+  const from=$('shopItems').children[i]?.getBoundingClientRect();
   S.money -= p;
   if (j.price === 0) S.shop.freeUsed = true;
   j.sold = true;
   addJoker(j);
   sfxCash();
   renderShop();
+  acquireFeedback(from,j,$('shopOwned').querySelector('.ownedRow[data-kind="joker"]')?.lastElementChild);
 }
 function buyCons(i) {
   const t = S.shop.cons[i];
@@ -134,11 +155,13 @@ function buyCons(i) {
     msg('消耗牌槽位已满（' + S.cons.length + '/' + S.consSlots + '）！先使用或卖出持有的消耗牌', 1);
     return;
   }
+  const from=$('shopItems').children[i+2]?.getBoundingClientRect();
   S.money -= p;
   t.sold = true;
   S.cons.push({ ...t });
   sfxCash();
   renderShop();
+  acquireFeedback(from,t,$('shopOwned').querySelector('.ownedRow[data-kind="cons"]')?.lastElementChild);
 }
 function buyVoucher() {
   const v = S.anteVoucher;

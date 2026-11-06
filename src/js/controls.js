@@ -20,20 +20,24 @@ function changeSetting(key,value) {
   try { localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings)); } catch {}
   applySettings();
 }
-function activeDialog() {
+function visibleDialogs() {
   return [...document.querySelectorAll('.ov')].filter(e=>e.style.display==='flex')
-    .sort((a,b)=>(Number(getComputedStyle(a).zIndex)-Number(getComputedStyle(b).zIndex)) ||
-      (Number(a.dataset.order||0)-Number(b.dataset.order||0))).pop();
+    .sort((a,b)=>Number(a.dataset.order||0)-Number(b.dataset.order||0));
 }
-let previousDialog=null, returnFocus=null;
+function activeDialog() { return visibleDialogs().pop(); }
+let previousDialog=null, returnFocus=null, animatedDialogOrder=0;
 function focusables(root) {
   return [...root.querySelectorAll('button,input,select,a[href],[tabindex]')]
     .filter(e=>!e.disabled&&!e.hidden&&e.tabIndex>=0&&e.getClientRects().length);
 }
 function syncDialogs() {
-  const top=activeDialog();
+  const stack=visibleDialogs(), top=stack[stack.length-1];
+  // Painting, pointer input and keyboard focus must use the same stack.
+  // Explicit pointer handling also covers Android WebViews without inert support.
+  stack.forEach((el,i)=>el.style.zIndex=String(50+i*2));
   for(const el of document.querySelectorAll('.ov')) {
     el.inert=el!==top;
+    el.style.pointerEvents=el===top?'auto':'none';
     el.setAttribute('role','dialog');
     el.setAttribute('aria-modal',String(el===top));
     const title=el.querySelector('h1,h2');
@@ -44,6 +48,10 @@ function syncDialogs() {
     if(top) {
       if(!previousDialog) returnFocus=document.activeElement;
       (focusables(top)[0]||top).focus({preventScroll:true});
+      if(Number(top.dataset.order)>animatedDialogOrder) {
+        feedback(top.querySelector('.box'),[{transform:'scale(.97)'},{transform:'scale(1)'}],150);
+        animatedDialogOrder=Number(top.dataset.order);
+      }
     } else if(returnFocus?.isConnected) returnFocus.focus({preventScroll:true});
     previousDialog=top;
   }
@@ -75,13 +83,15 @@ function openOwned(kind,key) {
 }
 function renderOwned() {
   const {kind,item}=owned;
-  $('ownedTitle').textContent=item.ic+' '+item.name;
-  $('ownedDesc').innerHTML=kind==='joker'?jokerTipHTML(item):
+  $('ownedTitle').textContent=item.name;
+  $('ownedArt').textContent=item.ic; $('ownedArt').dataset.kind=kind;
+  $('ownedDesc').innerHTML=kind==='joker'?'<span class="ownedRarity">'+RARNAME[item.rar||0]+(item.ed?' · '+EDNAME[item.ed]:'')+'</span><p>'+jokerDesc(item)+'</p>':
     (item.kind==='planet'?HANDS[item.key].name+' 牌型升 1 级':item.desc);
   const needsHand=kind==='cons'&&['magician','empress','lovers','death','tower','devil','chariot','justice','sun','world'].includes(item.id);
   $('useOwned').hidden=kind!=='cons'; $('useOwned').disabled=needsHand&&S.screen!=='play';
   $('useOwned').textContent=needsHand&&S.screen!=='play'?'需在对局中选牌':'使用';
   $('sellOwned').textContent=(sellConfirm?'确认卖出 $':'卖出 $')+sellPrice(item);
+  $('sellOwned').classList.toggle('confirmSale',sellConfirm);
   const i=S.jokers.indexOf(item);
   $('moveLeft').hidden=$('moveRight').hidden=kind!=='joker';
   $('moveLeft').disabled=i<=0; $('moveRight').disabled=i===S.jokers.length-1;
@@ -94,30 +104,38 @@ function useOwned() {
   if(!S.cons.includes(owned.item)) hide('ovOwned');
 }
 function sellOwned() {
-  if(!owned||S.busy) return;
+  if(!owned||S.busy||activeDialog()?.id!=='ovOwned') return;
   if(!sellConfirm) { sellConfirm=true; renderOwned(); return; }
   const list=owned.kind==='joker'?S.jokers:S.cons, index=list.indexOf(owned.item);
   if(index<0) return;
   S.money+=sellPrice(owned.item); list.splice(index,1); sfxCash();
-  hide('ovOwned'); renderAll(); if(S.shop) renderShop(); persistRun();
+  owned=null; hide('ovOwned');
+  if(S.screen==='shop') renderShop(); else renderAll();
+  persistRun();
 }
 function moveOwned(direction) {
   if(!owned||S.busy||owned.kind!=='joker') return;
   const i=S.jokers.indexOf(owned.item), target=i+direction;
   if(i<0||target<0||target>=S.jokers.length) return;
   [S.jokers[i],S.jokers[target]]=[S.jokers[target],S.jokers[i]];
-  renderJokers(); updatePreview(); if(S.shop) renderShop(); renderOwned(); persistRun();
+  if(S.screen==='shop') renderShop(); else {renderJokers();updatePreview();}
+  renderOwned(); persistRun();
 }
 function renderInventory(container) {
   container.replaceChildren();
   for(const [kind,list] of [['joker',S.jokers],['cons',S.cons]]) {
+    const row=document.createElement('div'); row.className='ownedRow'; row.dataset.kind=kind;
+    row.setAttribute('aria-label',kind==='joker'?'持有的小丑':'持有的消耗牌');
     for(let i=0;i<list.length;i++) {
       const item=list[i], button=document.createElement('button'); button.className='sbtn ownedItem';
-      button.textContent=item.ic+' '+item.name;
+      const icon=document.createElement('span'), name=document.createElement('span');
+      icon.className='ownedIcon'; icon.textContent=item.ic; name.textContent=item.name;
+      button.append(icon,name); button.setAttribute('aria-label',item.name+'，查看与管理');
       button.dataset.kind=kind;
       button.onclick=()=>openOwned(kind,kind==='joker'?item.uid:i);
-      container.append(button);
+      row.append(button);
     }
+    container.append(row);
   }
 }
 function openScore() {
@@ -142,4 +160,12 @@ function exitToTitle() {
   $('oppBox').style.display='none'; $('livesRow').style.display='none';
   tutEnd(); refreshTitle(); show('ovStart');
 }
+document.querySelector('.shopTabs').addEventListener('keydown',e=>{
+  const i=SHOP_TABS.findIndex(([,id])=>id===e.target.id);
+  if(i<0||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
+  e.preventDefault();
+  const count=SHOP_TABS.length;
+  const next=e.key==='Home'?0:e.key==='End'?count-1:(i+(e.key==='ArrowRight'?1:count-1))%count;
+  selectShopTab(SHOP_TABS[next][0]); $(SHOP_TABS[next][1]).focus();
+});
 applySettings(); syncDialogs();

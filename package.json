@@ -1,6 +1,6 @@
 {
   "name": "pixel-balatro",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "private": true,
   "description": "像素小丑牌 - 网页版 Roguelike 卡牌游戏（含多人对战）",
   "main": "server.js",
