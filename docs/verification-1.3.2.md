@@ -53,3 +53,9 @@ python -B tests/browser_gameplay.py --browser "浏览器可执行文件" --mode 
 - 网络和方向保持初值；仅停止独立测试实例 3，原实例保留，ADB 已无设备连接。
 
 截图与报告在 `.qa/v132/android/`：`02-old-shop.png` / `04-new-shop.png` 为升级前后，`13-after-play.png` / `15-cold-resume.png` 为出牌及续局。Android 本轮未实测标准包，相关正常购买与三尺寸开包由浏览器覆盖；没有为随机遇包反复新开局。Android 宿主未修改，本轮未重复 1.3.0 的断网冷启动检查，不能将旧证据写成新版断网实测。未测试用户实体手机、Android 15/16 或扬声器听感，不以模拟、构建成功或截图代替真机流畅度和真人完整通关结论。
+
+## 发布与仓库
+
+正式版 [v1.3.2](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.3.2) 已设为 Latest；标签固定在游戏提交 `2a08923984875dc18d9a4120bb2cdb1abde0678c`。APK、HTML 和 176 字节校验文件在未登录状态下下载均返回 HTTP 200，逐字节匹配本地已验证产物，原始凭据在 `.qa/v132/release-download-verification.json`。
+
+复用临时 Actions 发布分支，只上传已验证字节，不在远端重新构建或使用签名私钥。运行 `42252029173` 成功，临时分支自动移除，远端只保留 main。发布载荷、签名、构建缓存与 QA 记录继续排除在主分支之外。源码、生成 HTML、回归脚本、版本和使用文档已同步；本文件的发布结果属于后续文档提交，不改变 Release 中的游戏文件。
