@@ -13,7 +13,8 @@
 <!-- ART -->
 <div id="game">
   <header id="rail"><span class="wordmark"><svg aria-hidden="true" viewBox="0 0 80 80"><use href="#jester"/></svg>像素小丑牌</span>
-    <button id="menuBtn" class="railbtn" onclick="show('ovMenu')">菜单 ☰</button></header>
+    <span id="netStatus" role="status" hidden></span>
+    <button id="menuBtn" class="railbtn" onclick="openMenu()">菜单 ☰</button></header>
   <div id="side">
     <div class="panel" id="blindBox">
       <div id="blindName">🔸 小盲注</div>
@@ -56,6 +57,7 @@
       <div id="prevName">选择手牌</div>
       <div id="prevLvl"></div>
       <span id="selCount" aria-label="选中张数"></span>
+      <span id="scoreEstimate" aria-label="预计得分"></span>
       <div id="prevCalc">
         <div class="chipbox" id="prevChips">0</div>
         <div class="xsign">×</div>
@@ -95,8 +97,33 @@
       <button class="sbtn" onclick="hide('ovMenu'); openInfo()">📊 本局信息 / 优惠券</button>
       <button class="sbtn" onclick="hide('ovMenu'); tutStart()">❓ 新手教程</button>
       <button class="sbtn" id="muteBtn" onclick="toggleMute()">🔊 音乐：开</button>
+      <button class="sbtn" id="soundBtn" onclick="changeSetting('sound',!settings.sound)">音效：开</button>
+      <label class="settingRow" for="speedSelect">计分速度<select id="speedSelect" onchange="changeSetting('speed',Number(this.value))">
+        <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="0">立即</option>
+      </select></label>
+      <button class="sbtn" id="lastScoreBtn" onclick="hide('ovMenu');openScore()">上次计分明细</button>
+      <button class="sbtn" id="returnTitleBtn" onclick="returnToTitle()">回到标题</button>
     </div>
   <button class="pxbtn" onclick="hide('ovMenu')">回到牌桌</button>
+</div></div>
+<div class="ov" id="ovOwned"><div class="box">
+  <h2 id="ownedTitle"></h2><div id="ownedDesc"></div>
+  <div class="ownedActions">
+    <button class="pxbtn gray" id="moveLeft" onclick="moveOwned(-1)">向左</button>
+    <button class="pxbtn gray" id="moveRight" onclick="moveOwned(1)">向右</button>
+    <button class="pxbtn" id="useOwned" onclick="useOwned()">使用</button>
+    <button class="pxbtn gray" id="sellOwned" onclick="sellOwned()">卖出</button>
+  </div>
+  <button class="pxbtn" onclick="hide('ovOwned')">返回</button>
+</div></div>
+<div class="ov" id="ovScore"><div class="box">
+  <h2 id="scoreTitle">计分明细</h2><div id="scoreRows"></div>
+  <button class="pxbtn" onclick="hide('ovScore')">关闭</button>
+</div></div>
+<div class="ov" id="ovLeave" style="z-index:80"><div class="box">
+  <h2>离开对战？</h2><p>离开后本场对战结束，单人存档仍保留。</p>
+  <button class="pxbtn gray" onclick="hide('ovLeave')">继续对战</button>
+  <button class="pxbtn" id="confirmLeave" onclick="exitToTitle()">离开</button>
 </div></div>
 <div class="ov" id="ovRestart"><div class="box"><h2>重新开局？</h2>
   <p>新的一局会替换已保存的单人进度。</p>
@@ -139,7 +166,7 @@
   <h2 id="packTitle"></h2>
   <p id="packHint" style="color:#9ab;font-size:12px"></p>
   <div id="packCards"></div>
-  <button class="pxbtn gray" onclick="closePack()">不选了，离开</button>
+  <button class="pxbtn gray" onclick="closePack()">取消并退款</button>
 </div></div>
 
 <!-- 本局信息 -->
@@ -194,10 +221,10 @@
     <label class="lbl" for="mpServer">对战服务器地址</label>
     <input class="mpin" id="mpServer" type="url" placeholder="填写对战服务器的网址">
   </div>
-  <button class="pxbtn" onclick="mpCreate()">创建房间</button>
+  <button class="pxbtn" id="mpCreateBtn" onclick="mpCreate()">创建房间</button>
   <span style="margin:0 10px;color:#667">或</span>
   <input class="mpin" id="mpCode" aria-label="房间码" autocapitalize="characters" autocomplete="off" maxlength="4" placeholder="房间码" style="width:110px;text-transform:uppercase">
-  <button class="pxbtn" onclick="mpJoin()">加入</button>
+  <button class="pxbtn" id="mpJoinBtn" onclick="mpJoin()">加入</button>
   <p id="mpStatus" style="color:#57e6ff;min-height:22px;margin-top:10px"></p>
   <button class="pxbtn gray" onclick="mpCancel()">返回标题</button>
 </div></div>

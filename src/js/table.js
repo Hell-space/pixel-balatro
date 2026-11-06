@@ -45,7 +45,7 @@ function cardTipHTML(c) {
 function jokerTipHTML(j) {
   return '<span class="tn">' + j.ic + ' ' + j.name + '</span> <span class="tr rc' + (j.rar || 0) + '">[' + RARNAME[j.rar || 0] + ']</span>' +
     (j.ed ? '<br><span class="tr">' + EDNAME[j.ed] + '</span>' : '') +
-    '<br>' + jokerDesc(j) + '<br><span class="tr" style="color:#667">点击两次卖出 $' + sellPrice(j) + '</span>';
+    '<br>' + jokerDesc(j);
 }
 
 // ================= 渲染 =================
@@ -82,6 +82,7 @@ function cardEl(c, interactive = false) {
 }
 function renderHand() {
   const row = $('handRow');
+  row.style.setProperty('--hand-columns',S.hand.length>8?5:4);
   row.innerHTML = '';
   S.hand.forEach(c => {
     const el = cardEl(c, true);
@@ -102,16 +103,20 @@ function renderHand() {
 function updatePreview() {
   const sel = S.hand.filter(c => c.sel);
   $('selCount').textContent = sel.length && !S.busy ? sel.length+'/5' : '';
+  if (!S.busy) $('scoreEstimate').textContent='';
   if (!S.busy && !sel.length) {
     $('prevName').textContent = '选择手牌'; $('prevLvl').textContent = '';
     $('prevChips').textContent = '0'; $('prevMult').textContent = '0';
   } else if (!S.busy) {
     const ev = evalHand(sel);
+    const state={...S,handsLeft:S.handsLeft-1};
+    const lo=scoreHand(state,sel,()=>0), hi=scoreHand(state,sel,()=>.999999);
     const b = handBase(ev.key);
     $('prevName').textContent = HANDS[ev.key].name;
     $('prevLvl').textContent = '等级 ' + b.lv;
-    $('prevChips').textContent = b.chips;
-    $('prevMult').textContent = b.mult;
+    $('prevChips').textContent = fmt(lo.chips);
+    $('prevMult').textContent = lo.mult===hi.mult?fmtM(lo.mult):fmtM(lo.mult)+'–'+fmtM(hi.mult);
+    $('scoreEstimate').textContent=(lo.total===hi.total?fmt(lo.total):fmt(lo.total)+'–'+fmt(hi.total))+' 分';
   }
   $('btnPlay').disabled = S.busy || !sel.length || S.handsLeft <= 0;
   $('btnDiscard').disabled = S.busy || !sel.length || S.discLeft <= 0;
@@ -122,13 +127,14 @@ function renderStats() {
   $('moneyVal').textContent = '$' + S.money;
   $('handSizeVal').textContent = effHandSize();
   $('anteVal').textContent = MP.on ? S.ante + ' ⚔️' : (S.ante > 8 ? S.ante + ' ♾️' : S.ante + ' / 8');
-  $('deckVal').textContent = S.drawPile.length + '/' + S.deckAll.length;
+  $('deckVal').textContent = (S.screen==='select'?S.deckAll.length:S.drawPile.length) + '/' + S.deckAll.length;
   $('scoreVal').textContent = fmt(S.score);
   // 对决盲注：目标栏实时显示对手分数
   const duel = MP.on && S.blindIdx === 2 && (S.screen === 'play' || S.screen === 'duelwait');
   const oppSc = duel && MP.opp.ante === S.ante && MP.opp.blind === 2 ? MP.opp.score : 0;
   $('targetLbl').textContent = duel ? '⚔️ 对手得分' : '目标分数';
-  $('targetVal').textContent = fmt(duel ? oppSc : S.target);
+  const target=S.screen==='select'?blindMeta().target:S.target;
+  $('targetVal').textContent = fmt(duel ? oppSc : target);
   $('scorebar').style.width = Math.min(100, S.score / Math.max(1, duel ? oppSc : S.target) * 100) + '%';
   if (MP.on) $('livesVal').textContent = '❤️'.repeat(Math.max(0, MP.lives)) || '💀';
   const m = blindMeta();
@@ -162,16 +168,7 @@ function renderJokers() {
       (j.ed ? '<span class="edfx ' + ['', 'f', 'h', 'p'][j.ed] + '"></span>' : '') +
       (S.sellId === j.uid ? '<div class="sellbadge">卖出 $' + sellPrice(j) + '</div>' : '');
     bindTip(d, () => jokerTipHTML(j));
-    d.onclick = () => {
-      if (S.busy) return;
-      if (S.sellId === j.uid) {
-        S.money += sellPrice(j);
-        S.jokers = S.jokers.filter(x => x.uid !== j.uid);
-        S.sellId = null; sfxCash(); hideTip();
-        msg('已卖出 ' + j.name);
-        renderJokers(); renderStats(); if (S.shop) renderShop();
-      } else { S.sellId = j.uid; renderJokers(); }
-    };
+    d.onclick = () => { if(!S.busy) openOwned('joker',j.uid); };
     row.appendChild(d);
   });
   for (let i = S.jokers.length; i < S.jokerSlots; i++) {
@@ -190,8 +187,8 @@ function renderCons() {
     d.innerHTML = '<div class="ic">' + t.ic + '</div><div class="nm">' + t.name + '</div>';
     bindTip(d, () => '<span class="tn">' + t.ic + ' ' + t.name + '</span><br>' +
       (t.kind === 'planet' ? HANDS[t.key].name + ' 牌型升 1 级' : t.desc) +
-      '<br><span class="tr" style="color:#667">点击使用</span>');
-    d.onclick = () => useCons(i);
+      '<br><span class="tr" style="color:#667">点击查看 / 使用</span>');
+    d.onclick = () => { if(!S.busy) openOwned('cons',i); };
     row.appendChild(d);
   });
   for (let i = S.cons.length; i < S.consSlots; i++) {

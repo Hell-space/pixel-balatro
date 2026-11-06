@@ -33,11 +33,12 @@ function genShopMain() {
   S.shop.jokers = [rollJokerItem(S.shop.unc), rollJokerItem(S.shop.unc)];
   if (S.shop.unc && !S.shop.freeUsed) S.shop.jokers[0].price = 0;
   S.shop.cons = [
-    { ...randOf(PLANETS), kind: 'planet', price: 3, sold: false },
+    { ...randOf(availablePlanets()), kind: 'planet', price: 3, sold: false },
     { ...randOf(TAROTS), kind: 'tarot', price: 3, sold: false },
   ];
 }
 function openShop() {
+  if(S.screen!=='cash') return;
   hide('ovCash');
   S.shop = {
     disc: S.discount * (S.nextShopHalf ? 0.5 : 1),
@@ -101,14 +102,7 @@ function renderShop() {
     vb.innerHTML = '<p style="color:#556;font-size:12px">' +
       (S.anteVoucher ? '本底注的优惠券已购买 ✔' : '优惠券已全部收集！') + '</p>';
   }
-  const owned=$('shopOwned'); owned.replaceChildren();
-  for (const j of S.jokers) {
-    const button=document.createElement('button'); button.className='sbtn';
-    button.textContent=(S.sellId===j.uid?'确认卖出 ':'卖出 ')+j.name+' $'+sellPrice(j);
-    button.onclick=()=>{ if (S.sellId===j.uid) { S.money+=sellPrice(j); S.jokers=S.jokers.filter(x=>x.uid!==j.uid); S.sellId=null; sfxCash(); }
-      else S.sellId=j.uid; renderShop(); };
-    owned.append(button);
-  }
+  renderInventory($('shopOwned'));
   renderJokers(); renderCons(); renderStats();
 }
 function buyJoker(i) {
@@ -130,7 +124,7 @@ function buyCons(i) {
   const p = shopPrice(t.price);
   if (S.money < p) { msg('钱不够！', 1); return; }
   if (S.cons.length >= S.consSlots) {
-    msg('消耗牌槽位已满（' + S.cons.length + '/' + S.consSlots + '）！先在右上角使用掉一张', 1);
+    msg('消耗牌槽位已满（' + S.cons.length + '/' + S.consSlots + '）！先使用或卖出持有的消耗牌', 1);
     return;
   }
   S.money -= p;
@@ -141,6 +135,7 @@ function buyCons(i) {
 }
 function buyVoucher() {
   const v = S.anteVoucher;
+  if(!v || S.shop.voucherSold || S.vouchers.includes(v.id)) return;
   const p = shopPrice(10);
   if (S.money < p) { msg('钱不够！', 1); return; }
   S.money -= p;
@@ -153,8 +148,8 @@ function buyVoucher() {
     case 'anti': S.jokerSlots++; break;
     case 'crystal': S.consSlots++; break;
     case 'seed': S.interestCap = 10; break;
-    case 'surplus': S.rerollBase = 3; break;
-    case 'sale': S.discount = 0.75; break;
+    case 'surplus': S.shop.rerollCost=Math.max(0,S.shop.rerollCost-(S.rerollBase-3)); S.rerollBase=3; break;
+    case 'sale': S.shop.disc*=.75/S.discount; S.discount=.75; break;
   }
   sfxUp();
   msg('🎟️ ' + v.name + '：' + v.desc + '（永久生效）');
@@ -169,6 +164,7 @@ function doReroll() {
   renderShop();
 }
 function leaveShop() {
+  if(S.screen!=='shop' || S.pack) return;
   hide('ovShop');
   S.shop = null;
   S.blindIdx++;
@@ -178,15 +174,17 @@ function leaveShop() {
 
 // ================= 卡包 =================
 function buyPack(i) {
-  const p = S.shop.packs[i];
-  if (p.sold) return;
-  const cost = shopPrice(p.price);
-  if (S.money < cost) { msg('钱不够！', 1); return; }
-  S.money -= cost;
-  p.sold = true;
-  sfxCash();
-  renderShop();
-  openPackUI(p.id, cost);
+  const p=S.shop.packs[i];
+  if(p.sold || S.pack) return;
+  const cost=shopPrice(p.price);
+  if(S.money<cost) return msg('钱不够！',1);
+  if(!p.options) p.options=packOptions(p.id);
+  S.money-=cost; p.sold=true;
+  S.pack={index:i,type:p.id,cost,options:p.options};
+  sfxCash(); renderShop(); openPackUI(); persistRun();
+}
+function availablePlanets() {
+  return PLANETS.filter(p=>!['five','flushhouse','flushfive'].includes(p.key) || S.playCounts[p.key]>0);
 }
 function randCard() {
   const c = { id: ++cid, suit: Math.floor(Math.random() * 4), rank: 2 + Math.floor(Math.random() * 13),
@@ -200,89 +198,65 @@ function randCard() {
   if (Math.random() < 0.15) c.ed = 1 + Math.floor(Math.random() * 3);
   return c;
 }
-let packRefund = 0;
-function openPackUI(type, cost) {
-  packRefund = cost || 0;
-  const box = $('packCards');
-  box.innerHTML = '';
-  let title = '', hint = '';
-  const addOpt = (inner, tipFn, onPick) => {
-    const d = document.createElement('button');
-    d.className = 'pk shopItem';
-    d.style.position = 'relative';
-    d.innerHTML = inner;
-    if (tipFn) bindTip(d, tipFn);
-    d.onclick = () => { hideTip(); onPick(); };
-    box.appendChild(d);
-  };
-  if (type === 'arcana' || type === 'celestial') {
-    const pool = type === 'arcana' ? TAROTS : PLANETS;
-    title = type === 'arcana' ? '🔮 秘术包' : '🌌 天体包';
-    hint = type === 'arcana' ? '选择 1 张塔罗牌放入消耗槽' : '选择 1 张星球牌，立即使用';
-    for (let k = 0; k < 3; k++) {
-      const t = randOf(pool);
-      const ds = type === 'celestial' ? HANDS[t.key].name + ' 牌型永久升 1 级' : t.desc;
-      addOpt('<div class="ic">' + t.ic + '</div><div class="nm">' + t.name + '</div><div class="pkds">' + ds + '</div>', null, () => {
-        if (type === 'celestial') {
-          S.levels[t.key]++; S.planetsUsed++;
-          sfxUp(); msg(t.ic + ' ' + HANDS[t.key].name + ' 升到 ' + S.levels[t.key] + ' 级！');
-        } else {
-          if (S.cons.length >= S.consSlots) { msg('消耗牌槽位已满！', 1); return; }
-          S.cons.push({ ...t, kind: 'tarot', price: 3 });
-          sfxTarot();
-        }
-        packRefund = 0; closePack();
-      });
-    }
-  } else if (type === 'buffoon') {
-    title = '🃏 小丑包'; hint = '选择 1 张小丑牌';
-    for (let k = 0; k < 2; k++) {
-      const j = rollJokerItem(false);
-      addOpt('<div class="ic">' + j.ic + '</div><div class="nm">' + j.name + '</div><div class="pkds">' + j.desc + '</div>' +
-        (j.ed ? '<span class="edfx ' + ['', 'f', 'h', 'p'][j.ed] + '"></span>' : ''),
-        () => '<span class="tn">' + j.name + '</span> <span class="tr rc' + j.rar + '">[' + RARNAME[j.rar] + ']</span>' +
-          (j.ed ? '<br><span class="tr">' + EDNAME[j.ed] + '</span>' : '') + '<br>' + j.desc,
-        () => {
-          if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满！', 1); return; }
-          addJoker(j); sfxJok(); packRefund = 0; closePack();
-        });
-    }
-  } else if (type === 'standard') {
-    title = '🂡 标准包'; hint = '选择 1 张强化扑克牌，永久加入你的牌组';
-    for (let k = 0; k < 3; k++) {
-      const c = randCard();
-      const d = document.createElement('button');
-      d.className = 'pk';
-      d.appendChild(cardEl(c));
-      const ds = document.createElement('div');
-      ds.className = 'pkds';
-      const parts = cardTipHTML(c).split('<br>');
-      ds.innerHTML = parts.slice(1).join('<br>') || '普通牌';
-      d.appendChild(ds);
-      d.onclick = () => {
-        S.deckAll.push(c); S.cardsAdded++;
-        sfxCash(); msg('🂡 ' + rankName(c.rank) + (c.wild ? '🌈' : SUITS[c.suit]) + ' 已加入牌组（下个盲注生效）');
-        hideTip(); packRefund = 0; closePack();
-      };
-      box.appendChild(d);
-    }
-  } else if (type === 'spectral') {
-    title = '👻 幽灵包'; hint = '选择 1 张幻灵牌，立即生效';
-    shuffle(SPECTRALS.slice()).slice(0, 2).forEach(sp => {
-      addOpt('<div class="ic">' + sp.ic + '</div><div class="nm">' + sp.name + '</div><div class="pkds">' + sp.desc + '</div>', null, () => {
-        if (useSpectral(sp)) { sfxTarot(); packRefund = 0; closePack(); }
-      });
-    });
+function packOptions(type) {
+  const unique=(pool,n)=>shuffle(pool.slice()).slice(0,n).map(x=>({...x}));
+  if(type==='arcana') return unique(TAROTS,3);
+  if(type==='celestial') return unique(availablePlanets(),3);
+  if(type==='buffoon') {
+    const a=rollJokerItem(false);
+    let b=rollJokerItem(false);
+    if(b.id===a.id) b={...randOf(JDEFS.filter(j=>j.id!==a.id)),sold:false,ed:0};
+    return [a,b];
   }
-  $('packTitle').textContent = title;
-  $('packHint').textContent = hint;
+  if(type==='standard') return [randCard(),randCard(),randCard()];
+  return unique(SPECTRALS,2);
+}
+function openPackUI() {
+  const pack=S.pack;
+  if(!pack) return;
+  const definition=PACKS.find(p=>p.id===pack.type);
+  $('packTitle').textContent=definition.ic+' '+definition.name;
+  $('packHint').textContent=definition.desc;
+  const box=$('packCards'); box.replaceChildren();
+  pack.options.forEach((option,i)=>{
+    const button=document.createElement('button'); button.className='pk shopItem';
+    if(pack.type==='standard') {
+      button.append(cardEl(option));
+      const desc=document.createElement('div'); desc.className='pkds';
+      desc.innerHTML=cardTipHTML(option); button.append(desc);
+    } else {
+      button.innerHTML='<div class="ic">'+option.ic+'</div><div class="nm">'+option.name+
+        '</div><div class="pkds">'+(pack.type==='celestial'?HANDS[option.key].name+' 升 1 级':option.desc)+
+        (option.ed?'<br>'+EDNAME[option.ed]:'')+'</div>';
+    }
+    button.onclick=()=>pickPack(i);
+    box.append(button);
+  });
   show('ovPack');
 }
-function closePack() {
-  hideTip();
-  if (packRefund) { S.money += packRefund; packRefund = 0; renderStats(); msg('已退款，钱已返还'); }
-  hide('ovPack');
-  if (S.shop) renderShop();
+function pickPack(i) {
+  const pack=S.pack, option=pack?.options[i];
+  if(!option) return;
+  if(pack.type==='arcana') {
+    if(S.cons.length>=S.consSlots) return msg('消耗牌槽位已满，可取消并整理后重开。',1);
+    S.cons.push({...option,kind:'tarot',price:3});
+  } else if(pack.type==='celestial') { S.levels[option.key]++; S.planetsUsed++; }
+  else if(pack.type==='buffoon') {
+    if(S.jokers.length>=S.jokerSlots) return msg('小丑槽位已满，可取消并整理后重开。',1);
+    addJoker(option);
+  } else if(pack.type==='standard') { S.deckAll.push(option); S.cardsAdded++; }
+  else if(!useSpectral(option)) return;
+  sfxUp(); closePack(true);
+}
+function closePack(picked=false) {
+  if(!S.pack) return;
+  const pack=S.pack;
+  if(!picked) {
+    S.money+=pack.cost; S.shop.packs[pack.index].sold=false;
+    msg('已退回 $'+pack.cost+'，卡包保留原候选。');
+  }
+  S.pack=null;
+  hideTip(); hide('ovPack'); renderShop(); persistRun();
 }
 function useSpectral(sp) {
   switch (sp.id) {
@@ -291,6 +265,7 @@ function useSpectral(sp) {
       const owned = new Set(S.jokers.map(j => j.id));
       let pool = JDEFS.filter(j => j.rar === 2 && !owned.has(j.id));
       if (!pool.length) pool = JDEFS.filter(j => !owned.has(j.id));
+      if(!pool.length) return false;
       const def = randOf(pool);
       addJoker({ ...def });
       msg('👻 灵魂赐予你：' + def.name + '！');
@@ -304,6 +279,7 @@ function useSpectral(sp) {
       return true;
     case 'talis': case 'dejavu': {
       const c = randOf(S.deckAll);
+      if(!c) { msg('牌组中没有可强化的牌。',1); return false; }
       c.seal = sp.id === 'talis' ? 'gold' : 'red';
       msg(sp.ic + ' ' + rankName(c.rank) + (c.wild ? '🌈' : SUITS[c.suit]) + ' 获得了' + (sp.id === 'talis' ? '金' : '红') + '蜡封！');
       return true;
@@ -315,7 +291,7 @@ function useSpectral(sp) {
 // ================= 消耗牌 =================
 let consLock = 0;
 function useCons(i) {
-  if (S.busy) return;
+  if (S.busy || !['play','shop','select'].includes(S.screen)) return;
   const t = S.cons[i];
   if (!t || Date.now() - consLock < 300) return;  // 防止双击连用两张
   consLock = Date.now();
@@ -325,7 +301,7 @@ function useCons(i) {
     sfxUp();
     msg(t.ic + ' ' + HANDS[t.key].name + ' 升到 ' + S.levels[t.key] + ' 级！');
     S.cons.splice(i, 1);
-    renderCons(); updatePreview(); if (S.shop) renderShop();
+    renderCons(); updatePreview(); if (S.shop) renderShop(); persistRun();
     return;
   }
   // 塔罗：id -> [最少选牌, 最多选牌]
@@ -362,6 +338,7 @@ function useCons(i) {
       const owned = new Set(S.jokers.map(j => j.id));
       const pool = JDEFS.filter(j => !owned.has(j.id));
       const j = randOf(pool);
+      if(!j) return;
       addJoker({ ...j });
       msg('⚖️ 审判赐予你：' + j.name + '！');
       break;
@@ -386,5 +363,7 @@ function useCons(i) {
   S.cons.splice(i, 1);
   S.hand.forEach(c => c.sel = false);
   renderAll(); if (S.shop) renderShop();
+  if(t.id==='tower') { drawTo(effHandSize()); renderHand(); checkStuck(); }
+  persistRun();
   if (t.id !== 'judge' && t.id !== 'emperor') msg(t.ic + ' ' + t.name + ' 已生效！');
 }

@@ -8,7 +8,7 @@
 }
 html,body {height:100%; margin:0; background:var(--deep);font-family:var(--ui);color:var(--light)}
 button,input {font:inherit}
-button {touch-action:manipulation;cursor:pointer}
+button {touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
 button:focus-visible,[tabindex]:focus-visible,input:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
 [hidden]{display:none!important}
 body::after {display:none}
@@ -90,7 +90,9 @@ body::after {display:none}
 .pxbtn {margin:10px 4px 4px;background:var(--brass);border-color:#e5c687;color:#262c28;box-shadow:0 3px 0 #8d6c36}
 .pxbtn.gray,.sbtn,.bbtn.skip,.tbtn.gray {background:#2e4846;color:#e5ebdc;border-color:#607d70;box-shadow:0 2px 0 #132925}
 .pxbtn:hover {transform:none}
-.menuList {display:grid;gap:4px;min-width:min(240px,67vw)}
+.menuList {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;min-width:min(240px,67vw)}
+.menuList>.sbtn,.menuList>.settingRow {grid-column:1/-1;margin:0}
+.menuList>#muteBtn,.menuList>#soundBtn {grid-column:auto}
 #ovStart {z-index:55;overflow:auto}
 .titleScreen {margin:auto;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0}
 .titleArt {position:relative;width:210px;height:156px;margin:0 auto 9px}
@@ -155,7 +157,7 @@ body::after {display:none}
   #playArea {min-height:76px}
   #previewBox {max-width:490px;margin-bottom:4px;min-height:34px}
   #handWrap {padding:0;max-width:540px}
-  #handRow {display:grid;grid-template-columns:repeat(4,minmax(42px,72px));justify-content:center;align-items:end;gap:9px 7px;min-height:0;padding:8px 3px 1px}
+  #handRow {display:grid;grid-template-columns:repeat(var(--hand-columns,4),minmax(42px,72px));justify-content:center;align-items:end;gap:9px 7px;min-height:0;padding:8px 3px 1px}
   #handRow .card {width:100%;height:clamp(70px,12vh,101px)}
   .card.sel {transform:translateY(-5px)}
   .pips i {font-size:15px}.pips .acePip {font-size:24px}
@@ -203,6 +205,26 @@ body::after {display:none}
 #selCount {font:600 12px var(--mono);color:#b6cdbb}
 .shopActions {position:sticky;bottom:0;padding:4px 0;background:#1b3034;box-shadow:0 -1px #57746a;z-index:2}
 .shopActions .pxbtn {padding-inline:14px;margin:4px}
+.settingRow {display:flex;align-items:center;justify-content:space-between;padding:8px 4px;gap:15px}
+.settingRow select {min-height:44px;min-width:100px;background:#244238;color:var(--paper);border:1px solid #739283;border-radius:5px;padding:6px 12px}
+#scoreEstimate {font:700 13px var(--mono);color:var(--brass);margin-left:auto;white-space:nowrap}
+#previewBox {flex-wrap:wrap}
+#prevCalc {margin-left:0}
+#prevMult {max-width:150px;overflow-wrap:anywhere}
+.ownedActions {display:flex;justify-content:center;gap:5px;flex-wrap:wrap}
+.ownedActions .pxbtn {padding-inline:14px}
+#ownedDesc {line-height:1.8;max-width:400px;font-weight:500}
+#scoreRows p {font:500 13px/1.6 var(--ui);text-align:left;border-bottom:1px solid var(--seam);padding:5px}
+#netStatus {color:var(--brass);font-size:12px;margin-left:auto;margin-right:8px}
+#shopOwned {display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+.pxbtn:disabled,.sbtn:disabled {opacity:.5;cursor:default}
+#handRow .card .st2 {pointer-events:none}
+@media(max-width:370px) {
+  #scoreEstimate {font-size:11px}.chipbox {font-size:16px;min-width:30px}
+  #jokerBar {flex-wrap:wrap;gap:4px}
+  #jokerRow {justify-content:center}
+  #consRow {justify-content:center}
+}
 @media (max-width:760px),(max-width:1000px) and (max-height:540px) {
   #ovShop .box {padding-bottom:4px}
   .shopActions {margin:0 -5px;padding:4px;display:flex;gap:6px}

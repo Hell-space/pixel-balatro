@@ -1,77 +1,114 @@
-async function mpApi(p, body) {
-  const r = await fetch(MP.base + p, { method:'POST', headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify(body) });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.err || ('HTTP ' + r.status));
-  return j;
+let mpGeneration=0, mpPending=false, mpMessageId=0, mpQueue=Promise.resolve();
+async function mpApi(path,body,base=MP.base) {
+  const control=new AbortController(), timer=setTimeout(()=>control.abort(),10000);
+  try {
+    const r=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:control.signal});
+    const data=await r.json().catch(()=>({}));
+    if(!r.ok) throw Error(data.err||'HTTP '+r.status);
+    return data;
+  } finally { clearTimeout(timer); }
 }
 function relayAddress() {
   const value=$('mpServer').value.trim();
-  if (!value) throw new Error('请填写运行对战服务器的 HTTP 或 HTTPS 地址');
-  const url=new URL(value);
-  if (!['http:','https:'].includes(url.protocol)) throw new Error('服务器地址须以 http:// 或 https:// 开头');
-  if (location.protocol==='https:' && url.protocol==='http:') throw new Error('请填写 HTTPS 地址，或直接打开局域网服务器提供的游戏页');
+  if(!value) throw Error('请填写对战服务器地址');
+  let url;
+  try { url=new URL(value); } catch { throw Error('服务器地址格式不正确'); }
+  if(!['http:','https:'].includes(url.protocol)) throw Error('地址须以 http:// 或 https:// 开头');
+  if(location.protocol==='https:'&&url.protocol==='http:') throw Error('请填写 HTTPS 地址，或直接打开局域网服务器的游戏页');
   return url.href.replace(/\/+$/, '');
 }
-function escapeText(value) { const el=document.createElement('span'); el.textContent=value; return el.innerHTML; }
-function mpListen() {
-  if (MP.net) MP.net.close();
-  MP.net = new EventSource(MP.base + '/api/events?room=' + MP.room + '&pid=' + MP.pid);
-  MP.net.onmessage = e => { let d; try { d = JSON.parse(e.data); } catch (_) { return; } mpOnEvent(d); };
+function escapeText(value) {const el=document.createElement('span');el.textContent=value;return el.innerHTML;}
+function networkStatus(text) {
+  $('netStatus').hidden=!text; $('netStatus').textContent=text;
 }
-function mpSend(type, data) {
-  if (!MP.room) return;
-  fetch(MP.base + '/api/send', { method:'POST', headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify({ room: MP.room, pid: MP.pid, type, data: data || {} }) }).catch(() => {});
+function mpListen() {
+  if(MP.net) MP.net.close();
+  const generation=mpGeneration;
+  MP.net=new EventSource(MP.base+'/api/events?room='+MP.room+'&pid='+MP.pid);
+  MP.net.onopen=()=>{if(generation===mpGeneration) networkStatus('');};
+  MP.net.onerror=()=>{if(generation===mpGeneration&&!MP.over) networkStatus('连接中断，正在重连…');};
+  MP.net.onmessage=e=>{
+    if(generation!==mpGeneration||MP.over) return;
+    let data;try {data=JSON.parse(e.data);}catch{return;}
+    mpOnEvent(data);
+  };
+}
+function mpSend(type,data={}) {
+  if(!MP.room||MP.over) return Promise.resolve();
+  const generation=mpGeneration,base=MP.base;
+  const body={room:MP.room,pid:MP.pid,type,data,messageId:++mpMessageId};
+  mpQueue=mpQueue.catch(()=>{}).then(async()=>{
+    for(let attempt=0;attempt<2;attempt++) {
+      if(generation!==mpGeneration) return;
+      try {await mpApi('/api/send',body,base);return;}
+      catch(error) {
+        if(attempt===1&&generation===mpGeneration) {
+          networkStatus('消息未送达');
+          if(MP.on&&!MP.over) mpMatchEnd(false,'连接失败，本场对战已结束。');
+        }
+      }
+    }
+  });
+  return mpQueue;
 }
 function mpSendState() {
-  if (!MP.on || !S) return;
-  mpSend('state', { ante: S.ante, blind: S.blindIdx, score: S.score, lives: MP.lives, phase: S.screen });
+  if(!MP.on||!S) return;
+  mpSend('state',{ante:S.ante,blind:S.blindIdx,score:S.score,lives:MP.lives,phase:S.screen});
 }
-
-// —— 大厅 ——
+function lobbyBusy(busy) {
+  mpPending=busy;
+  for(const id of ['mpCreateBtn','mpJoinBtn']) $(id).disabled=busy||!!MP.room;
+}
 function openMpLobby() {
   initAudio();
-  $('mpServer').value = $('mpServer').value ||
-    (/^https?:$/.test(location.protocol) && !location.hostname.endsWith('.github.io') ? location.origin : '');
-  $('mpName').value = $('mpName').value || '玩家' + (100 + Math.floor(Math.random() * 900));
-  $('mpStatus').textContent = '';
-  hide('ovStart'); show('ovMpLobby');
+  $('mpServer').value ||= /^https?:$/.test(location.protocol)&&!location.hostname.endsWith('.github.io')?location.origin:'';
+  $('mpName').value ||= '玩家'+(100+Math.floor(Math.random()*900));
+  $('mpStatus').textContent=''; lobbyBusy(false);
+  hide('ovStart');show('ovMpLobby');
+}
+function mpLeave() {
+  mpGeneration++;
+  if(MP.net) MP.net.close();MP.net=null;
+  if(MP.room&&MP.pid) fetch(MP.base+'/api/leave',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({room:MP.room,pid:MP.pid}),keepalive:true}).catch(()=>{});
+  MP.room='';MP.pid='';mpMessageId=0;mpQueue=Promise.resolve();
+  lobbyBusy(false);networkStatus('');
 }
 function mpCancel() {
-  if (MP.net) { MP.net.close(); MP.net = null; }
-  MP.room = ''; MP.pid = '';
-  hide('ovMpLobby'); show('ovStart');
+  mpLeave();hide('ovMpLobby');refreshTitle();show('ovStart');
 }
-async function mpCreate() {
+async function joinLobby(create) {
+  if(mpPending||MP.room) return;
+  const generation=++mpGeneration;
+  let base,room='';
   try {
-    MP.base = relayAddress();
-    MP.name = $('mpName').value.trim() || '玩家';
-    $('mpStatus').textContent = '正在创建房间…';
-    const r = await mpApi('/api/create', { name: MP.name });
-    MP.room = r.room; MP.pid = r.pid; MP.host = true;
+    base=relayAddress();room=$('mpCode').value.trim().toUpperCase();
+    if(!create&&!/^[A-HJ-NP-Z2-9]{4}$/.test(room)) throw Error('请输入有效的 4 位房间码');
+    MP.base=base;MP.name=$('mpName').value.trim()||'玩家';
+    lobbyBusy(true);$('mpStatus').textContent=create?'正在创建房间…':'正在加入…';
+    const r=await mpApi(create?'/api/create':'/api/join',{name:MP.name,...(!create?{room}:{})},base);
+    const joinedRoom=create?r.room:room;
+    if(generation!==mpGeneration) {
+      await mpApi('/api/leave',{room:joinedRoom,pid:r.pid},base).catch(()=>{});
+      return;
+    }
+    if(!r.pid||!joinedRoom) throw Error('该地址不是对战服务器');
+    MP.room=joinedRoom;MP.pid=r.pid;MP.host=create;MP.over=false;mpMessageId=0;
     mpListen();
-    $('mpStatus').innerHTML = '房间码 <b style="font-size:24px;color:#ffd54a;letter-spacing:5px">' + escapeText(r.room) +
-      '</b><br>把房间码发给朋友，等待加入…';
-  } catch (e) { $('mpStatus').textContent = '❌ ' + e.message + ''; }
+    $('mpStatus').textContent=create?'房间码 '+joinedRoom+'，等待对手加入…':'已加入，正在连接对手…';
+  } catch(error) {
+    if(generation===mpGeneration) $('mpStatus').textContent=error.name==='AbortError'?'连接超时，请检查服务器地址。':error.message;
+  } finally {if(generation===mpGeneration) lobbyBusy(false);}
 }
-async function mpJoin() {
-  try {
-    MP.base = relayAddress();
-    MP.name = $('mpName').value.trim() || '玩家';
-    const code = $('mpCode').value.trim().toUpperCase();
-    if (code.length !== 4) { $('mpStatus').textContent = '请输入 4 位房间码'; return; }
-    $('mpStatus').textContent = '正在加入…';
-    const r = await mpApi('/api/join', { room: code, name: MP.name });
-    MP.room = code; MP.pid = r.pid; MP.host = false;
-    mpListen();
-    $('mpStatus').textContent = '已加入房间，正在连接对手…';
-  } catch (e) { $('mpStatus').textContent = '❌ ' + e.message; }
-}
+function mpCreate() {return joinLobby(true);}
+function mpJoin() {return joinLobby(false);}
 
 // —— 事件分发 ——
 function mpOnEvent(d) {
+  if(d.ev==='peer-away') { networkStatus('对手暂时断线，等待重连…');return; }
+  if(d.ev==='peer-back') { networkStatus('');return; }
   if (d.ev === 'paired') {
+    if(MP.on) return;
     for (const id in d.names) if (id !== MP.pid) MP.oppName = d.names[id];
     if (MP.host) {
       // 房主生成 30 个底注的 Boss 序列，保证双方每轮对决面对同一 Boss
@@ -87,14 +124,15 @@ function mpOnEvent(d) {
   }
   if (d.ev === 'peer-left') {
     if (MP.on && !MP.over) mpMatchEnd(true, escapeText(MP.oppName) + ' 已断线 / 退出');
-    else if (!MP.on) $('mpStatus').textContent = '对方已离开房间';
+    else if (!MP.on) { mpLeave(); $('mpStatus').textContent='对方已离开，请重新创建房间。'; }
     return;
   }
   if (d.ev !== 'msg') return;
   const m = d.data || {};
   switch (d.type) {
-    case 'start': if (!MP.on) mpBegin(m.bossSeq, m.lives || 2); break;
+    case 'start': if(!MP.on&&Array.isArray(m.bossSeq)&&m.bossSeq.every(id=>BOSSES.some(b=>b.id===id))) mpBegin(m.bossSeq,2); break;
     case 'state': {
+      if(!Number.isSafeInteger(m.score)||!Number.isInteger(m.lives)||m.lives<0||m.lives>2) return;
       Object.assign(MP.opp, m);
       mpRenderOpp();
       // 对决进行中：目标栏实时显示对手分数
@@ -158,6 +196,7 @@ function duelFinish() {
 }
 function mpTryResolve() {
   if (!MP.myDuel || !MP.oppDuel || MP.oppDuel.ante !== MP.myDuel.ante) return;
+  if(MP.over) return;
   const my = MP.myDuel.score, op = MP.oppDuel.score;
   MP.myDuel = null; MP.oppDuel = null;
   const goShop = () => { hide('ovMpRes'); beatBlind(); };
@@ -180,6 +219,7 @@ function mpTryResolve() {
 
 // —— 小盲/大盲 PvE 失败：不扣命，只是无金钱奖励、不进商店，直接下一盲注 ——
 function mpPveFail() {
+  S.screen='duelwait';
   sfxBad();
   mpSendState();
   mpShowRes('💨 挑战失败', '未达到目标分数——本关<span class="red">无金钱奖励、不进商店</span><br>（生命只会在 ⚔️ 对决中扣除）',
@@ -188,11 +228,13 @@ function mpPveFail() {
 
 // —— 比赛结束 ——
 function mpMatchEnd(won, reason) {
+  if(MP.over) return;
   MP.over = true;
   if (S) S.screen = 'over';
   if (won) sfxWin(); else sfxBad();
   mpShowRes(won ? '🏆 你获胜！' : '💀 败北…',
     reason + '<br><br>本场最高单次得分：<b class="gold">' + fmt(S ? S.bestHand : 0) + '</b>',
-    '返回标题', () => location.reload());
-  if (MP.net) setTimeout(() => { try { MP.net.close(); } catch (e) {} }, 800);
+    '返回标题',exitToTitle);
+  networkStatus('');
+  mpQueue.finally(()=>{if(MP.net) MP.net.close();});
 }

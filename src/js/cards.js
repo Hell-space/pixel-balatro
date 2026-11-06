@@ -5,6 +5,9 @@ const rankName = r => RNAME[r] || r;
 const chipVal = c => c.rank === 14 ? 11 : c.rank > 10 ? 10 : c.rank;
 
 const HANDS = {
+  flushfive:{ name:'同花五条', chips:160, mult:16, incC:50, incM:3 },
+  flushhouse:{ name:'同花葫芦', chips:140, mult:14, incC:40, incM:4 },
+  five:     { name:'五条', chips:120, mult:12, incC:35, incM:3 },
   sf:       { name:'同花顺', chips:100, mult:8, incC:40, incM:4 },
   four:     { name:'四条',   chips:60,  mult:7, incC:30, incM:3 },
   fh:       { name:'葫芦',   chips:40,  mult:4, incC:25, incM:2 },
@@ -15,7 +18,7 @@ const HANDS = {
   pair:     { name:'对子',   chips:10,  mult:2, incC:15, incM:1 },
   high:     { name:'高牌',   chips:5,   mult:1, incC:10, incM:1 },
 };
-const HORDER = ['sf','four','fh','flush','straight','trips','twopair','pair','high'];
+const HORDER = ['flushfive','flushhouse','five','sf','four','fh','flush','straight','trips','twopair','pair','high'];
 
 const JDEFS = [
   { id:'joker',   ic:'🤡', name:'小丑',     price:4, rar:0, desc:'+4 倍率' },
@@ -64,6 +67,8 @@ const JDEFS = [
 const RARNAME = ['普通', '罕见', '稀有'];
 
 const PLANETS = [
+  { key:'five', ic:'🪐', name:'谷神星' }, { key:'flushhouse', ic:'🪐', name:'阋神星' },
+  { key:'flushfive', ic:'🪐', name:'塞德娜' },
   { key:'high',     ic:'🪐', name:'冥王星' }, { key:'pair',    ic:'☿️', name:'水星' },
   { key:'twopair',  ic:'🌌', name:'天王星' }, { key:'trips',   ic:'💛', name:'金星' },
   { key:'straight', ic:'🪐', name:'土星' },   { key:'flush',   ic:'🟠', name:'木星' },
@@ -74,7 +79,7 @@ const TAROTS = [
   { id:'magician', ic:'🎩', name:'魔术师', desc:'选中的最多 2 张牌永久 +30 筹码' },
   { id:'empress',  ic:'👑', name:'女皇',   desc:'选中的最多 2 张牌变为倍率牌(+4 倍率)' },
   { id:'lovers',   ic:'💞', name:'恋人',   desc:'选中的 1 张牌变为万能牌(视为所有花色)' },
-  { id:'death',    ic:'💀', name:'死神',   desc:'选中 2 张牌：第 1 张变成第 2 张的复制' },
+  { id:'death',    ic:'💀', name:'死神',   desc:'选中 2 张牌：左侧牌变成右侧牌的复制' },
   { id:'tower',    ic:'🗼', name:'高塔',   desc:'摧毁选中的最多 2 张牌(永久移出牌组)' },
   { id:'hermit',   ic:'🏮', name:'隐士',   desc:'金钱翻倍(最多 +$20)' },
   { id:'judge',    ic:'⚖️', name:'审判',   desc:'随机获得一张小丑牌(需有空位)' },

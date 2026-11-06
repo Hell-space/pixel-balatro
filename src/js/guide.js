@@ -1,6 +1,6 @@
 function openChart() {
   let h = '<table><tr><th>牌型</th><th>等级</th><th>筹码 × 倍率</th><th>本局打出</th><th>示例</th></tr>';
-  const ex = { sf:'♥5♥6♥7♥8♥9', four:'8888+x', fh:'QQQ+55', flush:'5 张同花色', straight:'5 张连续点数', trips:'JJJ+xy', twopair:'KK+33+x', pair:'99+xyz', high:'其余情况' };
+  const ex = { flushfive:'同花色 5 张同点数',flushhouse:'同花色的葫芦',five:'AAAAA',sf:'♥5♥6♥7♥8♥9', four:'8888+x', fh:'QQQ+55', flush:'5 张同花色', straight:'5 张连续点数', trips:'JJJ+xy', twopair:'KK+33+x', pair:'99+xyz', high:'其余情况' };
   HORDER.forEach(k => {
     const b = handBase(k);
     h += '<tr><td class="hn">' + HANDS[k].name + '</td><td>' + b.lv + '</td><td>' + b.chips + ' × ' + b.mult + '</td><td>' + S.playCounts[k] + '</td><td>' + ex[k] + '</td></tr>';
@@ -45,7 +45,7 @@ const TUT = [
   { sel: '#handRow', title: '1️⃣ 你的手牌', body:
     '每回合手上有 <b class="gold">8 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；长按可看牌面效果。<br>下方「按点数 / 按花色」按钮可以整理手牌，找同花时很好用。' },
   { sel: '#previewBox', title: '2️⃣ 牌型与预览', body:
-    '选中牌后，这里会实时显示组成的<b class="gold">牌型</b>和基础数值。<br>牌型从弱到强：高牌 → 对子 → 两对 → 三条 → 顺子 → 同花 → 葫芦 → 四条 → 同花顺。<br>随时点菜单中的「牌型表」查看完整数值。' },
+    '选中牌后，这里会实时显示组成的<b class="gold">牌型</b>和计入小丑及牌面效果的预计分数。随机倍率会显示范围。<br>牌型从弱到强：高牌 → 对子 → 两对 → 三条 → 顺子 → 同花 → 葫芦 → 四条 → 同花顺。<br>随时点菜单中的「牌型表」查看完整数值。' },
   { sel: '#previewBox', title: '3️⃣ 得分公式（重点！）', body:
     '得分 = (<b class="blue">牌型基础筹码 + 牌面筹码</b>) × <b class="red">倍率</b><br>牌面筹码：数字牌=面值，J/Q/K=10，<b class="gold">A=11</b>。<br>例：打出 ♥K ♦K = 对子。基础 10 筹码 ×2 倍率，两张 K 各 +10 筹码<br>→ (10+10+10) × 2 = <b class="gold">60 分</b>。只有参与牌型的牌才计分！' },
   { sel: '#btnRow', title: '4️⃣ 出牌与弃牌', body:
@@ -55,7 +55,7 @@ const TUT = [
   { sel: '#statsBox', title: '6️⃣ 金钱与利息', body:
     '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（上限 $5）。<b class="gold">存钱到 $25 吃满利息</b>是常见运营思路。' },
   { sel: '#jokerRow', title: '7️⃣ 小丑牌（构筑核心！）', body:
-    '商店里买的<b class="gold">小丑牌</b>会显示在这里（最多 5 张），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来，分数会滚雪球。点小丑两次可以卖掉换钱。' },
+    '商店里买的<b class="gold">小丑牌</b>会显示在这里（最多 5 张），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来，分数会滚雪球。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
     '商店还卖两种消耗牌，买了存在这里，点击使用：<br><b class="blue">🌌 星球牌</b>：永久提升某个牌型的等级（筹码和倍率都涨）。<br><b class="gold">🔮 塔罗牌</b>：强化手牌（钢铁/玻璃/黄金/万能等）、复制、销毁牌、变钱。<br>商店里还有 <b class="blue">🎁 卡包</b>（开包三选一）和 <b class="gold">🎟️ 优惠券</b>（$10 永久强化，如 +1 出牌次数）！' },
   { sel: null, title: '9️⃣ 实战建议', body:

@@ -32,10 +32,15 @@ function newGame(withTut) {
   showBlindSelect();
 }
 const $ = id => document.getElementById(id);
-const hide = id => $(id).style.display = 'none';
-const show = id => $(id).style.display = 'flex';
+let modalOrder=0;
+function hide(id) { $(id).style.display='none'; queueMicrotask(syncDialogs); }
+function show(id) { $(id).style.display='flex'; $(id).dataset.order=++modalOrder; queueMicrotask(syncDialogs); }
 const fmt = n => Math.floor(n).toLocaleString('en');
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+const sleep = ms => {
+  const speed=settings.speed;
+  if(!speed || document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches) return Promise.resolve();
+  return new Promise(r=>setTimeout(r,ms/speed));
+};
 let msgT = null;
 function msg(t, warn) {
   const b = $('infobar');
@@ -94,6 +99,8 @@ function blindMeta() { return blindMetaFor(S.blindIdx); }
 function showBlindSelect() {
   S.screen = 'select';
   S.boss = null;
+  S.score=0; S.target=blindMeta().target;
+  S.hand=[]; S.drawPile=S.deckAll.slice();
   $('bsAnte').textContent = S.ante;
   const cols = $('blindCols');
   cols.innerHTML = '';
@@ -156,7 +163,6 @@ function startBlind() {
   S.discLeft = S.boss && S.boss.id === 'arm' ? 1 : S.boss && S.boss.id === 'water' ? 0 : S.baseDisc;
   S.drawPile = shuffle(S.deckAll.slice());
   S.hand = []; S.played = [];
-  S.jokers.forEach(j => { if (j.id === 'green') j.state = 0; });
   drawTo(effHandSize());
   S.screen = 'play';
   renderAll();
@@ -198,13 +204,14 @@ function setSort(m) { if (S.busy) return; S.sortMode = m; sortHand(); renderHand
 
 // ================= 牌型判定 =================
 const SUIT_BOSS = { hearts: 1, spades: 0, club: 2, window: 3 };
-function isDebuffed(c) {
-  if (!S.boss || c.wild) return false;
-  const t = SUIT_BOSS[S.boss.id];
-  return t !== undefined && c.suit === t;
+function isDebuffed(c, state = S) {
+  if (!state.boss) return false;
+  const t = SUIT_BOSS[state.boss.id];
+  return t !== undefined && (c.wild || c.suit === t);
 }
 function evalHand(cards) {
   const n = cards.length;
+  if (!n) return {key:null,scoring:[],contains:{}};
   const cnt = {};
   cards.forEach(c => cnt[c.rank] = (cnt[c.rank] || 0) + 1);
   const groups = Object.entries(cnt).map(([r, c]) => ({ r: +r, c })).sort((a, b) => b.c - a.c || b.r - a.r);
@@ -223,7 +230,9 @@ function evalHand(cards) {
   };
   let key, scoring;
   const ofRank = r => cards.filter(c => c.rank === r);
-  if (isStraight && isFlush) { key = 'sf'; scoring = cards; }
+  if (groups[0].c === 5) { key = isFlush ? 'flushfive' : 'five'; scoring = cards; }
+  else if (isFlush && groups[0].c === 3 && groups[1]?.c === 2) { key = 'flushhouse'; scoring = cards; }
+  else if (isStraight && isFlush) { key = 'sf'; scoring = cards; }
   else if (groups[0].c === 4) { key = 'four'; scoring = ofRank(groups[0].r); }
   else if (groups[0].c === 3 && groups[1] && groups[1].c >= 2) { key = 'fh'; scoring = cards; }
   else if (isFlush) { key = 'flush'; scoring = cards; }
@@ -237,10 +246,10 @@ function evalHand(cards) {
   }
   return { key, scoring, contains };
 }
-function handBase(key) {
-  const h = HANDS[key], lv = S.levels[key];
+function handBase(key, state = S) {
+  const h = HANDS[key], lv = state.levels[key] || 1;
   let chips = h.chips + (lv - 1) * h.incC, mult = h.mult + (lv - 1) * h.incM;
-  if (S.boss && S.boss.id === 'flint' && S.screen === 'play') {
+  if (state.boss && state.boss.id === 'flint' && state.screen === 'play') {
     chips = Math.ceil(chips / 2); mult = Math.ceil(mult / 2);
   }
   return { chips, mult, lv };

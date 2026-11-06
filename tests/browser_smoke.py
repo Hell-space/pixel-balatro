@@ -35,6 +35,11 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(errors="backslashreplace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(errors="backslashreplace")
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILES = {
@@ -335,8 +340,16 @@ def play_best_first_blind(page, mobile):
         activate(page.locator("#handRow .card").nth(i), mobile)
     require(page.locator("#prevName").inner_text().strip() == name,
             f"Wrong hand preview; expected {name}, got {page.locator('#prevName').inner_text()!r}")
-    require(read_number(page, "#prevChips") == base and read_number(page, "#prevMult") == mult,
-            f"Wrong base score preview for {name}")
+    # Newer builds preview the selected cards' complete chips and multiplier;
+    # the independent oracle above includes only ordinary first-blind cards.
+    # Older builds displayed the bare base values instead.
+    estimate = page.locator("#scoreEstimate")
+    expected_chips = expected // mult if estimate.count() else base
+    require(read_number(page, "#prevChips") == expected_chips and read_number(page, "#prevMult") == mult,
+            f"Wrong score preview for {name}; expected {expected_chips} × {mult}")
+    if estimate.count():
+        require(read_number(page, "#scoreEstimate") == expected,
+                f"Wrong estimated score for {name}; expected {expected}")
     hands_before = read_number(page, "#handsVal")
     activate(page.locator("#btnPlay"), mobile)
     page.wait_for_function("""before => {
@@ -650,13 +663,13 @@ def resume_references_case(browser, base_url, output, seed):
         context.close()
 
 
-def standalone_case(browser, output, seed):
+def standalone_case(browser, output, seed, standalone_file=None):
     spec = PROFILES["portrait"]
     context = context_for(browser, spec, seed)
     page = context.new_page()
     errors = watch_page(page)
     try:
-        page.goto((ROOT / "balatro.html").resolve().as_uri(), wait_until="domcontentloaded")
+        page.goto((standalone_file or ROOT / "balatro.html").resolve().as_uri(), wait_until="domcontentloaded")
         assert_viewport(page, spec["width"])
         start_blind(page, True)
         play = play_best_first_blind(page, True)
@@ -690,8 +703,10 @@ def multiplayer_case(browser, base_url, output, seed):
             page.locator("#mpName").fill("甲" if i == 0 else "乙")
             page.locator("#mpServer").fill(base_url.rstrip("/"))
         activate(pages[0].locator('#ovMpLobby button[onclick="mpCreate()"]'), False)
-        pages[0].locator("#mpStatus b").wait_for(state="visible", timeout=10000)
-        code = pages[0].locator("#mpStatus b").inner_text().strip()
+        pages[0].wait_for_function(r"""() => /房间码\s*[A-Z2-9]{4}/.test(
+          document.querySelector('#mpStatus').textContent)""", timeout=10000)
+        match = re.search(r"房间码\s*([A-Z2-9]{4})", pages[0].locator("#mpStatus").inner_text())
+        code = match.group(1) if match else ""
         require(re.fullmatch(r"[A-Z2-9]{4}", code), f"Unexpected room code: {code!r}")
         pages[1].locator("#mpCode").fill(code)
         activate(pages[1].locator('#ovMpLobby button[onclick="mpJoin()"]'), False)
@@ -757,6 +772,8 @@ def main():
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--profile", choices=PROFILES, action="append", help="Run only these profiles")
     parser.add_argument("--skip-standalone", action="store_true")
+    parser.add_argument("--standalone-file", type=Path,
+                        help="Standalone HTML to open as a file; defaults to the repository build")
     parser.add_argument("--skip-multiplayer", action="store_true")
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -793,7 +810,7 @@ def main():
                     run_case("loss_checkpoint", lambda: loss_checkpoint_case(browser, url, args.output_dir, args.seed))
                     run_case("resume_references", lambda: resume_references_case(browser, url, args.output_dir, args.seed))
                 if not args.skip_standalone:
-                    run_case("standalone", lambda: standalone_case(browser, args.output_dir, args.seed))
+                    run_case("standalone", lambda: standalone_case(browser, args.output_dir, args.seed, args.standalone_file))
                 if not args.skip_multiplayer:
                     run_case("multiplayer", lambda: multiplayer_case(browser, url, args.output_dir, args.seed))
             finally:
