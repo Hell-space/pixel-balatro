@@ -10,7 +10,8 @@ function openChart() {
 }
 function openInfo() {
   if (!S) return;
-  let h = '<p style="text-align:left">💰 金钱 <b class="gold">$' + S.money + '</b>　🏆 最高单次 <b class="gold">' + fmt(S.bestHand) + '</b>　🃏 总出牌 <b class="blue">' + S.totHands + '</b></p>' +
+  let h = '<p>'+ (DECKS.find(d=>d.id===S.deckId)?.name||'经典牌组')+' · '+(STAKES.find(t=>t.id===S.stakeId)?.name||'白注')+'</p>'+
+    '<p style="text-align:left">💰 金钱 <b class="gold">$' + S.money + '</b>　🏆 最高单次 <b class="gold">' + fmt(S.bestHand) + '</b>　🃏 总出牌 <b class="blue">' + S.totHands + '</b></p>' +
     '<p style="text-align:left">🎴 手牌上限 <b>' + S.handSize + '</b>　🂠 牌组张数 <b>' + S.deckAll.length + '</b>　🌌 已用星球 <b>' + S.planetsUsed + '</b>　➕ 已加入牌 <b>' + S.cardsAdded + '</b></p>' +
     '<p style="text-align:left">🃏 出牌/盲注 <b>' + S.baseHands + '</b>　🗑️ 弃牌/盲注 <b>' + S.baseDisc + '</b>　利息上限 <b class="green">$' + S.interestCap + '</b></p>' +
     '<p style="text-align:left;color:#57e6ff;margin-top:8px">🎟️ 已拥有的优惠券：</p>';
@@ -49,11 +50,11 @@ const TUT = [
   { sel: '#previewBox', title: '3️⃣ 得分公式（重点！）', body:
     '得分 = (<b class="blue">牌型基础筹码 + 牌面筹码</b>) × <b class="red">倍率</b><br>牌面筹码：数字牌=面值，J/Q/K=10，<b class="gold">A=11</b>。<br>例：打出 ♥K ♦K = 对子。基础 10 筹码 ×2 倍率，两张 K 各 +10 筹码<br>→ (10+10+10) × 2 = <b class="gold">60 分</b>。只有参与牌型的牌才计分！' },
   { sel: '#btnRow', title: '4️⃣ 出牌与弃牌', body:
-    '<b class="blue">出牌</b>：打出选中的牌并计分，每个盲注只有 <b class="gold">4 次</b>！<br><b class="red">弃牌</b>：把选中的牌扔掉换新牌，<b class="gold">3 次</b>机会，不计分。<br>策略核心：用弃牌凑大牌型，别浪费出牌次数打高牌！' },
+    '<b class="blue">出牌</b>：打出选中的牌并计分，本局每个普通盲注有 <b class="gold">{hands} 次</b>。<br><b class="red">弃牌</b>：把选中的牌扔掉换新牌，<b class="gold">{discards} 次</b>机会，不计分。<br>用弃牌凑牌型；小丑构筑也能让高牌成为主力。' },
   { sel: '#blindBox', title: '5️⃣ 盲注（关卡）', body:
     '每个底注有 3 关：<b>🔸小盲注 → 🔶大盲注 → 💀Boss盲注</b>，目标分数越来越高。<br>Boss 有特殊规则（比如禁用某花色、只能出 1 手牌），选盲注时会提前展示。<br><b class="gold">小盲/大盲可以跳过</b>，换一个标签奖励（半价商店、免费小丑等）；Boss 必须挑战。<br>在出牌次数耗尽前把「当前得分」刷过「目标分数」就赢！' },
   { sel: '#statsBox', title: '6️⃣ 金钱与利息', body:
-    '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（上限 $5）。<b class="gold">存钱到 $25 吃满利息</b>是常见运营思路。' },
+    '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（通常上限 $5）。绿色牌组改为每次剩余出牌 $2、弃牌 $1，没有利息。' },
   { sel: '#jokerRow', title: '7️⃣ 小丑牌（构筑核心！）', body:
     '商店里买的<b class="gold">小丑牌</b>会显示在这里（最多 5 张），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来，分数会滚雪球。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
@@ -77,7 +78,7 @@ function tutShow() {
     if (el) { el.classList.add('tut-hl'); tutHl = el; }
   }
   $('tutTitle').textContent = t.title;
-  $('tutBody').innerHTML = t.body;
+  $('tutBody').innerHTML = t.body.replace('{hands}',S.baseHands).replace('{discards}',S.baseDisc);
   $('tutStep').textContent = (tutI + 1) + ' / ' + TUT.length;
   $('tutPrev').style.visibility = tutI === 0 ? 'hidden' : 'visible';
   $('tutNext').textContent = tutI === TUT.length - 1 ? '完成 ✓' : '下一步';

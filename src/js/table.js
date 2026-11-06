@@ -35,7 +35,7 @@ function cardTipHTML(c) {
   if (c.multB) h += '<br>计分时 +' + c.multB + ' 倍率';
   if (c.steel) h += '<br>🛡️ 钢铁：留在手中 ×1.5 倍率';
   if (c.glass) h += '<br>🏺 玻璃：计分 ×2 倍率，25% 碎裂';
-  if (c.goldc) h += '<br>🪙 黄金：计分时 +$3';
+  if (c.goldc) h += '<br>💰 黄金：计分时 +$3';
   if (c.ed) h += '<br>' + EDNAME[c.ed];
   if (c.seal === 'red') h += '<br>🔴 红蜡封：计分时重复触发';
   if (c.seal === 'gold') h += '<br>🟡 金蜡封：计分时 +$3';
@@ -56,8 +56,9 @@ PIPS[5]=[...PIPS[4],[50,50]]; PIPS[6]=[...PIPS[4],[18,50],[82,50]];
 PIPS[7]=[...PIPS[6],[50,31]]; PIPS[8]=[...PIPS[7],[50,69]];
 PIPS[9]=[...PIPS[4],[18,37],[82,37],[18,63],[82,63],[50,50]];
 PIPS[10]=[...PIPS[9].slice(0,8),[50,25],[50,75]];
+function suitSVG(c){return '<svg class="suitIcon" viewBox="0 0 24 24" aria-hidden="true"><use href="#suit'+(c.wild?'Wild':c.suit)+'"/></svg>';}
 function facePrint(c) {
-  const suit=c.wild?'✦':SUITS[c.suit], r=c.rank;
+  const suit=suitSVG(c), r=c.rank;
   if(r>10 && r<14) return '<span class="facePip" aria-hidden="true">'+rankName(r)+'<small>'+suit+' '+suit+'</small></span>';
   return '<span class="pips" aria-hidden="true">'+PIPS[r===14?1:r].map(([x,y])=>
     '<i class="'+(r===14?'acePip':'')+'" style="left:'+x+'%;top:'+y+'%">'+suit+'</i>').join('')+'</span>';
@@ -75,8 +76,8 @@ function cardEl(c, interactive = false) {
   if (c.wild) en += '<span class="en w">万</span>';
   if (c.seal) en += '<span class="seal ' + c.seal + '"></span>';
   if (c.ed) en += '<span class="edfx ' + ['', 'f', 'h', 'p'][c.ed] + '"></span>';
-  d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2">' + (c.wild ? '🌈' : SUITS[c.suit]) + '</span>' +
-    '<span class="st">' + (c.wild ? '🌈' : SUITS[c.suit]) + '</span>' + facePrint(c) + en;
+  d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2">' + (c.wild ? '✦' : SUITS[c.suit]+'\uFE0E') + '</span>' +
+    '<span class="st">' + (c.wild ? '✦' : SUITS[c.suit]+'\uFE0E') + '</span>' + facePrint(c) + en;
   bindTip(d, () => cardTipHTML(c));
   return d;
 }
@@ -118,7 +119,9 @@ function updatePreview() {
     $('prevMult').textContent = lo.mult===hi.mult?fmtM(lo.mult):fmtM(lo.mult)+'–'+fmtM(hi.mult);
     $('scoreEstimate').textContent=(lo.total===hi.total?fmt(lo.total):fmt(lo.total)+'–'+fmt(hi.total))+' 分';
   }
-  $('btnPlay').disabled = S.busy || !sel.length || S.handsLeft <= 0;
+  const forbidden=S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key);
+  if(forbidden)$('scoreEstimate').textContent='本盲注已打出此牌型';
+  $('btnPlay').disabled = S.busy || !sel.length || S.handsLeft <= 0 || forbidden;
   $('btnDiscard').disabled = S.busy || !sel.length || S.discLeft <= 0;
 }
 function renderStats() {
@@ -153,6 +156,9 @@ function jokerDesc(j) {
   if (j.id === 'constel') d += '（当前 ×' + (1 + 0.1 * S.planetsUsed).toFixed(1) + '）';
   if (j.id === 'holog') d += '（当前 ×' + (1 + 0.25 * S.cardsAdded).toFixed(2) + '）';
   if (j.id === 'stencil') d += '（当前 ×' + Math.max(1, S.jokerSlots - S.jokers.length + 1) + '）';
+  if (j.id === 'fortune') d += '（当前 +'+S.tarotsUsed+'）';
+  if (j.id === 'boots') d += '（当前 +'+2*Math.floor(S.money/5)+'）';
+  if (j.id === 'compass') d += '（已打出 '+Object.values(S.playCounts).filter(n=>n>0).length+' 种）';
   return d;
 }
 function sellPrice(j) { return j.sell || Math.max(1, Math.ceil(j.price / 2)); }

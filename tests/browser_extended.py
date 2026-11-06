@@ -30,7 +30,8 @@ from playwright.sync_api import sync_playwright
 from browser_smoke import (
     ROOT, PROFILES, activate, assert_reachable, assert_viewport, cards_on_screen,
     context_for, loss_checkpoint_case, play_best_first_blind, read_number,
-    reload_and_resume, require, score_unmodified_hand, screenshot, shown, start_blind, swipe_up_within, touch_at, watch_page,
+    reload_and_resume, request_new_solo, require, score_unmodified_hand, screenshot, shown, start_blind,
+    swipe_up_within, touch_at, verify_shop_purchase, watch_page,
 )
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -575,6 +576,9 @@ def brief_network_outage(browser, url, out, seed):
         guest.locator('#ovMpLobby button[onclick="mpJoin()"]',).click()
         for page in (host, guest):
             page.locator("#ovBlinds").wait_for(state="visible", timeout=15000)
+            rules = page.evaluate("""() => ({deck:S.deckId||'classic',hands:S.baseHands,discard:S.baseDisc})""")
+            require(rules == {"deck":"classic", "hands":4, "discard":3},
+                    f"multiplayer changed classic 4/3 rules: {rules}")
         host.locator("#blindCols .cur .bbtn:not(.skip)").first.click()
         host.locator("#handRow .card").first.wait_for(state="visible")
         before = host.evaluate("""() => ({score:S.score,hands:S.handsLeft,discard:S.discLeft,
@@ -695,7 +699,7 @@ def loss_restart(browser, url, out, seed):
         loss_text = page.locator("#overStats").inner_text()
         page.locator("#ovOver button").filter(has_text="再来一局").tap()
         page.locator("#ovStart").wait_for(state="visible")
-        page.locator("#newBtn").tap()
+        request_new_solo(page, True)
         page.locator("#ovRestart").wait_for(state="visible")
         page.locator("#ovRestart button").filter(has_text="保留进度").tap()
         page.locator("#resumeBtn").tap()
@@ -703,7 +707,7 @@ def loss_restart(browser, url, out, seed):
         require(page.locator("#overStats").inner_text() == loss_text and
                 read_number(page, "#scoreVal") == score, "keep progress failed after loss")
         page.locator("#ovOver button").filter(has_text="再来一局").tap()
-        page.locator("#newBtn").tap()
+        request_new_solo(page, True)
         page.locator("#confirmNew").tap()
         page.locator("#ovBlinds").wait_for(state="visible")
         require("小盲" in page.locator("#blindCols .cur").inner_text(), "new game selected wrong initial blind")
@@ -790,6 +794,10 @@ def v1_migration(browser, url, out, seed, fixture_path):
         require([list(card) for card in actual] == fixture["cards"], f"old save hand changed: {actual} vs {fixture['cards']}")
         counters = [read_number(page, s) for s in ("#scoreVal", "#handsVal", "#discVal")]
         require(counters == fixture["counters"], f"old save counters changed: {counters} vs {fixture['counters']}")
+        rules = page.evaluate("""() => ({deck:S.deckId||'classic',stake:S.stakeId||'white',
+          hands:S.baseHands,discard:S.baseDisc})""")
+        require(rules == {"deck":"classic", "stake":"white", "hands":4, "discard":3},
+                f"legacy classic rules changed: {rules}")
         if fixture.get("jokers"):
             actual_jokers = page.evaluate("() => S.jokers.map(j=>j.id)")
             require(actual_jokers == fixture["jokers"], f"old save jokers changed: {actual_jokers} vs {fixture['jokers']}")
@@ -798,14 +806,190 @@ def v1_migration(browser, url, out, seed, fixture_path):
         require(references, "old save did not rebind hand/pile cards to the canonical deck")
         reload_and_resume(page, True, "#handRow .card")
         require([list(card) for card in cards_on_screen(page)] == fixture["cards"], "migrated save changed after refresh")
+        page.locator("#handRow .card").first.tap()
+        page.locator("#btnDiscard").tap()
+        require(read_number(page, "#discVal") == counters[2] - 1, "migrated classic discard did not spend one use")
+        continued_hand = cards_on_screen(page)
+        reload_and_resume(page, True, "#handRow .card")
+        require(cards_on_screen(page) == continued_hand and read_number(page, "#discVal") == counters[2] - 1,
+                "continued legacy run did not persist after another discard")
+        require(page.evaluate("() => S.baseHands===4 && S.baseDisc===3 && (S.deckId||'classic')==='classic'"),
+                "continued classic run lost its original 4/3 rules")
         require(not errors, f"page errors: {errors}")
         screenshot(page, out, "v1-migrated")
         origin = ("1.1.0 normal blind, injected judge tarot and used it through UI" if fixture.get("jokers")
                   else "1.1.0 save captured from a genuine discard")
         return {"status": "passed", "fixture": origin, "path": str(fixture_path),
-                "counters": counters, "canonical_references": references}
+                "counters": counters, "rules": rules, "canonical_references": references,
+                "continued_discard_survived_refresh": True}
     except Exception:
         screenshot(page, out, "v1-migration-failure")
+        raise
+    finally:
+        context.close()
+
+
+def capture_v2_shop(browser, url, out, seed, fixture_path):
+    """Capture an actual 1.2.0 shop after earning and buying owned cards."""
+    context = context_for(browser, PROFILES["desktop"], seed)
+    page = context.new_page()
+    try:
+        plays = enter_shop(page, url, False)
+        joker = verify_shop_purchase(page, False)
+        item = page.locator("#shopItems .shopItem").nth(2)
+        money = read_number(page, "#shopMoney")
+        price = int(re.search(r"\d+", item.locator(".pr").inner_text()).group())
+        require(price <= money, "1.2 fixture cannot afford a planet after buying a joker")
+        item.click()
+        require(page.evaluate("() => S.cons.length") == 1, "1.2 shop did not buy the planet")
+        page.wait_for_timeout(100)
+        raw = page.evaluate("() => localStorage.getItem('pixel-balatro.run.v1')")
+        data = json.loads(raw)
+        require(data.get("version") == 2 and data["state"]["screen"] == "shop", "expected a real version 2 shop save")
+        snapshot = page.evaluate("""() => ({money:S.money, jokers:S.jokers.map(j=>j.id),
+          consumables:S.cons.map(c=>({kind:c.kind,key:c.key||null,id:c.id||null})),
+          soldJokers:S.shop.jokers.map(j=>!!j.sold), soldCons:S.shop.cons.map(c=>!!c.sold)})""")
+        fixture = {"raw": raw, "snapshot": snapshot, "plays": plays, "purchased_joker": joker}
+        fixture_path.parent.mkdir(parents=True, exist_ok=True)
+        fixture_path.write_text(json.dumps(fixture, ensure_ascii=False, indent=2), encoding="utf-8")
+        reload_and_resume(page, False, "#ovShop")
+        require(read_number(page, "#shopMoney") == snapshot["money"], "old shop fixture does not survive refresh")
+        screenshot(page, out, "v2-shop-fixture")
+        return {"status":"passed", "fixture":"1.2 normal first blind, bought a joker and planet", "path":str(fixture_path),
+                "snapshot":snapshot}
+    finally:
+        context.close()
+
+
+def v2_shop_migration(browser, url, out, seed, fixture_path):
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    context = context_for(browser, PROFILES["desktop"], seed)
+    page = context.new_page()
+    errors = watch_page(page)
+    try:
+        page.goto(url, wait_until="domcontentloaded")
+        page.evaluate("raw => localStorage.setItem('pixel-balatro.run.v1',raw)", fixture["raw"])
+        page.reload(wait_until="domcontentloaded")
+        page.locator("#resumeBtn").wait_for(state="visible", timeout=6000)
+        page.locator("#resumeBtn").click()
+        page.locator("#ovShop").wait_for(state="visible")
+        snapshot = page.evaluate("""() => ({money:S.money, jokers:S.jokers.map(j=>j.id),
+          consumables:S.cons.map(c=>({kind:c.kind,key:c.key||null,id:c.id||null})),
+          soldJokers:S.shop.jokers.map(j=>!!j.sold), soldCons:S.shop.cons.map(c=>!!c.sold)})""")
+        require(snapshot == fixture["snapshot"], f"1.2 shop changed on migration: {snapshot} vs {fixture['snapshot']}")
+        rules = page.evaluate("""() => ({deck:S.deckId||'classic',stake:S.stakeId||'white',
+          hands:S.baseHands,discard:S.baseDisc})""")
+        require(rules == {"deck":"classic", "stake":"white", "hands":4, "discard":3},
+                f"1.2 classic rules changed: {rules}")
+        planet = snapshot["consumables"][0]
+        key = planet["key"]
+        before = page.evaluate("key => S.levels[key]", key)
+        page.locator("#shopOwned .ownedItem[data-kind='cons']").first.click()
+        page.locator("#ovOwned").wait_for(state="visible")
+        page.locator("#useOwned").click()
+        require(page.evaluate("key => S.levels[key]", key) == before + 1 and
+                page.evaluate("() => S.cons.length") == 0, "migrated planet could not be used")
+        reload_and_resume(page, False, "#ovShop")
+        require(page.evaluate("key => S.levels[key]", key) == before + 1 and
+                page.evaluate("() => S.cons.length") == 0 and
+                page.evaluate("() => S.jokers.map(j=>j.id)") == snapshot["jokers"],
+                "continued 1.2 shop progress did not survive refresh")
+        require(not errors, f"page errors: {errors}")
+        screenshot(page, out, "v2-shop-migrated")
+        return {"status":"passed", "fixture":"actual 1.2 shop purchases, migrated and continued through UI",
+                "before":snapshot, "rules":rules, "used_planet":key, "after_level":before+1}
+    except Exception:
+        screenshot(page, out, "v2-shop-migration-failure")
+        raise
+    finally:
+        context.close()
+
+
+def legacy_setup_cancel(browser, url, out, seed, fixture_path):
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    legacy = json.loads(fixture["raw"])
+    context = context_for(browser, PROFILES["desktop"], seed)
+    page = context.new_page()
+    errors = watch_page(page)
+    try:
+        page.goto(url, wait_until="domcontentloaded")
+        page.evaluate("raw => localStorage.setItem('pixel-balatro.run.v1',raw)", fixture["raw"])
+        page.reload(wait_until="domcontentloaded")
+        page.locator("#resumeBtn").wait_for(state="visible", timeout=6000)
+        page.locator("#newBtn").click()
+        page.locator("#ovSetup").wait_for(state="visible")
+        page.locator("#deckChoices button").filter(has_text="蓝色牌组").click()
+        page.locator("#stakeChoices button").filter(has_text="金注").click()
+        page.locator("#beginRunBtn").click()
+        page.locator("#ovRestart").wait_for(state="visible")
+        page.locator("#ovRestart button").filter(has_text="保留进度").click()
+        page.locator("#ovStart").wait_for(state="visible")
+        raw = page.evaluate("() => localStorage.getItem('pixel-balatro.run.v1')")
+        require(raw == fixture["raw"], "cancelling the new setup modified the existing save")
+        page.locator("#resumeBtn").click()
+        if legacy["state"]["screen"] == "shop":
+            page.locator("#ovShop").wait_for(state="visible")
+            require(read_number(page, "#shopMoney") == fixture["snapshot"]["money"] and
+                    page.evaluate("() => S.jokers.map(j=>j.id)") == fixture["snapshot"]["jokers"],
+                    "existing 1.2 shop progress changed after cancelling setup")
+        else:
+            page.locator("#handRow .card").first.wait_for(state="visible")
+            require([list(card) for card in cards_on_screen(page)] == fixture["cards"] and
+                    [read_number(page, s) for s in ("#scoreVal", "#handsVal", "#discVal")] == fixture["counters"],
+                    "existing 1.1 run changed after cancelling setup")
+        rules = page.evaluate("() => ({deck:S.deckId||'classic',hands:S.baseHands,discard:S.baseDisc})")
+        require(rules == {"deck":"classic", "hands":4, "discard":3},
+                f"cancelled blue/gold setup changed legacy run rules: {rules}")
+        require(not errors, f"page errors: {errors}")
+        screenshot(page, out, f"legacy-v{legacy['version']}-setup-cancel")
+        return {"status":"passed", "fixture":f"actual 1.{1 if legacy['version']==1 else 2} save; blue/gold setup cancelled",
+                "screen":legacy["state"]["screen"], "save_unchanged_before_resume":True, "rules":rules}
+    except Exception:
+        screenshot(page, out, f"legacy-v{legacy['version']}-setup-cancel-failure")
+        raise
+    finally:
+        context.close()
+
+
+def legacy_checkpoint(browser, url, out, seed, fixture_path):
+    fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+    context = context_for(browser, PROFILES["short"], seed)
+    page = context.new_page()
+    errors = watch_page(page)
+    try:
+        page.goto(url, wait_until="domcontentloaded")
+        page.evaluate("raw => localStorage.setItem('pixel-balatro.run.v1',raw)", fixture["raw"])
+        page.reload(wait_until="domcontentloaded")
+        page.locator("#resumeBtn").tap()
+        page.locator("#handRow .card").first.wait_for(state="visible")
+        require(page.evaluate("() => S.jokers.length===0 && S.baseHands===4 && S.baseDisc===3"),
+                "legacy checkpoint fixture is not a plain classic 4/3 run")
+        points = []
+        for _ in range(4):
+            cards = cards_on_screen(page)
+            index = min(range(len(cards)), key=lambda i: cards[i][0])
+            points.append(score_unmodified_hand([cards[index]])[0])
+            page.locator("#handRow .card").nth(index).tap()
+            page.locator("#btnPlay").tap()
+            page.wait_for_function("() => S && !S.busy", timeout=15000)
+        page.locator("#ovOver").wait_for(state="visible", timeout=10000)
+        require(read_number(page, "#scoreVal") == sum(points) < 300, f"legacy loss score was unexpected: {points}")
+        page.locator("#btnRestore").tap()
+        page.locator("#ovBlinds").wait_for(state="visible")
+        page.locator("#blindCols .cur .bbtn:not(.skip)").first.tap()
+        page.locator("#handRow .card").first.wait_for(state="visible")
+        counters = [read_number(page, s) for s in ("#scoreVal", "#handsVal", "#discVal")]
+        require(counters == [0,4,3], f"legacy checkpoint should restart with [0,4,3], got {counters}")
+        require(page.evaluate("() => (S.deckId||'classic')==='classic' && S.baseDisc===3"), "legacy checkpoint changed deck")
+        reload_and_resume(page, True, "#handRow .card")
+        require([read_number(page, s) for s in ("#scoreVal", "#handsVal", "#discVal")] == [0,4,3],
+                "legacy 4/3 checkpoint did not survive refresh")
+        require(not errors, f"page errors: {errors}")
+        screenshot(page, out, "legacy-checkpoint-4-3")
+        return {"status":"passed", "fixture":"actual 1.1 save; weak plays and checkpoint through UI",
+                "weak_scores":points, "checkpoint_counters":counters, "refresh_preserved_4_3":True}
+    except Exception:
+        screenshot(page, out, "legacy-checkpoint-failure")
         raise
     finally:
         context.close()
@@ -1147,7 +1331,7 @@ def endless_after_victory(browser, url, out, seed):
     errors = watch_page(page)
     try:
         page.goto(url, wait_until="domcontentloaded")
-        page.locator("#newBtn").tap()
+        request_new_solo(page, True)
         page.locator("#ovBlinds").wait_for(state="visible")
         # Place a normal run immediately before the eighth-ante final boss.
         # Lowering only its target keeps the completion action genuinely played.
@@ -1190,6 +1374,91 @@ def endless_after_victory(browser, url, out, seed):
                 "ante": 9, "target": target, "victory_cash_and_ante9_survived_refresh": True}
     except Exception:
         screenshot(page, out, "endless-failure")
+        raise
+    finally:
+        context.close()
+
+
+def recorded_victory(browser, url, out, seed):
+    context = context_for(browser, {"width":390, "height":844, "mobile":True}, seed)
+    # Observe writes without changing the game's storage behavior.
+    context.add_init_script("""(() => {
+      const setItem = Storage.prototype.setItem;
+      window.__profileWrites = 0;
+      Storage.prototype.setItem = function(key, value) {
+        if (key === 'pixel-balatro.profile.v1') window.__profileWrites++;
+        return setItem.call(this, key, value);
+      };
+    })();""")
+    page = context.new_page()
+    errors = watch_page(page)
+    prior = {"wins": {"blue:red": {"best": 777}, "black:white": {"best": 334}}}
+    try:
+        page.goto(url, wait_until="domcontentloaded")
+        # Only unrelated prior records are injected; the red/white result must
+        # be created by the game's real scoring and victory path.
+        page.evaluate("p => localStorage.setItem('pixel-balatro.profile.v1', JSON.stringify(p))", prior)
+        page.reload(wait_until="domcontentloaded")
+        require(page.evaluate("() => window.__profileWrites") == 0, "unexpected profile write on title load")
+        request_new_solo(page, True)
+        page.locator("#ovBlinds").wait_for(state="visible")
+        # White-box setup of the last Boss; target remains the game's normal
+        # eighth-ante target, while the score starts one point below it.
+        page.evaluate("""() => {
+          S.ante=8; S.blindIdx=2; S.anteBoss=BOSSES.find(b=>b.id==='arm'); showBlindSelect();
+        }""")
+        page.locator("#blindCols .cur .bbtn:not(.skip)").first.tap()
+        page.locator("#handRow .card").first.wait_for(state="visible")
+        target = page.evaluate("() => { S.score=S.target-1; renderStats(); return S.target; }")
+        require(target > 1 and read_number(page, "#targetVal") == target, "boss target was not retained")
+        chosen = cards_on_screen(page)[0]
+        expected = score_unmodified_hand([chosen])[0]
+        screenshot(page, out, "victory-record-boss-fixture")
+        page.locator("#handRow .card").first.tap()
+        page.locator("#btnPlay").tap()
+        page.locator("#ovWin").wait_for(state="visible", timeout=20000)
+        result = page.evaluate("""() => ({ante:S.ante,blind:S.blindIdx,deck:S.deckId,stake:S.stakeId,
+          target:S.target,score:S.score,best:S.bestHand,played:S.lastResult.total,pending:S.winPending})""")
+        require(result == {"ante":8,"blind":2,"deck":"red","stake":"white","target":target,
+                           "score":target-1+expected,"best":expected,"played":expected,"pending":True},
+                f"real play did not complete the intended boss: {result}")
+        raw = page.evaluate("() => localStorage.getItem('pixel-balatro.profile.v1')")
+        expected_profile = {"wins": {**prior["wins"], "red:white": {"best": expected}}}
+        require(raw and json.loads(raw) == expected_profile, f"victory record or prior records incorrect: {raw}")
+        require(page.evaluate("() => window.__profileWrites") == 1, "victory did not write the profile exactly once")
+        screenshot(page, out, "victory-record-written")
+
+        page.reload(wait_until="domcontentloaded")
+        page.locator("#ovStart").wait_for(state="visible")
+        page.locator("#ovStart .collectionLink").tap()
+        page.locator("#ovCollection").wait_for(state="visible")
+        page.locator("#collectionTabs button").filter(has_text="通关").tap()
+        rows = {}
+        for row in page.locator("#collectionBody .recordTable tbody tr").all():
+            rows[row.locator("th").inner_text().strip()] = [x.strip() for x in row.locator("td").all_inner_texts()]
+        require(rows == {"红色牌组":["✓","—","—"], "蓝色牌组":["—","✓","—"],
+                         "金色牌组":["—","—","—"], "绿色牌组":["—","—","—"],
+                         "黑色牌组":["✓","—","—"]}, f"record table after refresh: {rows}")
+        screenshot(page, out, "victory-record-title-collection")
+        page.locator('#ovCollection button[onclick="hide(\'ovCollection\')"]').tap()
+        page.locator("#resumeBtn").tap()
+        page.locator("#ovWin").wait_for(state="visible")
+        require(page.evaluate("() => localStorage.getItem('pixel-balatro.profile.v1')") == raw,
+                "resuming the victory changed existing records")
+        require(page.evaluate("() => window.__profileWrites") == 0,
+                "resuming the victory wrote an extra profile record")
+        screenshot(page, out, "victory-record-resumed")
+        reload_and_resume(page, True, "#ovWin")
+        require(page.evaluate("() => localStorage.getItem('pixel-balatro.profile.v1')") == raw,
+                "a second resumed victory changed existing records")
+        require(page.evaluate("() => window.__profileWrites") == 0,
+                "a second resume wrote an extra profile record")
+        require(not errors, f"page errors: {errors}")
+        return {"status":"passed", "fixture":"injected other profile records and ante 8 boss with score one below normal target; victory used actual UI play",
+                "chosen":chosen, "victory":result, "profile":expected_profile, "record_table":rows,
+                "profile_writes_on_victory":1, "profile_writes_on_each_resume":0, "resumes":2}
+    except Exception:
+        screenshot(page, out, "victory-record-failure")
         raise
     finally:
         context.close()
@@ -1240,6 +1509,138 @@ def latest_visual(browser, url, out, seed, width, height):
         context.close()
 
 
+def final_deck_choices(browser, url, out, seed):
+    decks = [
+        {"id":"red", "name":"红色牌组", "desc":"每个盲注 +1 次弃牌", "money":4, "hands":4, "discards":4, "slots":5},
+        {"id":"blue", "name":"蓝色牌组", "desc":"每个盲注 +1 次出牌，初始金币 $0", "money":0, "hands":5, "discards":3, "slots":5},
+        {"id":"yellow", "name":"金色牌组", "desc":"初始金币 $10", "money":10, "hands":4, "discards":3, "slots":5},
+        {"id":"green", "name":"绿色牌组", "desc":"无利息；结算每次剩余出牌 $2、每次剩余弃牌 $1", "money":4, "hands":4, "discards":3, "slots":5},
+        {"id":"black", "name":"黑色牌组", "desc":"小丑槽位 +1，每个盲注 -1 次出牌", "money":4, "hands":3, "discards":3, "slots":6},
+    ]
+    results = []
+    for deck in decks:
+        context = context_for(browser, PROFILES["portrait"], seed)
+        page = context.new_page()
+        errors = watch_page(page)
+        try:
+            page.goto(url, wait_until="domcontentloaded")
+            page.locator("#newBtn").tap()
+            page.locator("#ovSetup").wait_for(state="visible")
+            button = page.locator("#deckChoices button").filter(has_text=deck["name"])
+            require(deck["desc"] in button.inner_text(), f"{deck['name']} description is incorrect")
+            button.tap()
+            require(page.locator("#deckChoices button").filter(has_text=deck["name"]).get_attribute("aria-pressed") == "true",
+                    f"{deck['name']} was not selected")
+            screenshot(page, out, f"deck-{deck['id']}-setup")
+            page.locator("#beginRunBtn").tap()
+            page.locator("#ovBlinds").wait_for(state="visible")
+            page.locator("#blindCols .cur .bbtn:not(.skip)").first.tap()
+            page.locator("#handRow .card").first.wait_for(state="visible")
+            actual = {"money":read_number(page,"#moneyVal"), "hands":read_number(page,"#handsVal"),
+                      "discards":read_number(page,"#discVal"), "slots":page.locator("#jokerRow .jslot").count()}
+            expected = {k:deck[k] for k in ("money","hands","discards","slots")}
+            require(actual == expected, f"{deck['name']} starts with {actual}; expected {expected}")
+            require(page.evaluate("() => S.deckId") == deck["id"] and page.evaluate("() => S.stakeId") == "white",
+                    f"{deck['name']} did not preserve selected deck/stake")
+            page.locator("#menuBtn").tap()
+            page.locator("#ovMenu button").filter(has_text="本局信息").tap()
+            page.locator("#ovInfo").wait_for(state="visible")
+            info = page.locator("#infoBody").inner_text()
+            require(deck["name"] in info and "白注" in info, f"run info omitted chosen deck/stake: {info!r}")
+            page.locator("#ovInfo button").last.tap()
+            page.locator("#menuBtn").tap()
+            page.locator("#ovMenu button").filter(has_text="新手教程").tap()
+            page.locator("#tutBox").wait_for(state="visible")
+            for _ in range(4):
+                page.locator("#tutNext").tap()
+            require(page.locator("#tutStep").inner_text().strip() == "5 / 10", "tutorial did not reach action counts")
+            text = page.locator("#tutBody").inner_text()
+            counts = re.search(r"出牌.*?(\d+)\s*次.*?弃牌.*?(\d+)\s*次", text, re.S)
+            require(counts is not None and [int(counts.group(1)),int(counts.group(2))] == [deck["hands"],deck["discards"]],
+                    f"{deck['name']} tutorial shows wrong action counts: {text!r}")
+            require(not errors, f"page errors: {errors}")
+            results.append({"deck":deck["id"],"description":deck["desc"],"start":actual,"run_info_and_tutorial":True})
+        except Exception:
+            screenshot(page, out, f"deck-{deck['id']}-failure")
+            raise
+        finally:
+            context.close()
+    return {"status":"passed", "fixture":"normal setup and play at white stake", "decks":results}
+
+
+def final_card_visual(browser, url, out, seed, width, height):
+    context = context_for(browser, {"width":width,"height":height,"mobile":True}, seed)
+    page = context.new_page()
+    errors = watch_page(page)
+    try:
+        page.goto(url, wait_until="domcontentloaded")
+        assert_viewport(page,width)
+        start_blind(page,True)
+        hand = cards_on_screen(page)
+        discard_rounds = 0
+        while 14 not in {rank for rank, _ in hand} and discard_rounds < 4:
+            keep = {next((i for i, (rank, _) in enumerate(hand) if rank == target), None)
+                    for target in (10, 13)}
+            require(None not in keep, f"missing K or 10 while drawing an A: {hand}")
+            discard_indices = [i for i in range(len(hand)) if i not in keep][:5]
+            before_discards = read_number(page,"#discVal")
+            for index in discard_indices:
+                page.locator("#handRow .card").nth(index).tap()
+            page.locator("#btnDiscard").tap()
+            require(read_number(page,"#discVal") == before_discards - 1,
+                    "actual discard did not reduce the counter")
+            hand = cards_on_screen(page)
+            require(len(hand) == 8, "actual discard did not refill the hand")
+            discard_rounds += 1
+        require({10, 13, 14} <= {rank for rank, _ in hand},
+                f"normal draws did not produce 10, A and K together: {hand}")
+        for index in (0,1):
+            assert_reachable(page.locator("#handRow .card").nth(index), f"card {index+1}")
+            page.locator("#handRow .card").nth(index).tap()
+        page.wait_for_timeout(200)
+        require(page.locator("#handRow .card.sel").count()==2, "two selected cards were not visible")
+        geometry = page.evaluate("""() => {
+          const rect=e=>{const r=e.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height}};
+          const overlap=(a,b)=>Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*
+            Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top));
+          return [...document.querySelectorAll('#handRow .card')].map(card=>{
+            const outer=rect(card), corners=[...card.querySelectorAll('.rk,.st,.st2')].map(rect);
+            const pips=[...card.querySelectorAll('.suitIcon')].map(rect);
+            return {outer,corners,pips,clipped:pips.some(p=>p.left<outer.left-1||p.right>outer.right+1||
+              p.top<outer.top-1||p.bottom>outer.bottom+1),
+              collision:pips.some(p=>corners.some(c=>overlap(p,c)>1)),
+              overlappingPips:pips.some((p,i)=>pips.slice(i+1).some(q=>
+                overlap(p,q)>.15*Math.min(p.width*p.height,q.width*q.height)))};
+          });
+        }""")
+        problems = [{"index":i,"clipped":g["clipped"],"corner_collision":g["collision"],
+                     "overlapping_pips":g["overlappingPips"]} for i,g in enumerate(geometry)
+                    if not g["pips"] or g["clipped"] or g["collision"] or g["overlappingPips"]]
+        require(len(geometry)==8 and not problems,
+                f"card symbols clipped or visibly overlapping at {width}x{height}: {problems}")
+        screenshot(page,out,f"final-{width}x{height}-selected")
+        expected = score_unmodified_hand(hand[:2])[0]
+        estimate = read_number(page,"#scoreEstimate")
+        require(estimate == expected, f"ordinary score preview {estimate} differs from independent expected {expected}")
+        actual = None
+        if width == 390:
+            page.locator("#btnPlay").tap()
+            page.wait_for_function("() => S && !S.busy && S.score>0",timeout=20000)
+            actual = read_number(page,"#scoreVal")
+            require(actual == expected, f"actual score {actual} differs from preview {expected}")
+            screenshot(page,out,f"final-{width}x{height}-scored")
+        require(not errors, f"page errors: {errors}")
+        return {"status":"passed", "fixture":"normal red/white setup, actual discards, and two touched cards",
+                "size":[width,height], "hand":hand, "discard_rounds":discard_rounds,
+                "cards":hand[:2], "expected_score":expected, "preview":estimate, "actual_score":actual,
+                "center_symbols_checked":sum(len(g["pips"]) for g in geometry)}
+    except Exception:
+        screenshot(page,out,f"final-{width}x{height}-failure")
+        raise
+    finally:
+        context.close()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--browser", default=os.environ.get("BALATRO_BROWSER"))
@@ -1249,6 +1650,8 @@ def main():
     parser.add_argument("--only", action="append")
     parser.add_argument("--v1-fixture", type=Path,
                         help="Capture/load a real 1.1.0 save for the capture_v1_save or v1_migration case")
+    parser.add_argument("--v2-fixture", type=Path,
+                        help="Capture/load an actual 1.2.0 shop save for legacy migration")
     args = parser.parse_args()
     args.app_dir = args.app_dir.resolve()
     args.output_dir = args.output_dir.resolve()
@@ -1288,16 +1691,29 @@ def main():
                     "backup_recovery": lambda: backup_recovery(browser, url, args.output_dir, args.seed),
                     "corrupt_pack_recovery": lambda: corrupt_pack_recovery(browser, url, args.output_dir, args.seed),
                     "endless_after_victory": lambda: endless_after_victory(browser, url, args.output_dir, args.seed),
+                    "recorded_victory": lambda: recorded_victory(browser, url, args.output_dir, args.seed),
                     "visual_320": lambda: latest_visual(browser, url, args.output_dir, args.seed, 320, 568),
                     "visual_390": lambda: latest_visual(browser, url, args.output_dir, args.seed, 390, 844),
+                    "final_deck_choices": lambda: final_deck_choices(browser, url, args.output_dir, args.seed),
+                    "final_640x360": lambda: final_card_visual(browser, url, args.output_dir, args.seed, 640, 360),
+                    "final_320x568": lambda: final_card_visual(browser, url, args.output_dir, args.seed, 320, 568),
+                    "final_390x844": lambda: final_card_visual(browser, url, args.output_dir, args.seed, 390, 844),
                 }
                 if args.v1_fixture:
                     fixture_path = args.v1_fixture.resolve()
                     cases["v1_migration"] = lambda: v1_migration(browser, url, args.output_dir, args.seed, fixture_path)
+                    cases["legacy_checkpoint"] = lambda: legacy_checkpoint(browser, url, args.output_dir, args.seed, fixture_path)
+                    cases["v1_setup_cancel"] = lambda: legacy_setup_cancel(browser, url, args.output_dir, args.seed, fixture_path)
                     if args.only and "capture_v1_save" in args.only:
                         cases["capture_v1_save"] = lambda: capture_v1_save(browser, url, args.output_dir, args.seed, fixture_path)
                     if args.only and "capture_v1_judge" in args.only:
                         cases["capture_v1_judge"] = lambda: capture_v1_judge(browser, url, args.output_dir, args.seed, fixture_path)
+                if args.v2_fixture:
+                    v2_fixture_path = args.v2_fixture.resolve()
+                    cases["v2_shop_migration"] = lambda: v2_shop_migration(browser, url, args.output_dir, args.seed, v2_fixture_path)
+                    cases["v2_setup_cancel"] = lambda: legacy_setup_cancel(browser, url, args.output_dir, args.seed, v2_fixture_path)
+                    if args.only and "capture_v2_shop" in args.only:
+                        cases["capture_v2_shop"] = lambda: capture_v2_shop(browser, url, args.output_dir, args.seed, v2_fixture_path)
                 if args.only:
                     unknown = set(args.only) - set(cases)
                     require(not unknown, f"unknown cases: {sorted(unknown)}")

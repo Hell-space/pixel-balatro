@@ -5,8 +5,8 @@ const PACKS = [
   { id:'standard', ic:'🂡', name:'标准包', price:4, desc:'3 选 1 强化扑克牌，永久加入牌组' },
   { id:'spectral', ic:'👻', name:'幽灵包', price:6, desc:'2 选 1 幻灵牌，立即生效' },
 ];
-function rollJokerItem(forceUnc) {
-  const owned = new Set(S.jokers.map(j => j.id));
+function rollJokerItem(forceUnc, exclude=[]) {
+  const owned = new Set([...S.jokers.map(j => j.id),...exclude]);
   let pool = JDEFS.filter(j => !owned.has(j.id));
   if (forceUnc) pool = pool.filter(j => j.rar >= 1);
   if (!pool.length) pool = JDEFS.slice();
@@ -30,7 +30,14 @@ function shopPrice(base) {
   return Math.max(1, Math.ceil(base * S.shop.disc));
 }
 function genShopMain() {
-  S.shop.jokers = [rollJokerItem(S.shop.unc), rollJokerItem(S.shop.unc)];
+  const first=rollJokerItem(S.shop.unc);
+  S.shop.jokers = [first, rollJokerItem(S.shop.unc,[first.id])];
+  // The first shop offers an affordable scoring anchor, without reroll farming.
+  if(S.ante===1&&S.blindIdx===0&&!S.jokers.length&&!S.shop.unc&&!S.shop.opened) {
+    S.shop.jokers[0]={...randOf(JDEFS.filter(j=>['joker','jolly','sly','scary','even','odd'].includes(j.id))),sold:false,ed:0};
+    if(S.shop.jokers[1].id===S.shop.jokers[0].id)S.shop.jokers[1]=rollJokerItem(false,[S.shop.jokers[0].id]);
+  }
+  S.shop.opened=true;
   if (S.shop.unc && !S.shop.freeUsed) S.shop.jokers[0].price = 0;
   S.shop.cons = [
     { ...randOf(availablePlanets()), kind: 'planet', price: 3, sold: false },
@@ -109,7 +116,7 @@ function buyJoker(i) {
   const j = S.shop.jokers[i];
   if (j.sold) return;
   const p = shopPrice(j.price);
-  if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满！点自己的小丑两次可卖出', 1); return; }
+  if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满，点击持有的小丑可查看并卖出。', 1); return; }
   if (S.money < p) { msg('钱不够！', 1); return; }
   S.money -= p;
   if (j.price === 0) S.shop.freeUsed = true;
@@ -204,8 +211,7 @@ function packOptions(type) {
   if(type==='celestial') return unique(availablePlanets(),3);
   if(type==='buffoon') {
     const a=rollJokerItem(false);
-    let b=rollJokerItem(false);
-    if(b.id===a.id) b={...randOf(JDEFS.filter(j=>j.id!==a.id)),sold:false,ed:0};
+    const b=rollJokerItem(false,[a.id]);
     return [a,b];
   }
   if(type==='standard') return [randCard(),randCard(),randCard()];
@@ -306,7 +312,8 @@ function useCons(i) {
   }
   // 塔罗：id -> [最少选牌, 最多选牌]
   const NEED = { magician:[1,2], empress:[1,2], lovers:[1,1], death:[2,2], tower:[1,2],
-                 devil:[1,1], chariot:[1,1], justice:[1,1], sun:[1,3], world:[1,3] };
+                 devil:[1,1], chariot:[1,1], justice:[1,1], sun:[1,3], world:[1,3],
+                 star:[1,3],mooncard:[1,3],strength:[1,2] };
   const sel = S.hand.filter(c => c.sel);
   if (NEED[t.id]) {
     if (S.screen !== 'play') { msg('这张塔罗牌需要在对局中选中手牌后使用', 1); return; }
@@ -348,6 +355,10 @@ function useCons(i) {
     case 'justice': clearEnh(sel[0]); sel[0].glass = true; break;
     case 'sun': sel.forEach(c => { c.suit = 1; c.wild = false; }); break;
     case 'world': sel.forEach(c => { c.suit = 0; c.wild = false; }); break;
+    case 'star': sel.forEach(c => { c.suit = 3; c.wild = false; }); break;
+    case 'mooncard': sel.forEach(c => { c.suit = 2; c.wild = false; }); break;
+    case 'strength': sel.forEach(c => { c.rank=c.rank===14?2:c.rank+1; }); sortHand(); break;
+    case 'temperance': S.money+=Math.min(30,S.jokers.reduce((n,j)=>n+sellPrice(j),0)); break;
     case 'emperor': {
       let got = 0;
       while (S.cons.length < S.consSlots + 1 && got < 2) {  // +1：自己占的槽即将释放
@@ -360,6 +371,7 @@ function useCons(i) {
     }
   }
   sfxTarot();
+  S.tarotsUsed=(S.tarotsUsed||0)+1;
   S.cons.splice(i, 1);
   S.hand.forEach(c => c.sel = false);
   renderAll(); if (S.shop) renderShop();

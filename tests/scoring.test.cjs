@@ -12,7 +12,7 @@ const card=(rank,suit=3,id=rank)=>({id,rank,suit,bonus:0,multB:0,wild:false,stee
 const hand=ranks=>ranks.map((rank,i)=>card(rank,i%4,i+1));
 const joker=(id,more={})=>({...definitions.find(j=>j.id===id),uid:100,ed:0,state:0,...more});
 const state=more=>({levels:Object.fromEntries(keys.map(k=>[k,1])),playCounts:{high:0},jokers:[],hand:[],
-  boss:null,screen:'play',handsLeft:3,jokerSlots:5,planetsUsed:0,cardsAdded:0,...more});
+  boss:null,screen:'play',handsLeft:3,jokerSlots:5,planetsUsed:0,cardsAdded:0,money:0,tarotsUsed:0,...more});
 const score=(cards,jokers=[],more={},random=()=>0)=>context.scoreHand(state({hand:cards,jokers,...more}),cards,random);
 
 test('复制牌产生的三种牌型有独立分数与优先级',()=>{
@@ -41,10 +41,19 @@ test('每张小丑的独立效果都有明确的数值样例',()=>{
     ['nova',28,undefined,{}, {playCounts:{high:2}}],['bus',28,undefined,{state:3}],
     ['constel',10,undefined,{}, {planetsUsed:5}],['holog',14,undefined,{}, {cardsAdded:4}],
     ['baseball',10,undefined,{}, {jokers:[joker('baseball'),joker('green',{uid:101,rar:1})]}],
+    ['scholar',180,[card(14)]],['duo',56,pairs],['tribe',520,flush],['order',600,straight],
+    ['blackboard',21,undefined,{}, {hand:[card(2),card(3,0)]}],
+    ['boots',77,undefined,{}, {money:25}],['fortune',35,undefined,{}, {tarotsUsed:4}],['compass',32],
   ];
   assert.deepEqual(tests.map(x=>x[0]).sort(),Array.from(definitions,j=>j.id).sort());
   for(const [id,total,cards=[card(2)],dynamic={},extra={}] of tests)
     assert.equal(score(cards,[joker(id,dynamic)],extra).total,total,id);
+});
+test('黑板需要真实留牌，面具禁用人头与红封；学者重复触发两种加成',()=>{
+  assert.equal(score([card(2)],[joker('blackboard')]).total,7);
+  assert.equal(score([card(2)],[joker('blackboard')],{hand:[card(2),card(13,0)],boss:{id:'mark'}}).total,7);
+  assert.equal(score([{...card(13),seal:'red'}],[joker('photo')],{boss:{id:'mark'}}).total,5);
+  assert.equal(score([{...card(14),seal:'red'}],[joker('scholar')]).total,603);
 });
 test('摄影师与黑客/黄昏支持多张叠加和红蜡封重复',()=>{
   assert.equal(score([{...card(13),seal:'red'}],[joker('photo'),joker('photo',{uid:101})]).total,400);

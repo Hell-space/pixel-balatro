@@ -80,7 +80,9 @@ def cards_on_screen(page):
     for card in page.locator("#handRow .card").all():
         rank_text = card.locator(".rk").inner_text().strip().upper()
         rank = RANKS[rank_text] if rank_text in RANKS else int(rank_text)
-        suit = card.locator(".st").inner_text().strip()
+        # The text presentation selector keeps suit glyphs out of emoji mode;
+        # it does not change the suit's identity for the scoring oracle.
+        suit = card.locator(".st").inner_text().strip().replace("\ufe0e", "")
         result.append((rank, suit))
     return result
 
@@ -214,15 +216,34 @@ def watch_page(page):
     return errors
 
 
-def start_blind(page, mobile):
+def request_new_solo(page, mobile):
+    """Enter the default setup on 1.3; older builds start directly."""
     page.locator("#ovStart").wait_for(state="visible")
     activate(new_button(page), mobile)
+    setup = page.locator("#ovSetup")
+    if not setup.count():
+        return False
+    setup.wait_for(state="visible")
+    deck = page.locator("#deckChoices button").filter(has_text="红色牌组")
+    stake = page.locator("#stakeChoices button").filter(has_text="白注")
+    require(deck.get_attribute("aria-pressed") == "true" and
+            stake.get_attribute("aria-pressed") == "true", "Default setup is not red deck / white stake")
+    activate(page.locator("#beginRunBtn"), mobile)
+    return True
+
+
+def start_blind(page, mobile):
+    page.locator("#ovStart").wait_for(state="visible")
+    configured = request_new_solo(page, mobile)
     page.locator("#ovBlinds").wait_for(state="visible")
     challenge = page.locator("#blindCols .cur .bbtn:not(.skip)").first
     assert_reachable(challenge, "Start blind")
     activate(challenge, mobile)
     page.locator("#handRow .card").first.wait_for(state="visible")
     require(page.locator("#handRow .card").count() == 8, "Expected eight dealt cards")
+    if configured:
+        require([read_number(page, s) for s in ("#handsVal", "#discVal")] == [4, 4],
+                "Red deck / white stake should start with 4 hands and 4 discards")
 
 
 def reload_and_resume(page, mobile, visible_selector):
@@ -543,6 +564,14 @@ def tutorial_case(browser, base_url, profile, output, seed):
             if geometry["target"]:
                 if not geometry["inViewport"] or geometry["panelCovers"] or not geometry["highlightReceives"]:
                     problems.append({"step": step, **geometry})
+            if geometry["target"] == "btnRow":
+                text = page.locator("#tutBody").inner_text()
+                counts = re.search(r"出牌.*?(\d+)\s*次.*?弃牌.*?(\d+)\s*次", text, re.S)
+                rules = page.evaluate("() => ({hands:S.baseHands,discards:S.baseDisc})")
+                require(counts is not None and [int(counts.group(1)), int(counts.group(2))] ==
+                        [rules["hands"], rules["discards"]],
+                        f"Tutorial action counts do not match this run: {text!r}, {rules}")
+                geometry["tutorial_action_counts"] = rules
             for button in (["#tutNext"] if step == 1 else ["#tutPrev", "#tutNext"]):
                 pos = center_hit(page.locator(button))
                 if not pos["visible"]:
@@ -615,8 +644,10 @@ def loss_checkpoint_case(browser, base_url, output, seed):
         require("小盲" in page.locator("#blindCols .cur").inner_text(), "Restored checkpoint did not persist")
         activate(page.locator("#blindCols .cur .bbtn:not(.skip)").first, True)
         page.locator("#handRow .card").first.wait_for(state="visible")
-        require([read_number(page, s) for s in ("#scoreVal", "#handsVal", "#discVal")] == [0, 4, 3],
-                "Restored blind did not start with reset score and actions")
+        # 1.3's red deck adds a discard; the legacy classic deck remains 4/3.
+        expected = [0, 4, 4] if page.locator("#ovSetup").count() else [0, 4, 3]
+        require([read_number(page, s) for s in ("#scoreVal", "#handsVal", "#discVal")] == expected,
+                f"Restored blind did not reset to {expected}")
         require(not errors, f"Uncaught page errors: {errors}")
         return {"status": "passed", "weak_play_scores": plays, "lost_score": sum(plays),
                 "restored_blind": "底注1小盲", "refreshed_loss_and_checkpoint": True}
@@ -712,6 +743,9 @@ def multiplayer_case(browser, base_url, output, seed):
         activate(pages[1].locator('#ovMpLobby button[onclick="mpJoin()"]'), False)
         for page in pages:
             page.locator("#ovBlinds").wait_for(state="visible", timeout=15000)
+            rules = page.evaluate("""() => ({deck:S.deckId||'classic',hands:S.baseHands,discard:S.baseDisc})""")
+            require(rules == {"deck":"classic", "hands":4, "discard":3},
+                    f"multiplayer did not retain classic 4/3 rules: {rules}")
         require(pages[0].locator("#oppNameV").inner_text() == "乙", "Host has wrong opponent name")
         require(pages[1].locator("#oppNameV").inner_text() == "甲", "Guest has wrong opponent name")
         activate(pages[0].locator("#blindCols .cur .bbtn:not(.skip)").first, False)
@@ -720,7 +754,8 @@ def multiplayer_case(browser, base_url, output, seed):
         screenshot(pages[0], output, "multiplayer-host")
         screenshot(pages[1], output, "multiplayer-guest")
         require(not any(errors), f"Uncaught multiplayer page errors: {errors}")
-        return {"status": "passed", "paired": True, "opponent_state_synced": True}
+        return {"status": "passed", "paired": True, "opponent_state_synced": True,
+                "classic_4_3_rules": True}
     except Exception:
         for i, page in enumerate(pages):
             screenshot(page, output, f"multiplayer-failure-{i}")

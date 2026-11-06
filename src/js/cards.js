@@ -22,7 +22,7 @@ const HORDER = ['flushfive','flushhouse','five','sf','four','fh','flush','straig
 
 const JDEFS = [
   { id:'joker',   ic:'🤡', name:'小丑',     price:4, rar:0, desc:'+4 倍率' },
-  { id:'greedy',  ic:'🟠', name:'贪婪小丑', price:5, rar:0, desc:'每张计分的 ♦ +3 倍率' },
+  { id:'greedy',  ic:'♦', name:'贪婪小丑', price:5, rar:0, desc:'每张计分的 ♦ +3 倍率' },
   { id:'lusty',   ic:'❤️', name:'色欲小丑', price:5, rar:0, desc:'每张计分的 ♥ +3 倍率' },
   { id:'wrath',   ic:'🗡️', name:'愤怒小丑', price:5, rar:0, desc:'每张计分的 ♠ +3 倍率' },
   { id:'glut',    ic:'🍀', name:'暴食小丑', price:5, rar:0, desc:'每张计分的 ♣ +3 倍率' },
@@ -41,7 +41,7 @@ const JDEFS = [
   { id:'runner',  ic:'🏃', name:'跑者',     price:5, rar:0, desc:'打出顺子后永久 +15 筹码', state:0 },
   { id:'photo',   ic:'📷', name:'摄影师',   price:6, rar:1, desc:'第一张计分的人头牌(J/Q/K) ×2 倍率' },
   { id:'abstract',ic:'🎨', name:'抽象小丑', price:6, rar:0, desc:'每持有 1 张小丑牌 +3 倍率' },
-  { id:'bounty',  ic:'💰', name:'赏金猎人', price:5, rar:0, desc:'击败盲注时额外获得 $3' },
+  { id:'bounty',  ic:'💰', name:'赏金猎人', price:4, rar:0, desc:'击败盲注时，每剩余 1 次弃牌获得 $2（上限 $6）' },
   { id:'trio',    ic:'👨‍👦‍👦', name:'三人组', price:8, rar:2, desc:'牌型含三条 ×3 倍率' },
   { id:'family',  ic:'👨‍👩‍👧‍👦', name:'四口之家', price:8, rar:2, desc:'牌型含四条 ×4 倍率' },
   // —— 扩展小丑 ——
@@ -54,7 +54,7 @@ const JDEFS = [
   { id:'dusk',     ic:'🌆', name:'黄昏',       price:6, rar:1, desc:'最后一次出牌时，所有计分牌重复触发' },
   { id:'baron',    ic:'🎩', name:'男爵',       price:8, rar:2, desc:'留在手中的每张 K ×1.5 倍率' },
   { id:'moon',     ic:'🌙', name:'射月',       price:6, rar:1, desc:'留在手中的每张 Q +13 倍率' },
-  { id:'golden',   ic:'🪙', name:'黄金小丑',   price:5, rar:0, desc:'击败盲注时 +$4' },
+  { id:'golden',   ic:'💰', name:'黄金小丑',   price:5, rar:0, desc:'击败盲注时 +$4' },
   { id:'egg',      ic:'🥚', name:'彩蛋',       price:4, rar:0, desc:'每击败一个盲注，卖价 +$3' },
   { id:'gros',     ic:'🍌', name:'大香蕉',     price:5, rar:0, desc:'+15 倍率，每次盲注结束有 1/6 概率烂掉' },
   { id:'stencil',  ic:'🖼️', name:'小丑模板',   price:7, rar:1, desc:'每个空小丑槽位 ×1 倍率(自身也算空位)' },
@@ -63,15 +63,23 @@ const JDEFS = [
   { id:'constel',  ic:'✨', name:'星群',       price:7, rar:1, desc:'每使用过一张星球牌 ×0.1 倍率(累计)' },
   { id:'holog',    ic:'📽️', name:'全息影像',   price:7, rar:1, desc:'每往牌组加入一张牌 ×0.25 倍率(累计)' },
   { id:'baseball', ic:'⚾', name:'棒球卡',     price:8, rar:2, desc:'每张其他罕见(绿框)小丑 ×1.5 倍率' },
+  { id:'scholar', ic:'🎓', name:'学者', price:6, rar:1, desc:'每张计分的 A +20 筹码、+4 倍率' },
+  { id:'duo', ic:'👥', name:'二重奏', price:7, rar:1, desc:'牌型含对子 ×2 倍率' },
+  { id:'tribe', ic:'❦', name:'部族', price:8, rar:2, desc:'牌型含同花 ×2 倍率' },
+  { id:'order', ic:'📐', name:'秩序', price:8, rar:2, desc:'牌型含顺子 ×3 倍率' },
+  { id:'blackboard', ic:'🏴', name:'黑板', price:7, rar:1, desc:'至少留有 1 张牌且全部为 ♠/♣ 时 ×3 倍率；禁用牌不符合条件' },
+  { id:'boots', ic:'🥾', name:'长靴', price:6, rar:1, desc:'每持有 $5，+2 倍率' },
+  { id:'fortune', ic:'🔮', name:'占卜师', price:5, rar:0, desc:'本局每成功使用 1 张塔罗牌，+1 倍率' },
+  { id:'compass', ic:'🧭', name:'罗盘', price:6, rar:1, desc:'本局每打出过 1 种不同牌型，+25 筹码（含本手）' },
 ];
 const RARNAME = ['普通', '罕见', '稀有'];
 
 const PLANETS = [
-  { key:'five', ic:'🪐', name:'谷神星' }, { key:'flushhouse', ic:'🪐', name:'阋神星' },
-  { key:'flushfive', ic:'🪐', name:'塞德娜' },
-  { key:'high',     ic:'🪐', name:'冥王星' }, { key:'pair',    ic:'☿️', name:'水星' },
+  { key:'five', ic:'🌌', name:'谷神星' }, { key:'flushhouse', ic:'🌌', name:'阋神星' },
+  { key:'flushfive', ic:'🌌', name:'塞德娜' },
+  { key:'high',     ic:'🌌', name:'冥王星' }, { key:'pair',    ic:'☿️', name:'水星' },
   { key:'twopair',  ic:'🌌', name:'天王星' }, { key:'trips',   ic:'💛', name:'金星' },
-  { key:'straight', ic:'🪐', name:'土星' },   { key:'flush',   ic:'🟠', name:'木星' },
+  { key:'straight', ic:'🌌', name:'土星' },   { key:'flush',   ic:'♦', name:'木星' },
   { key:'fh',       ic:'🌍', name:'地球' },   { key:'four',    ic:'🔴', name:'火星' },
   { key:'sf',       ic:'🔵', name:'海王星' },
 ];
@@ -89,6 +97,10 @@ const TAROTS = [
   { id:'sun',      ic:'☀️', name:'太阳',   desc:'选中的最多 3 张牌变为 ♥' },
   { id:'world',    ic:'🌐', name:'世界',   desc:'选中的最多 3 张牌变为 ♠' },
   { id:'emperor',  ic:'🤴', name:'皇帝',   desc:'获得最多 2 张随机塔罗牌(受槽位限制)' },
+  { id:'star', ic:'⭐', name:'星星', desc:'选中的最多 3 张牌变为 ♦' },
+  { id:'mooncard', ic:'🌘', name:'月亮', desc:'选中的最多 3 张牌变为 ♣' },
+  { id:'strength', ic:'🦁', name:'力量', desc:'选中的最多 2 张牌点数 +1（A 变为 2）' },
+  { id:'temperance', ic:'🏺', name:'节制', desc:'获得所有小丑卖价之和的金币（上限 $30）' },
 ];
 const SPECTRALS = [
   { id:'soul',   ic:'👻', name:'灵魂',   desc:'获得一张随机稀有小丑牌(需有空位)' },
@@ -119,14 +131,28 @@ const BOSSES = [
   { id:'hearts', name:'🌹 血月',  desc:'所有 ♥ 不提供筹码、不触发效果' },
   { id:'spades', name:'⚓ 暗礁',  desc:'所有 ♠ 不提供筹码、不触发效果' },
   { id:'club',   name:'🍀 三叶草', desc:'所有 ♣ 不提供筹码、不触发效果' },
-  { id:'window', name:'🪟 窗户',  desc:'所有 ♦ 不提供筹码、不触发效果' },
+  { id:'window', name:'▣ 窗户',  desc:'所有 ♦ 不提供筹码、不触发效果' },
   { id:'wall',   name:'🧱 巨墙',  desc:'目标分数额外提高 60%' },
-  { id:'needle', name:'🪡 之针',  desc:'本盲注只能打出 1 手牌' },
+  { id:'needle', name:'✦ 之针',  desc:'只能打出 1 手牌；目标降为小盲注分数' },
   { id:'arm',    name:'💪 铁腕',  desc:'本盲注只有 1 次弃牌机会' },
-  { id:'hook',   name:'🪝 钩爪',  desc:'每打出一手牌后随机弃掉 2 张手牌' },
+  { id:'hook',   name:'⚓ 钩爪',  desc:'每打出一手牌后随机弃掉 2 张手牌' },
   { id:'water',  name:'💧 流水',  desc:'本盲注不能弃牌' },
   { id:'psychic',name:'🧿 通灵者', desc:'必须每次打出恰好 5 张牌' },
   { id:'manacle',name:'⛓️ 镣铐',  desc:'本盲注手牌上限 -1' },
   { id:'flint',  name:'🔥 燧石',  desc:'牌型的基础筹码和倍率减半' },
+  { id:'mark', name:'🎭 面具', desc:'所有 J/Q/K 不提供筹码、不触发效果' },
+  { id:'eye', name:'👁️ 独眼', desc:'本盲注每种牌型只能打出一次' },
+];
+const DECKS = [
+  {id:'red',name:'红色牌组',color:'#bd514b',desc:'每个盲注 +1 次弃牌',disc:1},
+  {id:'blue',name:'蓝色牌组',color:'#578cab',desc:'每个盲注 +1 次出牌，初始金币 $0',hands:1,money:0},
+  {id:'yellow',name:'金色牌组',color:'#d4a74c',desc:'初始金币 $10',money:10},
+  {id:'green',name:'绿色牌组',color:'#5e9769',desc:'无利息；结算每次剩余出牌 $2、每次剩余弃牌 $1',noInterest:true},
+  {id:'black',name:'黑色牌组',color:'#5d596d',desc:'小丑槽位 +1，每个盲注 -1 次出牌',hands:-1,slots:1},
+];
+const STAKES = [
+  {id:'white',name:'白注',desc:'标准目标与奖励',scale:1},
+  {id:'red',name:'红注',desc:'底注 2 起目标提高 20%',scale:1.2},
+  {id:'gold',name:'金注',desc:'底注 2 起目标提高 40%，每关少 1 次弃牌',scale:1.4,disc:-1},
 ];
 const ANTE_BASE = [0, 300, 800, 2000, 5000, 11000, 20000, 35000, 50000];

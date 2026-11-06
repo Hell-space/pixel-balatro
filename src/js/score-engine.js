@@ -27,9 +27,10 @@ function scoreHand(state, cards, random = Math.random) {
       if (j.id==='scary' && card.rank>=11 && card.rank<=13) addC=30;
       if (j.id==='even' && card.rank<=10 && card.rank%2===0) addM=4;
       if (j.id==='odd' && (card.rank===14 || (card.rank<=9 && card.rank%2===1))) addC=31;
+      if (j.id==='scholar' && card.rank===14) { addC=20; addM=4; }
       if (addC || addM || factor!==1) {
         chips+=addC; mult=(mult+addM)*factor;
-        emit('joker',j.uid,addC?'+'+addC+' 筹码':addM?'+'+addM+' 倍率':'×'+factor+' 倍率');
+        emit('joker',j.uid,addC?'+'+addC+' 筹码'+(addM?' / +'+addM+' 倍率':''):addM?'+'+addM+' 倍率':'×'+factor+' 倍率');
       }
     }
   };
@@ -65,6 +66,17 @@ function scoreHand(state, cards, random = Math.random) {
       case 'abstract': m=state.jokers.length*3; break;
       case 'trio': if(hand.contains.trips) x=3; break;
       case 'family': if(hand.contains.quads) x=4; break;
+      case 'duo': if(hand.contains.pair) x=2; break;
+      case 'tribe': if(hand.contains.flush) x=2; break;
+      case 'order': if(hand.contains.straight) x=3; break;
+      case 'blackboard': {
+        const remaining=state.hand.filter(k=>!selected.has(k.id));
+        if(remaining.length&&remaining.every(k=>!isDebuffed(k,state)&&(k.wild||k.suit===0||k.suit===2)))x=3;
+        break;
+      }
+      case 'boots': m=2*Math.floor(state.money/5); break;
+      case 'fortune': m=state.tarotsUsed||0; break;
+      case 'compass': c=25*new Set([...Object.keys(state.playCounts).filter(k=>state.playCounts[k]>0),hand.key]).size; break;
       case 'misprint': m=Math.floor(random()*24); break;
       case 'gros': m=15; break;
       case 'nova': m=(state.playCounts[hand.key]||0)+1; break;

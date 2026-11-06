@@ -60,12 +60,13 @@ body::after {display:none}
 .card .rk {left:5px;top:1px;font-size:18px;line-height:1.1;font-weight:900}
 .card .st2 {right:4px;top:2px;font-size:13px}.card .st {right:4px;bottom:2px;font-size:15px}
 .card.sel {transform:translateY(-8px);border-color:#d59127;box-shadow:0 0 0 2px #ffe19a,1px 4px 0 #16322a}
-.pips {position:absolute;inset:26% 19% 19%;display:block;pointer-events:none}
-.pips i {position:absolute;transform:translate(-50%,-50%);font:900 clamp(11px,1.4vw,20px)/1 Georgia,serif;font-style:normal}
-.pips .acePip {font-size:clamp(22px,2.6vw,33px)}
-.facePip {position:absolute;inset:24% 18% 18%;display:grid;place-content:center;text-align:center;
+.pips {position:absolute;inset:max(26%,23px) 19% 19%;display:block;pointer-events:none}
+.pips i {position:absolute;transform:translate(-50%,-50%);width:24%;height:23%;font-style:normal}
+.pips .acePip {width:70%;height:75%}
+.facePip {position:absolute;inset:max(24%,23px) 18% 18%;display:grid;place-content:center;text-align:center;
   border:1px solid currentColor;line-height:.95;font:900 clamp(19px,2.5vw,32px)/1 Georgia,serif}
 .facePip small {font:700 9px/1 var(--mono)}
+.suitIcon{width:1em;height:1em;display:inline-block;vertical-align:middle}.pips .suitIcon{display:block;width:100%;height:100%}
 #btnRow {padding:8px 0 4px;gap:8px;align-items:stretch}
 .bigbtn,.pxbtn,.bbtn,.sbtn,.tbtn {border-radius:5px;border:1px solid #739283;font-family:var(--ui);text-shadow:none}
 .bigbtn,.pxbtn,.bbtn,.sbtn {min-height:44px}
@@ -195,6 +196,9 @@ body::after {display:none}
   #playArea {min-height:46px}#playedRow .card {height:56px}
   #handRow {display:flex;flex-wrap:wrap;gap:4px;padding-top:6px}
   #handRow .card {width:clamp(40px,6.4vw,56px);height:58px}
+  .card .rk{font-size:13px;left:3px;top:2px}.card .st2{font-size:10px;right:3px;top:2px}.card .st{font-size:9px;right:3px;bottom:2px}
+  .pips{inset:18px 23% 10px}.pips i{font-size:7px}.pips .acePip{font-size:18px}
+  .facePip{inset:18px 8px 9px;font-size:16px}.facePip small{font-size:7px}
   #previewBox {min-height:28px;margin:0}#btnRow {padding:4px 0}#infobar {font-size:11px}
   .tableSeal svg {width:45px}.titleArt {zoom:.65}.titleScreen {gap:5px;padding:0}
 }
@@ -230,3 +234,21 @@ body::after {display:none}
   .shopActions {margin:0 -5px;padding:4px;display:flex;gap:6px}
   .shopActions .pxbtn {flex:1;margin:0;min-width:0}
 }
+/* Deck selection and catalogue inherit the paper/felt palette of the table. */
+.collectionLink{border:0;background:none;color:#c5c9ab;text-decoration:underline;font:inherit;font-size:13px;padding:10px;min-height:44px;cursor:pointer}
+.setupBox{width:650px;max-width:100%!important}
+#deckChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}
+.deckChoice{position:relative;display:grid;grid-template-columns:36px 1fr;gap:4px 10px;text-align:left;background:#173b34;color:#f0e2b9;border:2px solid #47675b;padding:12px;min-height:83px;cursor:pointer;font:inherit}
+.deckChoice[aria-pressed=true]{border-color:#f0cc6b;background:#244c40;box-shadow:0 3px 0 #0b231e}
+.deckChoice b{font-size:15px}.deckChoice>span:last-child{font-size:12px;line-height:1.5;grid-column:2}
+.deckMini{grid-row:1/3;background:var(--deck-color);border:3px double #eadcb4;height:46px;display:grid;place-items:center;font-size:22px;align-self:center}
+#stakeChoices,#collectionTabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#stakeChoices .sbtn,#collectionTabs .sbtn{width:auto;min-width:62px;margin:0;padding:10px}
+[aria-pressed=true].sbtn{border-color:#e8bf5c;color:#f4db93;background:#365648}
+#stakeRule{min-height:36px;margin:12px 0 0;font-size:13px}#setupRecord{color:#a8cc91;font-size:12px;display:block;min-height:20px}
+.setupActions{display:flex;gap:10px;justify-content:center;padding:10px 0}.setupActions .pxbtn{margin:0;padding:12px 15px;white-space:nowrap;font-size:14px}
+#ovCollection{z-index:65}.collectionBox{width:720px;max-width:100%!important}#collectionSearch{width:100%;margin:12px 0}
+#collectionBody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;text-align:left;margin:16px 0}
+.catalogEntry{border-left:3px solid #ad9a63;padding:9px 12px;background:#193d34}.catalogEntry h3{font-size:15px;margin:0 0 6px}.catalogEntry p{font-size:13px;line-height:1.6;margin:0}.catalogEntry>span{font-size:11px;color:#b8bea2}
+.recordTable{grid-column:1/-1;width:100%;border-collapse:collapse;text-align:center}.recordTable th,.recordTable td{padding:12px 5px;border-bottom:1px solid #456256}.recordTable td{color:#e4c46d}
+@media(max-width:480px){#deckChoices{gap:8px}.deckChoice{padding:9px;grid-template-columns:27px 1fr;gap:5px 7px}.deckMini{height:40px}.deckChoice b{font-size:13px}.deckChoice>span:last-child{font-size:11px}#collectionBody{grid-template-columns:1fr}.collectionLink{font-size:12px}}

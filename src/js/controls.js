@@ -58,7 +58,8 @@ addEventListener('keydown',e=>{
       e.preventDefault(); controls[e.shiftKey?controls.length-1:0].focus();
     }
   }
-  if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore'].includes(top.id)) hide(top.id);
+  if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection'].includes(top.id)) hide(top.id);
+  if(e.key==='Escape'&&top.id==='ovSetup'){hide('ovSetup');show('ovStart');}
 });
 let owned=null, sellConfirm=false;
 function openMenu() {

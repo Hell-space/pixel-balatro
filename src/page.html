@@ -87,7 +87,20 @@
     <button class="pxbtn" id="newBtn" onclick="startSolo(false)">开始游戏</button>
     <div><button class="pxbtn gray" onclick="startSolo(true)">新手教学</button>
     <button class="pxbtn gray" onclick="openMpLobby()">多人对战</button></div>
+    <button class="collectionLink" onclick="openCollection()">卡牌图鉴 / 通关记录</button>
   </div>
+</div></div>
+
+<div class="ov" id="ovSetup"><div class="box setupBox">
+  <h2>选择牌组</h2><div id="deckChoices"></div>
+  <div id="stakeChoices" aria-label="难度"></div><p id="stakeRule"></p><span id="setupRecord"></span>
+  <div class="setupActions"><button class="pxbtn gray" onclick="hide('ovSetup');show('ovStart')">返回</button>
+  <button class="pxbtn" id="beginRunBtn" onclick="beginConfiguredRun()">开始这一局</button></div>
+</div></div>
+<div class="ov" id="ovCollection"><div class="box collectionBox">
+  <h2>卡牌图鉴</h2><div id="collectionTabs"></div>
+  <input id="collectionSearch" class="mpin" type="search" aria-label="搜索卡牌" placeholder="搜索名称或效果" oninput="renderCollection()">
+  <div id="collectionBody"></div><button class="pxbtn" onclick="hide('ovCollection')">关闭</button>
 </div></div>
 
 <div class="ov" id="ovMenu"><div class="box"><h2>牌桌菜单</h2>
@@ -95,6 +108,7 @@
       <button class="sbtn" onclick="hide('ovMenu'); openChart()">📖 牌型表 / 等级</button>
       <button class="sbtn" onclick="hide('ovMenu'); openDeck()">🂠 查看剩余牌库</button>
       <button class="sbtn" onclick="hide('ovMenu'); openInfo()">📊 本局信息 / 优惠券</button>
+      <button class="sbtn" onclick="hide('ovMenu'); openCollection()">卡牌图鉴 / 通关记录</button>
       <button class="sbtn" onclick="hide('ovMenu'); tutStart()">❓ 新手教程</button>
       <button class="sbtn" id="muteBtn" onclick="toggleMute()">🔊 音乐：开</button>
       <button class="sbtn" id="soundBtn" onclick="changeSetting('sound',!settings.sound)">音效：开</button>

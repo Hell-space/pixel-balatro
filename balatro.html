@@ -270,12 +270,13 @@ body::after {display:none}
 .card .rk {left:5px;top:1px;font-size:18px;line-height:1.1;font-weight:900}
 .card .st2 {right:4px;top:2px;font-size:13px}.card .st {right:4px;bottom:2px;font-size:15px}
 .card.sel {transform:translateY(-8px);border-color:#d59127;box-shadow:0 0 0 2px #ffe19a,1px 4px 0 #16322a}
-.pips {position:absolute;inset:26% 19% 19%;display:block;pointer-events:none}
-.pips i {position:absolute;transform:translate(-50%,-50%);font:900 clamp(11px,1.4vw,20px)/1 Georgia,serif;font-style:normal}
-.pips .acePip {font-size:clamp(22px,2.6vw,33px)}
-.facePip {position:absolute;inset:24% 18% 18%;display:grid;place-content:center;text-align:center;
+.pips {position:absolute;inset:max(26%,23px) 19% 19%;display:block;pointer-events:none}
+.pips i {position:absolute;transform:translate(-50%,-50%);width:24%;height:23%;font-style:normal}
+.pips .acePip {width:70%;height:75%}
+.facePip {position:absolute;inset:max(24%,23px) 18% 18%;display:grid;place-content:center;text-align:center;
   border:1px solid currentColor;line-height:.95;font:900 clamp(19px,2.5vw,32px)/1 Georgia,serif}
 .facePip small {font:700 9px/1 var(--mono)}
+.suitIcon{width:1em;height:1em;display:inline-block;vertical-align:middle}.pips .suitIcon{display:block;width:100%;height:100%}
 #btnRow {padding:8px 0 4px;gap:8px;align-items:stretch}
 .bigbtn,.pxbtn,.bbtn,.sbtn,.tbtn {border-radius:5px;border:1px solid #739283;font-family:var(--ui);text-shadow:none}
 .bigbtn,.pxbtn,.bbtn,.sbtn {min-height:44px}
@@ -405,6 +406,9 @@ body::after {display:none}
   #playArea {min-height:46px}#playedRow .card {height:56px}
   #handRow {display:flex;flex-wrap:wrap;gap:4px;padding-top:6px}
   #handRow .card {width:clamp(40px,6.4vw,56px);height:58px}
+  .card .rk{font-size:13px;left:3px;top:2px}.card .st2{font-size:10px;right:3px;top:2px}.card .st{font-size:9px;right:3px;bottom:2px}
+  .pips{inset:18px 23% 10px}.pips i{font-size:7px}.pips .acePip{font-size:18px}
+  .facePip{inset:18px 8px 9px;font-size:16px}.facePip small{font-size:7px}
   #previewBox {min-height:28px;margin:0}#btnRow {padding:4px 0}#infobar {font-size:11px}
   .tableSeal svg {width:45px}.titleArt {zoom:.65}.titleScreen {gap:5px;padding:0}
 }
@@ -440,10 +444,33 @@ body::after {display:none}
   .shopActions {margin:0 -5px;padding:4px;display:flex;gap:6px}
   .shopActions .pxbtn {flex:1;margin:0;min-width:0}
 }
+/* Deck selection and catalogue inherit the paper/felt palette of the table. */
+.collectionLink{border:0;background:none;color:#c5c9ab;text-decoration:underline;font:inherit;font-size:13px;padding:10px;min-height:44px;cursor:pointer}
+.setupBox{width:650px;max-width:100%!important}
+#deckChoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}
+.deckChoice{position:relative;display:grid;grid-template-columns:36px 1fr;gap:4px 10px;text-align:left;background:#173b34;color:#f0e2b9;border:2px solid #47675b;padding:12px;min-height:83px;cursor:pointer;font:inherit}
+.deckChoice[aria-pressed=true]{border-color:#f0cc6b;background:#244c40;box-shadow:0 3px 0 #0b231e}
+.deckChoice b{font-size:15px}.deckChoice>span:last-child{font-size:12px;line-height:1.5;grid-column:2}
+.deckMini{grid-row:1/3;background:var(--deck-color);border:3px double #eadcb4;height:46px;display:grid;place-items:center;font-size:22px;align-self:center}
+#stakeChoices,#collectionTabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#stakeChoices .sbtn,#collectionTabs .sbtn{width:auto;min-width:62px;margin:0;padding:10px}
+[aria-pressed=true].sbtn{border-color:#e8bf5c;color:#f4db93;background:#365648}
+#stakeRule{min-height:36px;margin:12px 0 0;font-size:13px}#setupRecord{color:#a8cc91;font-size:12px;display:block;min-height:20px}
+.setupActions{display:flex;gap:10px;justify-content:center;padding:10px 0}.setupActions .pxbtn{margin:0;padding:12px 15px;white-space:nowrap;font-size:14px}
+#ovCollection{z-index:65}.collectionBox{width:720px;max-width:100%!important}#collectionSearch{width:100%;margin:12px 0}
+#collectionBody{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;text-align:left;margin:16px 0}
+.catalogEntry{border-left:3px solid #ad9a63;padding:9px 12px;background:#193d34}.catalogEntry h3{font-size:15px;margin:0 0 6px}.catalogEntry p{font-size:13px;line-height:1.6;margin:0}.catalogEntry>span{font-size:11px;color:#b8bea2}
+.recordTable{grid-column:1/-1;width:100%;border-collapse:collapse;text-align:center}.recordTable th,.recordTable td{padding:12px 5px;border-bottom:1px solid #456256}.recordTable td{color:#e4c46d}
+@media(max-width:480px){#deckChoices{gap:8px}.deckChoice{padding:9px;grid-template-columns:27px 1fr;gap:5px 7px}.deckMini{height:40px}.deckChoice b{font-size:13px}.deckChoice>span:last-child{font-size:11px}#collectionBody{grid-template-columns:1fr}.collectionLink{font-size:12px}}
 </style>
 </head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0" style="position:absolute">
+  <symbol id="suit0" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1C9 5 2 8 2 13a5 5 0 0 0 8 4c0 3-1 4-3 6h10c-2-2-3-3-3-6a5 5 0 0 0 8-4c0-5-7-8-10-12z"/></symbol>
+  <symbol id="suit1" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22C9 18 1 13 1 7a6 6 0 0 1 11-3 6 6 0 0 1 11 3c0 6-8 11-11 15z"/></symbol>
+  <symbol id="suit2" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1a5 5 0 0 0-4 8 5 5 0 1 0 2 9c0 2-1 3-3 5h10c-2-2-3-3-3-5a5 5 0 1 0 2-9 5 5 0 0 0-4-8z"/></symbol>
+  <symbol id="suit3" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1 23 12 12 23 1 12z"/></symbol>
+  <symbol id="suitWild" viewBox="0 0 24 24"><path fill="currentColor" d="m12 1 3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/></symbol>
   <symbol id="jester" viewBox="0 0 80 80">
     <g shape-rendering="crispEdges">
       <!-- Two-tone fool's cap, bells, domino mask and pleated collar. -->
@@ -538,7 +565,20 @@ body::after {display:none}
     <button class="pxbtn" id="newBtn" onclick="startSolo(false)">开始游戏</button>
     <div><button class="pxbtn gray" onclick="startSolo(true)">新手教学</button>
     <button class="pxbtn gray" onclick="openMpLobby()">多人对战</button></div>
+    <button class="collectionLink" onclick="openCollection()">卡牌图鉴 / 通关记录</button>
   </div>
+</div></div>
+
+<div class="ov" id="ovSetup"><div class="box setupBox">
+  <h2>选择牌组</h2><div id="deckChoices"></div>
+  <div id="stakeChoices" aria-label="难度"></div><p id="stakeRule"></p><span id="setupRecord"></span>
+  <div class="setupActions"><button class="pxbtn gray" onclick="hide('ovSetup');show('ovStart')">返回</button>
+  <button class="pxbtn" id="beginRunBtn" onclick="beginConfiguredRun()">开始这一局</button></div>
+</div></div>
+<div class="ov" id="ovCollection"><div class="box collectionBox">
+  <h2>卡牌图鉴</h2><div id="collectionTabs"></div>
+  <input id="collectionSearch" class="mpin" type="search" aria-label="搜索卡牌" placeholder="搜索名称或效果" oninput="renderCollection()">
+  <div id="collectionBody"></div><button class="pxbtn" onclick="hide('ovCollection')">关闭</button>
 </div></div>
 
 <div class="ov" id="ovMenu"><div class="box"><h2>牌桌菜单</h2>
@@ -546,6 +586,7 @@ body::after {display:none}
       <button class="sbtn" onclick="hide('ovMenu'); openChart()">📖 牌型表 / 等级</button>
       <button class="sbtn" onclick="hide('ovMenu'); openDeck()">🂠 查看剩余牌库</button>
       <button class="sbtn" onclick="hide('ovMenu'); openInfo()">📊 本局信息 / 优惠券</button>
+      <button class="sbtn" onclick="hide('ovMenu'); openCollection()">卡牌图鉴 / 通关记录</button>
       <button class="sbtn" onclick="hide('ovMenu'); tutStart()">❓ 新手教程</button>
       <button class="sbtn" id="muteBtn" onclick="toggleMute()">🔊 音乐：开</button>
       <button class="sbtn" id="soundBtn" onclick="changeSetting('sound',!settings.sound)">音效：开</button>
@@ -788,7 +829,7 @@ const HORDER = ['flushfive','flushhouse','five','sf','four','fh','flush','straig
 
 const JDEFS = [
   { id:'joker',   ic:'🤡', name:'小丑',     price:4, rar:0, desc:'+4 倍率' },
-  { id:'greedy',  ic:'🟠', name:'贪婪小丑', price:5, rar:0, desc:'每张计分的 ♦ +3 倍率' },
+  { id:'greedy',  ic:'♦', name:'贪婪小丑', price:5, rar:0, desc:'每张计分的 ♦ +3 倍率' },
   { id:'lusty',   ic:'❤️', name:'色欲小丑', price:5, rar:0, desc:'每张计分的 ♥ +3 倍率' },
   { id:'wrath',   ic:'🗡️', name:'愤怒小丑', price:5, rar:0, desc:'每张计分的 ♠ +3 倍率' },
   { id:'glut',    ic:'🍀', name:'暴食小丑', price:5, rar:0, desc:'每张计分的 ♣ +3 倍率' },
@@ -807,7 +848,7 @@ const JDEFS = [
   { id:'runner',  ic:'🏃', name:'跑者',     price:5, rar:0, desc:'打出顺子后永久 +15 筹码', state:0 },
   { id:'photo',   ic:'📷', name:'摄影师',   price:6, rar:1, desc:'第一张计分的人头牌(J/Q/K) ×2 倍率' },
   { id:'abstract',ic:'🎨', name:'抽象小丑', price:6, rar:0, desc:'每持有 1 张小丑牌 +3 倍率' },
-  { id:'bounty',  ic:'💰', name:'赏金猎人', price:5, rar:0, desc:'击败盲注时额外获得 $3' },
+  { id:'bounty',  ic:'💰', name:'赏金猎人', price:4, rar:0, desc:'击败盲注时，每剩余 1 次弃牌获得 $2（上限 $6）' },
   { id:'trio',    ic:'👨‍👦‍👦', name:'三人组', price:8, rar:2, desc:'牌型含三条 ×3 倍率' },
   { id:'family',  ic:'👨‍👩‍👧‍👦', name:'四口之家', price:8, rar:2, desc:'牌型含四条 ×4 倍率' },
   // —— 扩展小丑 ——
@@ -820,7 +861,7 @@ const JDEFS = [
   { id:'dusk',     ic:'🌆', name:'黄昏',       price:6, rar:1, desc:'最后一次出牌时，所有计分牌重复触发' },
   { id:'baron',    ic:'🎩', name:'男爵',       price:8, rar:2, desc:'留在手中的每张 K ×1.5 倍率' },
   { id:'moon',     ic:'🌙', name:'射月',       price:6, rar:1, desc:'留在手中的每张 Q +13 倍率' },
-  { id:'golden',   ic:'🪙', name:'黄金小丑',   price:5, rar:0, desc:'击败盲注时 +$4' },
+  { id:'golden',   ic:'💰', name:'黄金小丑',   price:5, rar:0, desc:'击败盲注时 +$4' },
   { id:'egg',      ic:'🥚', name:'彩蛋',       price:4, rar:0, desc:'每击败一个盲注，卖价 +$3' },
   { id:'gros',     ic:'🍌', name:'大香蕉',     price:5, rar:0, desc:'+15 倍率，每次盲注结束有 1/6 概率烂掉' },
   { id:'stencil',  ic:'🖼️', name:'小丑模板',   price:7, rar:1, desc:'每个空小丑槽位 ×1 倍率(自身也算空位)' },
@@ -829,15 +870,23 @@ const JDEFS = [
   { id:'constel',  ic:'✨', name:'星群',       price:7, rar:1, desc:'每使用过一张星球牌 ×0.1 倍率(累计)' },
   { id:'holog',    ic:'📽️', name:'全息影像',   price:7, rar:1, desc:'每往牌组加入一张牌 ×0.25 倍率(累计)' },
   { id:'baseball', ic:'⚾', name:'棒球卡',     price:8, rar:2, desc:'每张其他罕见(绿框)小丑 ×1.5 倍率' },
+  { id:'scholar', ic:'🎓', name:'学者', price:6, rar:1, desc:'每张计分的 A +20 筹码、+4 倍率' },
+  { id:'duo', ic:'👥', name:'二重奏', price:7, rar:1, desc:'牌型含对子 ×2 倍率' },
+  { id:'tribe', ic:'❦', name:'部族', price:8, rar:2, desc:'牌型含同花 ×2 倍率' },
+  { id:'order', ic:'📐', name:'秩序', price:8, rar:2, desc:'牌型含顺子 ×3 倍率' },
+  { id:'blackboard', ic:'🏴', name:'黑板', price:7, rar:1, desc:'至少留有 1 张牌且全部为 ♠/♣ 时 ×3 倍率；禁用牌不符合条件' },
+  { id:'boots', ic:'🥾', name:'长靴', price:6, rar:1, desc:'每持有 $5，+2 倍率' },
+  { id:'fortune', ic:'🔮', name:'占卜师', price:5, rar:0, desc:'本局每成功使用 1 张塔罗牌，+1 倍率' },
+  { id:'compass', ic:'🧭', name:'罗盘', price:6, rar:1, desc:'本局每打出过 1 种不同牌型，+25 筹码（含本手）' },
 ];
 const RARNAME = ['普通', '罕见', '稀有'];
 
 const PLANETS = [
-  { key:'five', ic:'🪐', name:'谷神星' }, { key:'flushhouse', ic:'🪐', name:'阋神星' },
-  { key:'flushfive', ic:'🪐', name:'塞德娜' },
-  { key:'high',     ic:'🪐', name:'冥王星' }, { key:'pair',    ic:'☿️', name:'水星' },
+  { key:'five', ic:'🌌', name:'谷神星' }, { key:'flushhouse', ic:'🌌', name:'阋神星' },
+  { key:'flushfive', ic:'🌌', name:'塞德娜' },
+  { key:'high',     ic:'🌌', name:'冥王星' }, { key:'pair',    ic:'☿️', name:'水星' },
   { key:'twopair',  ic:'🌌', name:'天王星' }, { key:'trips',   ic:'💛', name:'金星' },
-  { key:'straight', ic:'🪐', name:'土星' },   { key:'flush',   ic:'🟠', name:'木星' },
+  { key:'straight', ic:'🌌', name:'土星' },   { key:'flush',   ic:'♦', name:'木星' },
   { key:'fh',       ic:'🌍', name:'地球' },   { key:'four',    ic:'🔴', name:'火星' },
   { key:'sf',       ic:'🔵', name:'海王星' },
 ];
@@ -855,6 +904,10 @@ const TAROTS = [
   { id:'sun',      ic:'☀️', name:'太阳',   desc:'选中的最多 3 张牌变为 ♥' },
   { id:'world',    ic:'🌐', name:'世界',   desc:'选中的最多 3 张牌变为 ♠' },
   { id:'emperor',  ic:'🤴', name:'皇帝',   desc:'获得最多 2 张随机塔罗牌(受槽位限制)' },
+  { id:'star', ic:'⭐', name:'星星', desc:'选中的最多 3 张牌变为 ♦' },
+  { id:'mooncard', ic:'🌘', name:'月亮', desc:'选中的最多 3 张牌变为 ♣' },
+  { id:'strength', ic:'🦁', name:'力量', desc:'选中的最多 2 张牌点数 +1（A 变为 2）' },
+  { id:'temperance', ic:'🏺', name:'节制', desc:'获得所有小丑卖价之和的金币（上限 $30）' },
 ];
 const SPECTRALS = [
   { id:'soul',   ic:'👻', name:'灵魂',   desc:'获得一张随机稀有小丑牌(需有空位)' },
@@ -885,15 +938,29 @@ const BOSSES = [
   { id:'hearts', name:'🌹 血月',  desc:'所有 ♥ 不提供筹码、不触发效果' },
   { id:'spades', name:'⚓ 暗礁',  desc:'所有 ♠ 不提供筹码、不触发效果' },
   { id:'club',   name:'🍀 三叶草', desc:'所有 ♣ 不提供筹码、不触发效果' },
-  { id:'window', name:'🪟 窗户',  desc:'所有 ♦ 不提供筹码、不触发效果' },
+  { id:'window', name:'▣ 窗户',  desc:'所有 ♦ 不提供筹码、不触发效果' },
   { id:'wall',   name:'🧱 巨墙',  desc:'目标分数额外提高 60%' },
-  { id:'needle', name:'🪡 之针',  desc:'本盲注只能打出 1 手牌' },
+  { id:'needle', name:'✦ 之针',  desc:'只能打出 1 手牌；目标降为小盲注分数' },
   { id:'arm',    name:'💪 铁腕',  desc:'本盲注只有 1 次弃牌机会' },
-  { id:'hook',   name:'🪝 钩爪',  desc:'每打出一手牌后随机弃掉 2 张手牌' },
+  { id:'hook',   name:'⚓ 钩爪',  desc:'每打出一手牌后随机弃掉 2 张手牌' },
   { id:'water',  name:'💧 流水',  desc:'本盲注不能弃牌' },
   { id:'psychic',name:'🧿 通灵者', desc:'必须每次打出恰好 5 张牌' },
   { id:'manacle',name:'⛓️ 镣铐',  desc:'本盲注手牌上限 -1' },
   { id:'flint',  name:'🔥 燧石',  desc:'牌型的基础筹码和倍率减半' },
+  { id:'mark', name:'🎭 面具', desc:'所有 J/Q/K 不提供筹码、不触发效果' },
+  { id:'eye', name:'👁️ 独眼', desc:'本盲注每种牌型只能打出一次' },
+];
+const DECKS = [
+  {id:'red',name:'红色牌组',color:'#bd514b',desc:'每个盲注 +1 次弃牌',disc:1},
+  {id:'blue',name:'蓝色牌组',color:'#578cab',desc:'每个盲注 +1 次出牌，初始金币 $0',hands:1,money:0},
+  {id:'yellow',name:'金色牌组',color:'#d4a74c',desc:'初始金币 $10',money:10},
+  {id:'green',name:'绿色牌组',color:'#5e9769',desc:'无利息；结算每次剩余出牌 $2、每次剩余弃牌 $1',noInterest:true},
+  {id:'black',name:'黑色牌组',color:'#5d596d',desc:'小丑槽位 +1，每个盲注 -1 次出牌',hands:-1,slots:1},
+];
+const STAKES = [
+  {id:'white',name:'白注',desc:'标准目标与奖励',scale:1},
+  {id:'red',name:'红注',desc:'底注 2 起目标提高 20%',scale:1.2},
+  {id:'gold',name:'金注',desc:'底注 2 起目标提高 40%，每关少 1 次弃牌',scale:1.4,disc:-1},
 ];
 const ANTE_BASE = [0, 300, 800, 2000, 5000, 11000, 20000, 35000, 50000];
 
@@ -911,8 +978,9 @@ function freshDeck() {
              steel: false, glass: false, goldc: false, ed: 0, seal: null });
   return d;
 }
-function newGame(withTut) {
+function newGame(withTut, deckId='classic', stakeId='white') {
   initAudio();
+  const deck=DECKS.find(d=>d.id===deckId),stake=STAKES.find(s=>s.id===stakeId)||STAKES[0];
   S = {
     deckAll: freshDeck(), money: 4, ante: 1, blindIdx: 0,
     levels: {}, jokers: [], cons: [], hand: [], drawPile: [], played: [],
@@ -925,7 +993,12 @@ function newGame(withTut) {
     playCounts: {}, planetsUsed: 0, cardsAdded: 0,
     investN: 0, nextShopHalf: false, nextShopUnc: false,
     anteBoss: null, anteVoucher: null, skipTags: [],
+    deckId:deck?.id||'classic',stakeId:stake.id,tarotsUsed:0,blindPlayed:[],bossHistory:[],
   };
+  S.money=deck?.money??4;
+  S.baseHands+=deck?.hands||0; S.baseDisc+=(deck?.disc||0)+(stake.disc||0);
+  S.jokerSlots+=deck?.slots||0;
+  S.handsLeft=S.baseHands; S.discLeft=S.baseDisc;
   HORDER.forEach(k => { S.levels[k] = 1; S.playCounts[k] = 0; });
   hide('ovStart');
   rollAnte();
@@ -978,12 +1051,19 @@ function restoreCheckpoint() {
   renderAll();
   showBlindSelect();
 }
+function availableBosses(ante) {
+  return BOSSES.filter(b => ante >= (['needle','eye','flint'].includes(b.id)?3:['wall','water','mark'].includes(b.id)?2:1));
+}
 function rollAnte() {
-  const pool = BOSSES.filter(b => S.ante > 1 || !['needle', 'wall', 'water'].includes(b.id));
+  S.bossHistory ||= [];
+  const eligible = availableBosses(S.ante);
+  let pool=eligible.filter(b=>!S.bossHistory.includes(b.id));
+  if(!pool.length) { S.bossHistory=[]; pool=eligible; }
   const mpBoss = MP.on ? BOSSES.find(b => b.id === MP.bossSeq[S.ante - 1]) : null;
   S.anteBoss = mpBoss || randOf(pool);
+  S.bossHistory.push(S.anteBoss.id);
   S.skipTags = [randOf(TAGS), randOf(TAGS)];
-  const vp = VOUCHERS.filter(v => !S.vouchers.includes(v.id));
+  const vp = VOUCHERS.filter(v => !S.vouchers.includes(v.id) && !(S.deckId==='green'&&v.id==='seed'));
   S.anteVoucher = vp.length ? randOf(vp) : null;
 }
 function blindMetaFor(i) {
@@ -993,7 +1073,11 @@ function blindMetaFor(i) {
     { name:'🔶 大盲注', mul:1.5, reward:4 },
     { name:'💀 Boss盲注', mul:2, reward:5 },
   ];
-  return { ...defs[i], target: Math.round(base * defs[i].mul) };
+  const scale=S.ante>1?(STAKES.find(t=>t.id===S.stakeId)?.scale||1):1;
+  let mul=defs[i].mul;
+  if(i===2&&S.anteBoss?.id==='needle')mul=1;
+  if(i===2&&S.anteBoss?.id==='wall')mul*=1.6;
+  return { ...defs[i], target: Math.round(base * mul * scale) };
 }
 function blindMeta() { return blindMetaFor(S.blindIdx); }
 function showBlindSelect() {
@@ -1009,7 +1093,7 @@ function showBlindSelect() {
     const d = document.createElement('div');
     d.className = 'bcol ' + (i === S.blindIdx ? 'cur' : i < S.blindIdx ? 'done' : 'todo');
     let h = '<div class="bname">' + (i === 2 ? (MP.on ? '⚔️ ' : '') + S.anteBoss.name : m.name) + '</div>' +
-      '<div class="btgt">' + fmt(i === 2 && S.anteBoss.id === 'wall' ? Math.round(m.target * 1.6) : m.target) + '</div>' +
+      '<div class="btgt">' + fmt(m.target) + '</div>' +
       '<div class="brw">奖励 $' + m.reward + ' + 结算</div>' +
       '<div class="bbs">' + (i === 2 ? S.anteBoss.desc +
         (MP.on ? '<br><span style="color:#ffd54a">⚔️ 对决：与对手拼总分，低者 -1❤️</span>' : '') : '') + '</div>';
@@ -1057,7 +1141,7 @@ function startBlind() {
   const m = blindMeta();
   S.boss = S.blindIdx === 2 ? S.anteBoss : null;
   S.target = m.target;
-  if (S.boss && S.boss.id === 'wall') S.target = Math.round(S.target * 1.6);
+  S.blindPlayed=[];
   S.score = 0;
   S.handsLeft = S.boss && S.boss.id === 'needle' ? 1 : S.baseHands;
   S.discLeft = S.boss && S.boss.id === 'arm' ? 1 : S.boss && S.boss.id === 'water' ? 0 : S.baseDisc;
@@ -1077,7 +1161,7 @@ function applyTag(t) {
     case 'unc': S.nextShopUnc = true; break;
     case 'invest': S.investN++; break;
     case 'meteor':
-      if (S.cons.length < S.consSlots) S.cons.push({ ...randOf(PLANETS), kind:'planet', price:3 });
+      if (S.cons.length < S.consSlots) S.cons.push({ ...randOf(availablePlanets()), kind:'planet', price:3 });
       else S.money += 3;
       break;
     case 'charm':
@@ -1106,6 +1190,7 @@ function setSort(m) { if (S.busy) return; S.sortMode = m; sortHand(); renderHand
 const SUIT_BOSS = { hearts: 1, spades: 0, club: 2, window: 3 };
 function isDebuffed(c, state = S) {
   if (!state.boss) return false;
+  if(state.boss.id==='mark')return c.rank>=11&&c.rank<=13;
   const t = SUIT_BOSS[state.boss.id];
   return t !== undefined && (c.wild || c.suit === t);
 }
@@ -1193,7 +1278,7 @@ function cardTipHTML(c) {
   if (c.multB) h += '<br>计分时 +' + c.multB + ' 倍率';
   if (c.steel) h += '<br>🛡️ 钢铁：留在手中 ×1.5 倍率';
   if (c.glass) h += '<br>🏺 玻璃：计分 ×2 倍率，25% 碎裂';
-  if (c.goldc) h += '<br>🪙 黄金：计分时 +$3';
+  if (c.goldc) h += '<br>💰 黄金：计分时 +$3';
   if (c.ed) h += '<br>' + EDNAME[c.ed];
   if (c.seal === 'red') h += '<br>🔴 红蜡封：计分时重复触发';
   if (c.seal === 'gold') h += '<br>🟡 金蜡封：计分时 +$3';
@@ -1214,8 +1299,9 @@ PIPS[5]=[...PIPS[4],[50,50]]; PIPS[6]=[...PIPS[4],[18,50],[82,50]];
 PIPS[7]=[...PIPS[6],[50,31]]; PIPS[8]=[...PIPS[7],[50,69]];
 PIPS[9]=[...PIPS[4],[18,37],[82,37],[18,63],[82,63],[50,50]];
 PIPS[10]=[...PIPS[9].slice(0,8),[50,25],[50,75]];
+function suitSVG(c){return '<svg class="suitIcon" viewBox="0 0 24 24" aria-hidden="true"><use href="#suit'+(c.wild?'Wild':c.suit)+'"/></svg>';}
 function facePrint(c) {
-  const suit=c.wild?'✦':SUITS[c.suit], r=c.rank;
+  const suit=suitSVG(c), r=c.rank;
   if(r>10 && r<14) return '<span class="facePip" aria-hidden="true">'+rankName(r)+'<small>'+suit+' '+suit+'</small></span>';
   return '<span class="pips" aria-hidden="true">'+PIPS[r===14?1:r].map(([x,y])=>
     '<i class="'+(r===14?'acePip':'')+'" style="left:'+x+'%;top:'+y+'%">'+suit+'</i>').join('')+'</span>';
@@ -1233,8 +1319,8 @@ function cardEl(c, interactive = false) {
   if (c.wild) en += '<span class="en w">万</span>';
   if (c.seal) en += '<span class="seal ' + c.seal + '"></span>';
   if (c.ed) en += '<span class="edfx ' + ['', 'f', 'h', 'p'][c.ed] + '"></span>';
-  d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2">' + (c.wild ? '🌈' : SUITS[c.suit]) + '</span>' +
-    '<span class="st">' + (c.wild ? '🌈' : SUITS[c.suit]) + '</span>' + facePrint(c) + en;
+  d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2">' + (c.wild ? '✦' : SUITS[c.suit]+'\uFE0E') + '</span>' +
+    '<span class="st">' + (c.wild ? '✦' : SUITS[c.suit]+'\uFE0E') + '</span>' + facePrint(c) + en;
   bindTip(d, () => cardTipHTML(c));
   return d;
 }
@@ -1276,7 +1362,9 @@ function updatePreview() {
     $('prevMult').textContent = lo.mult===hi.mult?fmtM(lo.mult):fmtM(lo.mult)+'–'+fmtM(hi.mult);
     $('scoreEstimate').textContent=(lo.total===hi.total?fmt(lo.total):fmt(lo.total)+'–'+fmt(hi.total))+' 分';
   }
-  $('btnPlay').disabled = S.busy || !sel.length || S.handsLeft <= 0;
+  const forbidden=S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key);
+  if(forbidden)$('scoreEstimate').textContent='本盲注已打出此牌型';
+  $('btnPlay').disabled = S.busy || !sel.length || S.handsLeft <= 0 || forbidden;
   $('btnDiscard').disabled = S.busy || !sel.length || S.discLeft <= 0;
 }
 function renderStats() {
@@ -1311,6 +1399,9 @@ function jokerDesc(j) {
   if (j.id === 'constel') d += '（当前 ×' + (1 + 0.1 * S.planetsUsed).toFixed(1) + '）';
   if (j.id === 'holog') d += '（当前 ×' + (1 + 0.25 * S.cardsAdded).toFixed(2) + '）';
   if (j.id === 'stencil') d += '（当前 ×' + Math.max(1, S.jokerSlots - S.jokers.length + 1) + '）';
+  if (j.id === 'fortune') d += '（当前 +'+S.tarotsUsed+'）';
+  if (j.id === 'boots') d += '（当前 +'+2*Math.floor(S.money/5)+'）';
+  if (j.id === 'compass') d += '（已打出 '+Object.values(S.playCounts).filter(n=>n>0).length+' 种）';
   return d;
 }
 function sellPrice(j) { return j.sell || Math.max(1, Math.ceil(j.price / 2)); }
@@ -1387,9 +1478,10 @@ function scoreHand(state, cards, random = Math.random) {
       if (j.id==='scary' && card.rank>=11 && card.rank<=13) addC=30;
       if (j.id==='even' && card.rank<=10 && card.rank%2===0) addM=4;
       if (j.id==='odd' && (card.rank===14 || (card.rank<=9 && card.rank%2===1))) addC=31;
+      if (j.id==='scholar' && card.rank===14) { addC=20; addM=4; }
       if (addC || addM || factor!==1) {
         chips+=addC; mult=(mult+addM)*factor;
-        emit('joker',j.uid,addC?'+'+addC+' 筹码':addM?'+'+addM+' 倍率':'×'+factor+' 倍率');
+        emit('joker',j.uid,addC?'+'+addC+' 筹码'+(addM?' / +'+addM+' 倍率':''):addM?'+'+addM+' 倍率':'×'+factor+' 倍率');
       }
     }
   };
@@ -1425,6 +1517,17 @@ function scoreHand(state, cards, random = Math.random) {
       case 'abstract': m=state.jokers.length*3; break;
       case 'trio': if(hand.contains.trips) x=3; break;
       case 'family': if(hand.contains.quads) x=4; break;
+      case 'duo': if(hand.contains.pair) x=2; break;
+      case 'tribe': if(hand.contains.flush) x=2; break;
+      case 'order': if(hand.contains.straight) x=3; break;
+      case 'blackboard': {
+        const remaining=state.hand.filter(k=>!selected.has(k.id));
+        if(remaining.length&&remaining.every(k=>!isDebuffed(k,state)&&(k.wild||k.suit===0||k.suit===2)))x=3;
+        break;
+      }
+      case 'boots': m=2*Math.floor(state.money/5); break;
+      case 'fortune': m=state.tarotsUsed||0; break;
+      case 'compass': c=25*new Set([...Object.keys(state.playCounts).filter(k=>state.playCounts[k]>0),hand.key]).size; break;
       case 'misprint': m=Math.floor(random()*24); break;
       case 'gros': m=15; break;
       case 'nova': m=(state.playCounts[hand.key]||0)+1; break;
@@ -1475,6 +1578,7 @@ async function doPlay() {
   const sel = S.hand.filter(c => c.sel);
   if (!sel.length) { msg('请先选择 1~5 张牌', 1); return; }
   if (S.boss && S.boss.id === 'psychic' && sel.length !== 5) { msg('🧿 通灵者：必须打出恰好 5 张牌！', 1); return; }
+  if(S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key))return msg('👁️ 独眼：本盲注不能重复打出同一种牌型。',1);
   persistRun();
   const activeRun=S;
   const result=scoreHand({...S,handsLeft:S.handsLeft-1},sel);
@@ -1485,6 +1589,7 @@ async function doPlay() {
 
   const ev = result.hand;
   S.playCounts[ev.key]++;
+  S.blindPlayed ||= []; S.blindPlayed.push(ev.key);
   const base = result.base;
   let chips = base.chips, mult = base.mult;
   $('prevName').textContent = HANDS[ev.key].name;
@@ -1569,7 +1674,7 @@ async function doPlay() {
   if (S.boss && S.boss.id === 'hook' && S.hand.length) {
     for (let i = 0; i < 2 && S.hand.length; i++)
       S.hand.splice(Math.floor(Math.random() * S.hand.length), 1);
-    msg('🪝 钩爪抓走了你 2 张手牌！', 1);
+    msg('⚓ 钩爪抓走了你 2 张手牌！', 1);
   }
   drawTo(effHandSize());
   S.busy = false;
@@ -1598,14 +1703,16 @@ function beatBlind() {
   if (S.screen!=='play' && S.screen!=='duelwait') return;
   sfxWin();
   const m = blindMeta();
-  const bounty = S.jokers.filter(j => j.id === 'bounty').length * 3;
+  const bounty = S.jokers.filter(j => j.id === 'bounty').length * Math.min(6,S.discLeft*2);
   const goldenN = S.jokers.filter(j => j.id === 'golden').length * 4;
-  const interest = Math.min(S.interestCap, Math.floor(S.money / 5));
-  const handBonus = S.handsLeft;
+  const green=S.deckId==='green';
+  const interest = green?0:Math.min(S.interestCap, Math.floor(S.money / 5));
+  const handBonus = S.handsLeft*(green?2:1),discardBonus=green?S.discLeft:0;
   let invest = 0;
   if (S.boss && S.investN) { invest = S.investN * 15; S.investN = 0; }
-  const total = m.reward + bounty + goldenN + interest + handBonus + invest;
-  S.payout = [['盲注奖励',m.reward], ['剩余出牌 ×'+handBonus,handBonus], ['利息',interest]];
+  const total = m.reward + bounty + goldenN + interest + handBonus + invest + discardBonus;
+  S.payout = [['盲注奖励',m.reward], ['剩余出牌 '+S.handsLeft+' × $'+(green?2:1),handBonus], ['利息',interest]];
+  if(green)S.payout.push(['剩余弃牌',discardBonus]);
   for (const [name,value] of [['赏金猎人',bounty],['黄金小丑',goldenN],['投资标签',invest]]) {
     if (value) S.payout.push([name,value]);
   }
@@ -1623,6 +1730,7 @@ function beatBlind() {
   const wasWin = !MP.on && S.ante === 8 && S.blindIdx === 2;
   S.winPending=wasWin;
   if (wasWin) {
+    if(typeof recordVictory==='function')recordVictory();
     $('winStats').innerHTML = '最高单次得分：<span class="gold">' + fmt(S.bestHand) + '</span>　总出牌数：<span class="blue">' + S.totHands + '</span>';
     show('ovWin');
   } else show('ovCash');
@@ -1675,8 +1783,8 @@ const PACKS = [
   { id:'standard', ic:'🂡', name:'标准包', price:4, desc:'3 选 1 强化扑克牌，永久加入牌组' },
   { id:'spectral', ic:'👻', name:'幽灵包', price:6, desc:'2 选 1 幻灵牌，立即生效' },
 ];
-function rollJokerItem(forceUnc) {
-  const owned = new Set(S.jokers.map(j => j.id));
+function rollJokerItem(forceUnc, exclude=[]) {
+  const owned = new Set([...S.jokers.map(j => j.id),...exclude]);
   let pool = JDEFS.filter(j => !owned.has(j.id));
   if (forceUnc) pool = pool.filter(j => j.rar >= 1);
   if (!pool.length) pool = JDEFS.slice();
@@ -1700,7 +1808,14 @@ function shopPrice(base) {
   return Math.max(1, Math.ceil(base * S.shop.disc));
 }
 function genShopMain() {
-  S.shop.jokers = [rollJokerItem(S.shop.unc), rollJokerItem(S.shop.unc)];
+  const first=rollJokerItem(S.shop.unc);
+  S.shop.jokers = [first, rollJokerItem(S.shop.unc,[first.id])];
+  // The first shop offers an affordable scoring anchor, without reroll farming.
+  if(S.ante===1&&S.blindIdx===0&&!S.jokers.length&&!S.shop.unc&&!S.shop.opened) {
+    S.shop.jokers[0]={...randOf(JDEFS.filter(j=>['joker','jolly','sly','scary','even','odd'].includes(j.id))),sold:false,ed:0};
+    if(S.shop.jokers[1].id===S.shop.jokers[0].id)S.shop.jokers[1]=rollJokerItem(false,[S.shop.jokers[0].id]);
+  }
+  S.shop.opened=true;
   if (S.shop.unc && !S.shop.freeUsed) S.shop.jokers[0].price = 0;
   S.shop.cons = [
     { ...randOf(availablePlanets()), kind: 'planet', price: 3, sold: false },
@@ -1779,7 +1894,7 @@ function buyJoker(i) {
   const j = S.shop.jokers[i];
   if (j.sold) return;
   const p = shopPrice(j.price);
-  if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满！点自己的小丑两次可卖出', 1); return; }
+  if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满，点击持有的小丑可查看并卖出。', 1); return; }
   if (S.money < p) { msg('钱不够！', 1); return; }
   S.money -= p;
   if (j.price === 0) S.shop.freeUsed = true;
@@ -1874,8 +1989,7 @@ function packOptions(type) {
   if(type==='celestial') return unique(availablePlanets(),3);
   if(type==='buffoon') {
     const a=rollJokerItem(false);
-    let b=rollJokerItem(false);
-    if(b.id===a.id) b={...randOf(JDEFS.filter(j=>j.id!==a.id)),sold:false,ed:0};
+    const b=rollJokerItem(false,[a.id]);
     return [a,b];
   }
   if(type==='standard') return [randCard(),randCard(),randCard()];
@@ -1976,7 +2090,8 @@ function useCons(i) {
   }
   // 塔罗：id -> [最少选牌, 最多选牌]
   const NEED = { magician:[1,2], empress:[1,2], lovers:[1,1], death:[2,2], tower:[1,2],
-                 devil:[1,1], chariot:[1,1], justice:[1,1], sun:[1,3], world:[1,3] };
+                 devil:[1,1], chariot:[1,1], justice:[1,1], sun:[1,3], world:[1,3],
+                 star:[1,3],mooncard:[1,3],strength:[1,2] };
   const sel = S.hand.filter(c => c.sel);
   if (NEED[t.id]) {
     if (S.screen !== 'play') { msg('这张塔罗牌需要在对局中选中手牌后使用', 1); return; }
@@ -2018,6 +2133,10 @@ function useCons(i) {
     case 'justice': clearEnh(sel[0]); sel[0].glass = true; break;
     case 'sun': sel.forEach(c => { c.suit = 1; c.wild = false; }); break;
     case 'world': sel.forEach(c => { c.suit = 0; c.wild = false; }); break;
+    case 'star': sel.forEach(c => { c.suit = 3; c.wild = false; }); break;
+    case 'mooncard': sel.forEach(c => { c.suit = 2; c.wild = false; }); break;
+    case 'strength': sel.forEach(c => { c.rank=c.rank===14?2:c.rank+1; }); sortHand(); break;
+    case 'temperance': S.money+=Math.min(30,S.jokers.reduce((n,j)=>n+sellPrice(j),0)); break;
     case 'emperor': {
       let got = 0;
       while (S.cons.length < S.consSlots + 1 && got < 2) {  // +1：自己占的槽即将释放
@@ -2030,6 +2149,7 @@ function useCons(i) {
     }
   }
   sfxTarot();
+  S.tarotsUsed=(S.tarotsUsed||0)+1;
   S.cons.splice(i, 1);
   S.hand.forEach(c => c.sel = false);
   renderAll(); if (S.shop) renderShop();
@@ -2051,7 +2171,8 @@ function openChart() {
 }
 function openInfo() {
   if (!S) return;
-  let h = '<p style="text-align:left">💰 金钱 <b class="gold">$' + S.money + '</b>　🏆 最高单次 <b class="gold">' + fmt(S.bestHand) + '</b>　🃏 总出牌 <b class="blue">' + S.totHands + '</b></p>' +
+  let h = '<p>'+ (DECKS.find(d=>d.id===S.deckId)?.name||'经典牌组')+' · '+(STAKES.find(t=>t.id===S.stakeId)?.name||'白注')+'</p>'+
+    '<p style="text-align:left">💰 金钱 <b class="gold">$' + S.money + '</b>　🏆 最高单次 <b class="gold">' + fmt(S.bestHand) + '</b>　🃏 总出牌 <b class="blue">' + S.totHands + '</b></p>' +
     '<p style="text-align:left">🎴 手牌上限 <b>' + S.handSize + '</b>　🂠 牌组张数 <b>' + S.deckAll.length + '</b>　🌌 已用星球 <b>' + S.planetsUsed + '</b>　➕ 已加入牌 <b>' + S.cardsAdded + '</b></p>' +
     '<p style="text-align:left">🃏 出牌/盲注 <b>' + S.baseHands + '</b>　🗑️ 弃牌/盲注 <b>' + S.baseDisc + '</b>　利息上限 <b class="green">$' + S.interestCap + '</b></p>' +
     '<p style="text-align:left;color:#57e6ff;margin-top:8px">🎟️ 已拥有的优惠券：</p>';
@@ -2090,11 +2211,11 @@ const TUT = [
   { sel: '#previewBox', title: '3️⃣ 得分公式（重点！）', body:
     '得分 = (<b class="blue">牌型基础筹码 + 牌面筹码</b>) × <b class="red">倍率</b><br>牌面筹码：数字牌=面值，J/Q/K=10，<b class="gold">A=11</b>。<br>例：打出 ♥K ♦K = 对子。基础 10 筹码 ×2 倍率，两张 K 各 +10 筹码<br>→ (10+10+10) × 2 = <b class="gold">60 分</b>。只有参与牌型的牌才计分！' },
   { sel: '#btnRow', title: '4️⃣ 出牌与弃牌', body:
-    '<b class="blue">出牌</b>：打出选中的牌并计分，每个盲注只有 <b class="gold">4 次</b>！<br><b class="red">弃牌</b>：把选中的牌扔掉换新牌，<b class="gold">3 次</b>机会，不计分。<br>策略核心：用弃牌凑大牌型，别浪费出牌次数打高牌！' },
+    '<b class="blue">出牌</b>：打出选中的牌并计分，本局每个普通盲注有 <b class="gold">{hands} 次</b>。<br><b class="red">弃牌</b>：把选中的牌扔掉换新牌，<b class="gold">{discards} 次</b>机会，不计分。<br>用弃牌凑牌型；小丑构筑也能让高牌成为主力。' },
   { sel: '#blindBox', title: '5️⃣ 盲注（关卡）', body:
     '每个底注有 3 关：<b>🔸小盲注 → 🔶大盲注 → 💀Boss盲注</b>，目标分数越来越高。<br>Boss 有特殊规则（比如禁用某花色、只能出 1 手牌），选盲注时会提前展示。<br><b class="gold">小盲/大盲可以跳过</b>，换一个标签奖励（半价商店、免费小丑等）；Boss 必须挑战。<br>在出牌次数耗尽前把「当前得分」刷过「目标分数」就赢！' },
   { sel: '#statsBox', title: '6️⃣ 金钱与利息', body:
-    '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（上限 $5）。<b class="gold">存钱到 $25 吃满利息</b>是常见运营思路。' },
+    '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（通常上限 $5）。绿色牌组改为每次剩余出牌 $2、弃牌 $1，没有利息。' },
   { sel: '#jokerRow', title: '7️⃣ 小丑牌（构筑核心！）', body:
     '商店里买的<b class="gold">小丑牌</b>会显示在这里（最多 5 张），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来，分数会滚雪球。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
@@ -2118,7 +2239,7 @@ function tutShow() {
     if (el) { el.classList.add('tut-hl'); tutHl = el; }
   }
   $('tutTitle').textContent = t.title;
-  $('tutBody').innerHTML = t.body;
+  $('tutBody').innerHTML = t.body.replace('{hands}',S.baseHands).replace('{discards}',S.baseDisc);
   $('tutStep').textContent = (tutI + 1) + ' / ' + TUT.length;
   $('tutPrev').style.visibility = tutI === 0 ? 'hidden' : 'visible';
   $('tutNext').textContent = tutI === TUT.length - 1 ? '完成 ✓' : '下一步';
@@ -2263,10 +2384,11 @@ function mpOnEvent(d) {
     for (const id in d.names) if (id !== MP.pid) MP.oppName = d.names[id];
     if (MP.host) {
       // 房主生成 30 个底注的 Boss 序列，保证双方每轮对决面对同一 Boss
-      const seq = [];
+      const seq = [];let seen=new Set();
       for (let a = 1; a <= 30; a++) {
-        const pool = BOSSES.filter(b => a > 1 || !['needle', 'wall', 'water'].includes(b.id));
-        seq.push(randOf(pool).id);
+        const eligible=availableBosses(a);let pool=eligible.filter(b=>!seen.has(b.id));
+        if(!pool.length){seen=new Set();pool=eligible;}
+        const id=randOf(pool).id;seq.push(id);seen.add(id);
       }
       mpSend('start', { bossSeq: seq, lives: 2 });
       mpBegin(seq, 2);
@@ -2397,6 +2519,11 @@ let lastWrite='', storageUnavailable=false;
 function normalizeRunState(input) {
   if(!input || !Array.isArray(input.deckAll) || !Array.isArray(input.hand) || !Array.isArray(input.drawPile)) throw Error('牌组格式');
   const s=input, finite=n=>Number.isFinite(n)&&n>=0;
+  s.deckId??='classic'; s.stakeId??='white'; s.tarotsUsed??=0; s.blindPlayed??=[];s.bossHistory??=[];
+  if(!['classic',...DECKS.map(d=>d.id)].includes(s.deckId)||!STAKES.some(t=>t.id===s.stakeId)||
+    !Number.isInteger(s.tarotsUsed)||s.tarotsUsed<0||!Array.isArray(s.blindPlayed)||
+    s.blindPlayed.some(k=>!HORDER.includes(k))||!Array.isArray(s.bossHistory)||
+    s.bossHistory.some(id=>!BOSSES.some(b=>b.id===id)))throw Error('局内规则损坏');
   for(const key of ['money','ante','blindIdx','handsLeft','discLeft','target','score','baseHands','baseDisc',
     'handSize','jokerSlots','consSlots','interestCap','rerollBase','discount','totHands','bestHand','planetsUsed','cardsAdded','investN'])
     if(!finite(s[key])) throw Error('数值损坏');
@@ -2471,7 +2598,7 @@ function normalizeRunState(input) {
 function decodeRun(raw) {
   try {
     const data=JSON.parse(raw);
-    if(!data || ![1,2].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
+    if(!data || ![1,2,3].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
     data.state=normalizeRunState(data.state);
     const checkpoint=normalizeRunState(JSON.parse(data.checkpoint));
     data.checkpoint=JSON.stringify(checkpoint);
@@ -2491,7 +2618,7 @@ function readRun() {
 function persistRun() {
   if(!S||MP.on||S.busy||!saveStr) return;
   const state={...S,hand:S.hand.map(c=>c.id),drawPile:S.drawPile.map(c=>c.id),played:[],sellId:null};
-  const raw=JSON.stringify({version:2,cid,state,checkpoint:saveStr,meta:saveMeta});
+  const raw=JSON.stringify({version:3,cid,state,checkpoint:saveStr,meta:saveMeta});
   if(raw===lastWrite) return;
   try {
     const previous=localStorage.getItem(RUN_KEY);
@@ -2508,10 +2635,11 @@ function refreshTitle() {
   if(slot) $('resumeBtn').textContent='继续游戏 · 底注 '+slot.state.ante+(slot.recovered?' · 备份':'');
 }
 function startSolo(tutorial) {
+  if(!tutorial){openSetup();return;}
   if(readRun()) {
     hide('ovStart'); show('ovRestart');
-    $('confirmNew').onclick=()=>{ hide('ovRestart'); newGame(tutorial); };
-  } else newGame(tutorial);
+    $('confirmNew').onclick=()=>{ hide('ovRestart'); newGame(true,'red'); };
+  } else newGame(true,'red');
 }
 function resumeGame() {
   const slot=readRun();
@@ -2607,7 +2735,8 @@ addEventListener('keydown',e=>{
       e.preventDefault(); controls[e.shiftKey?controls.length-1:0].focus();
     }
   }
-  if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore'].includes(top.id)) hide(top.id);
+  if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection'].includes(top.id)) hide(top.id);
+  if(e.key==='Escape'&&top.id==='ovSetup'){hide('ovSetup');show('ovStart');}
 });
 let owned=null, sellConfirm=false;
 function openMenu() {
@@ -2691,6 +2820,84 @@ function exitToTitle() {
   tutEnd(); refreshTitle(); show('ovStart');
 }
 applySettings(); syncDialogs();
+
+// ── collection ──
+const PROFILE_KEY='pixel-balatro.profile.v1';
+let profile={wins:{}};
+try {
+  const saved=JSON.parse(localStorage.getItem(PROFILE_KEY));
+  if(saved?.wins&&typeof saved.wins==='object')profile.wins=saved.wins;
+} catch {}
+let setupDeck='red',setupStake='white',collectionTab='jokers';
+function openSetup(){hide('ovStart');renderSetup();show('ovSetup');}
+function renderSetup(){
+  const decks=$('deckChoices');decks.replaceChildren();
+  for(const deck of DECKS){
+    const b=document.createElement('button');b.className='deckChoice';
+    b.style.setProperty('--deck-color',deck.color);b.setAttribute('aria-pressed',String(setupDeck===deck.id));
+    b.innerHTML='<span class="deckMini" aria-hidden="true">✦</span><b>'+deck.name+'</b><span>'+deck.desc+'</span>';
+    b.onclick=()=>{setupDeck=deck.id;renderSetup();};decks.append(b);
+  }
+  const stakes=$('stakeChoices');stakes.replaceChildren();
+  for(const stake of STAKES){
+    const b=document.createElement('button');b.className='sbtn';b.textContent=stake.name;
+    b.setAttribute('aria-pressed',String(setupStake===stake.id));
+    b.onclick=()=>{setupStake=stake.id;renderSetup();};stakes.append(b);
+  }
+  $('stakeRule').textContent=STAKES.find(s=>s.id===setupStake).desc;
+  $('setupRecord').textContent=profile.wins[setupDeck+':'+setupStake]?'已通关 ✓':'';
+}
+function beginConfiguredRun(){
+  const begin=()=>{hide('ovRestart');hide('ovSetup');newGame(false,setupDeck,setupStake);};
+  if(readRun()){hide('ovSetup');show('ovRestart');$('confirmNew').onclick=begin;}
+  else begin();
+}
+function recordVictory(){
+  const key=(S.deckId||'classic')+':'+(S.stakeId||'white');
+  profile.wins[key]={best:Math.max(S.bestHand,Number(profile.wins[key]?.best)||0)};
+  try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile));}catch{msg('通关记录未能保存，请检查存储权限。',true);}
+}
+function openCollection(){renderCollection();show('ovCollection');}
+function renderCollection(){
+  const tabs=$('collectionTabs');tabs.replaceChildren();
+  for(const [id,name] of [['jokers','小丑'],['tarots','塔罗'],['planets','星球'],['bosses','Boss'],['records','通关']]){
+    const b=document.createElement('button');b.className='sbtn';b.textContent=name;b.setAttribute('aria-pressed',String(collectionTab===id));
+    b.onclick=()=>{collectionTab=id;$('collectionSearch').value='';renderCollection();};tabs.append(b);
+  }
+  const search=$('collectionSearch');search.hidden=collectionTab==='records';
+  const body=$('collectionBody');body.replaceChildren();
+  if(collectionTab==='records'){
+    const table=document.createElement('table');table.className='recordTable';
+    table.innerHTML='<thead><tr><th>牌组</th>'+STAKES.map(s=>'<th>'+s.name+'</th>').join('')+'</tr></thead><tbody>'+DECKS.map(d=>
+      '<tr><th>'+d.name+'</th>'+STAKES.map(s=>'<td>'+ (profile.wins[d.id+':'+s.id]?'✓':'—')+'</td>').join('')+'</tr>').join('')+'</tbody>';
+    body.append(table);return;
+  }
+  const pool=collectionTab==='jokers'?JDEFS:collectionTab==='tarots'?TAROTS:collectionTab==='bosses'?BOSSES:PLANETS;
+  const query=search.value.trim().toLowerCase();
+  for(const item of pool){
+    const desc=collectionTab==='planets'?HANDS[item.key].name+'：每级 +'+HANDS[item.key].incC+' 筹码 / +'+HANDS[item.key].incM+' 倍率':item.desc;
+    if(query&&!(item.name+' '+desc).toLowerCase().includes(query))continue;
+    const row=document.createElement('article');row.className='catalogEntry';
+    const name=document.createElement('h3');name.textContent=(item.ic?item.ic+' ':'')+item.name;
+    const p=document.createElement('p');p.textContent=desc;
+    row.append(name,p);
+    if(collectionTab==='jokers'){const cost=document.createElement('span');cost.textContent=RARNAME[item.rar]+' · $'+item.price;row.append(cost);}
+    body.append(row);
+  }
+  if(!body.children.length)body.textContent='没有匹配的卡牌';
+}
+// Called only by the trusted native wrapper. Returns whether Android should leave the activity.
+function nativeBack(){
+  if($('tutBox').style.display==='block'){tutEnd();return false;}
+  const top=activeDialog();
+  if(top?.id==='ovStart')return true;
+  if(top?.id==='ovSetup'){hide('ovSetup');show('ovStart');return false;}
+  if(top?.id==='ovMpLobby'){mpCancel();return false;}
+  if(top?.id==='ovRestart'){hide('ovRestart');show('ovStart');return false;}
+  if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave'].includes(top.id)){hide(top.id);return false;}
+  if(top?.id==='ovPack'){closePack();return false;}
+  openMenu();return false;
+}
 </script>
 </body>
 </html>

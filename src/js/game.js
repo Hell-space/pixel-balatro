@@ -11,8 +11,9 @@ function freshDeck() {
              steel: false, glass: false, goldc: false, ed: 0, seal: null });
   return d;
 }
-function newGame(withTut) {
+function newGame(withTut, deckId='classic', stakeId='white') {
   initAudio();
+  const deck=DECKS.find(d=>d.id===deckId),stake=STAKES.find(s=>s.id===stakeId)||STAKES[0];
   S = {
     deckAll: freshDeck(), money: 4, ante: 1, blindIdx: 0,
     levels: {}, jokers: [], cons: [], hand: [], drawPile: [], played: [],
@@ -25,7 +26,12 @@ function newGame(withTut) {
     playCounts: {}, planetsUsed: 0, cardsAdded: 0,
     investN: 0, nextShopHalf: false, nextShopUnc: false,
     anteBoss: null, anteVoucher: null, skipTags: [],
+    deckId:deck?.id||'classic',stakeId:stake.id,tarotsUsed:0,blindPlayed:[],bossHistory:[],
   };
+  S.money=deck?.money??4;
+  S.baseHands+=deck?.hands||0; S.baseDisc+=(deck?.disc||0)+(stake.disc||0);
+  S.jokerSlots+=deck?.slots||0;
+  S.handsLeft=S.baseHands; S.discLeft=S.baseDisc;
   HORDER.forEach(k => { S.levels[k] = 1; S.playCounts[k] = 0; });
   hide('ovStart');
   rollAnte();
@@ -78,12 +84,19 @@ function restoreCheckpoint() {
   renderAll();
   showBlindSelect();
 }
+function availableBosses(ante) {
+  return BOSSES.filter(b => ante >= (['needle','eye','flint'].includes(b.id)?3:['wall','water','mark'].includes(b.id)?2:1));
+}
 function rollAnte() {
-  const pool = BOSSES.filter(b => S.ante > 1 || !['needle', 'wall', 'water'].includes(b.id));
+  S.bossHistory ||= [];
+  const eligible = availableBosses(S.ante);
+  let pool=eligible.filter(b=>!S.bossHistory.includes(b.id));
+  if(!pool.length) { S.bossHistory=[]; pool=eligible; }
   const mpBoss = MP.on ? BOSSES.find(b => b.id === MP.bossSeq[S.ante - 1]) : null;
   S.anteBoss = mpBoss || randOf(pool);
+  S.bossHistory.push(S.anteBoss.id);
   S.skipTags = [randOf(TAGS), randOf(TAGS)];
-  const vp = VOUCHERS.filter(v => !S.vouchers.includes(v.id));
+  const vp = VOUCHERS.filter(v => !S.vouchers.includes(v.id) && !(S.deckId==='green'&&v.id==='seed'));
   S.anteVoucher = vp.length ? randOf(vp) : null;
 }
 function blindMetaFor(i) {
@@ -93,7 +106,11 @@ function blindMetaFor(i) {
     { name:'🔶 大盲注', mul:1.5, reward:4 },
     { name:'💀 Boss盲注', mul:2, reward:5 },
   ];
-  return { ...defs[i], target: Math.round(base * defs[i].mul) };
+  const scale=S.ante>1?(STAKES.find(t=>t.id===S.stakeId)?.scale||1):1;
+  let mul=defs[i].mul;
+  if(i===2&&S.anteBoss?.id==='needle')mul=1;
+  if(i===2&&S.anteBoss?.id==='wall')mul*=1.6;
+  return { ...defs[i], target: Math.round(base * mul * scale) };
 }
 function blindMeta() { return blindMetaFor(S.blindIdx); }
 function showBlindSelect() {
@@ -109,7 +126,7 @@ function showBlindSelect() {
     const d = document.createElement('div');
     d.className = 'bcol ' + (i === S.blindIdx ? 'cur' : i < S.blindIdx ? 'done' : 'todo');
     let h = '<div class="bname">' + (i === 2 ? (MP.on ? '⚔️ ' : '') + S.anteBoss.name : m.name) + '</div>' +
-      '<div class="btgt">' + fmt(i === 2 && S.anteBoss.id === 'wall' ? Math.round(m.target * 1.6) : m.target) + '</div>' +
+      '<div class="btgt">' + fmt(m.target) + '</div>' +
       '<div class="brw">奖励 $' + m.reward + ' + 结算</div>' +
       '<div class="bbs">' + (i === 2 ? S.anteBoss.desc +
         (MP.on ? '<br><span style="color:#ffd54a">⚔️ 对决：与对手拼总分，低者 -1❤️</span>' : '') : '') + '</div>';
@@ -157,7 +174,7 @@ function startBlind() {
   const m = blindMeta();
   S.boss = S.blindIdx === 2 ? S.anteBoss : null;
   S.target = m.target;
-  if (S.boss && S.boss.id === 'wall') S.target = Math.round(S.target * 1.6);
+  S.blindPlayed=[];
   S.score = 0;
   S.handsLeft = S.boss && S.boss.id === 'needle' ? 1 : S.baseHands;
   S.discLeft = S.boss && S.boss.id === 'arm' ? 1 : S.boss && S.boss.id === 'water' ? 0 : S.baseDisc;
@@ -177,7 +194,7 @@ function applyTag(t) {
     case 'unc': S.nextShopUnc = true; break;
     case 'invest': S.investN++; break;
     case 'meteor':
-      if (S.cons.length < S.consSlots) S.cons.push({ ...randOf(PLANETS), kind:'planet', price:3 });
+      if (S.cons.length < S.consSlots) S.cons.push({ ...randOf(availablePlanets()), kind:'planet', price:3 });
       else S.money += 3;
       break;
     case 'charm':
@@ -206,6 +223,7 @@ function setSort(m) { if (S.busy) return; S.sortMode = m; sortHand(); renderHand
 const SUIT_BOSS = { hearts: 1, spades: 0, club: 2, window: 3 };
 function isDebuffed(c, state = S) {
   if (!state.boss) return false;
+  if(state.boss.id==='mark')return c.rank>=11&&c.rank<=13;
   const t = SUIT_BOSS[state.boss.id];
   return t !== undefined && (c.wild || c.suit === t);
 }

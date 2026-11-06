@@ -26,6 +26,7 @@ async function doPlay() {
   const sel = S.hand.filter(c => c.sel);
   if (!sel.length) { msg('请先选择 1~5 张牌', 1); return; }
   if (S.boss && S.boss.id === 'psychic' && sel.length !== 5) { msg('🧿 通灵者：必须打出恰好 5 张牌！', 1); return; }
+  if(S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key))return msg('👁️ 独眼：本盲注不能重复打出同一种牌型。',1);
   persistRun();
   const activeRun=S;
   const result=scoreHand({...S,handsLeft:S.handsLeft-1},sel);
@@ -36,6 +37,7 @@ async function doPlay() {
 
   const ev = result.hand;
   S.playCounts[ev.key]++;
+  S.blindPlayed ||= []; S.blindPlayed.push(ev.key);
   const base = result.base;
   let chips = base.chips, mult = base.mult;
   $('prevName').textContent = HANDS[ev.key].name;
@@ -120,7 +122,7 @@ async function doPlay() {
   if (S.boss && S.boss.id === 'hook' && S.hand.length) {
     for (let i = 0; i < 2 && S.hand.length; i++)
       S.hand.splice(Math.floor(Math.random() * S.hand.length), 1);
-    msg('🪝 钩爪抓走了你 2 张手牌！', 1);
+    msg('⚓ 钩爪抓走了你 2 张手牌！', 1);
   }
   drawTo(effHandSize());
   S.busy = false;
@@ -149,14 +151,16 @@ function beatBlind() {
   if (S.screen!=='play' && S.screen!=='duelwait') return;
   sfxWin();
   const m = blindMeta();
-  const bounty = S.jokers.filter(j => j.id === 'bounty').length * 3;
+  const bounty = S.jokers.filter(j => j.id === 'bounty').length * Math.min(6,S.discLeft*2);
   const goldenN = S.jokers.filter(j => j.id === 'golden').length * 4;
-  const interest = Math.min(S.interestCap, Math.floor(S.money / 5));
-  const handBonus = S.handsLeft;
+  const green=S.deckId==='green';
+  const interest = green?0:Math.min(S.interestCap, Math.floor(S.money / 5));
+  const handBonus = S.handsLeft*(green?2:1),discardBonus=green?S.discLeft:0;
   let invest = 0;
   if (S.boss && S.investN) { invest = S.investN * 15; S.investN = 0; }
-  const total = m.reward + bounty + goldenN + interest + handBonus + invest;
-  S.payout = [['盲注奖励',m.reward], ['剩余出牌 ×'+handBonus,handBonus], ['利息',interest]];
+  const total = m.reward + bounty + goldenN + interest + handBonus + invest + discardBonus;
+  S.payout = [['盲注奖励',m.reward], ['剩余出牌 '+S.handsLeft+' × $'+(green?2:1),handBonus], ['利息',interest]];
+  if(green)S.payout.push(['剩余弃牌',discardBonus]);
   for (const [name,value] of [['赏金猎人',bounty],['黄金小丑',goldenN],['投资标签',invest]]) {
     if (value) S.payout.push([name,value]);
   }
@@ -174,6 +178,7 @@ function beatBlind() {
   const wasWin = !MP.on && S.ante === 8 && S.blindIdx === 2;
   S.winPending=wasWin;
   if (wasWin) {
+    if(typeof recordVictory==='function')recordVictory();
     $('winStats').innerHTML = '最高单次得分：<span class="gold">' + fmt(S.bestHand) + '</span>　总出牌数：<span class="blue">' + S.totHands + '</span>';
     show('ovWin');
   } else show('ovCash');

@@ -112,10 +112,11 @@ function mpOnEvent(d) {
     for (const id in d.names) if (id !== MP.pid) MP.oppName = d.names[id];
     if (MP.host) {
       // 房主生成 30 个底注的 Boss 序列，保证双方每轮对决面对同一 Boss
-      const seq = [];
+      const seq = [];let seen=new Set();
       for (let a = 1; a <= 30; a++) {
-        const pool = BOSSES.filter(b => a > 1 || !['needle', 'wall', 'water'].includes(b.id));
-        seq.push(randOf(pool).id);
+        const eligible=availableBosses(a);let pool=eligible.filter(b=>!seen.has(b.id));
+        if(!pool.length){seen=new Set();pool=eligible;}
+        const id=randOf(pool).id;seq.push(id);seen.add(id);
       }
       mpSend('start', { bossSeq: seq, lives: 2 });
       mpBegin(seq, 2);

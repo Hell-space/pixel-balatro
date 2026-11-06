@@ -4,6 +4,11 @@ let lastWrite='', storageUnavailable=false;
 function normalizeRunState(input) {
   if(!input || !Array.isArray(input.deckAll) || !Array.isArray(input.hand) || !Array.isArray(input.drawPile)) throw Error('牌组格式');
   const s=input, finite=n=>Number.isFinite(n)&&n>=0;
+  s.deckId??='classic'; s.stakeId??='white'; s.tarotsUsed??=0; s.blindPlayed??=[];s.bossHistory??=[];
+  if(!['classic',...DECKS.map(d=>d.id)].includes(s.deckId)||!STAKES.some(t=>t.id===s.stakeId)||
+    !Number.isInteger(s.tarotsUsed)||s.tarotsUsed<0||!Array.isArray(s.blindPlayed)||
+    s.blindPlayed.some(k=>!HORDER.includes(k))||!Array.isArray(s.bossHistory)||
+    s.bossHistory.some(id=>!BOSSES.some(b=>b.id===id)))throw Error('局内规则损坏');
   for(const key of ['money','ante','blindIdx','handsLeft','discLeft','target','score','baseHands','baseDisc',
     'handSize','jokerSlots','consSlots','interestCap','rerollBase','discount','totHands','bestHand','planetsUsed','cardsAdded','investN'])
     if(!finite(s[key])) throw Error('数值损坏');
@@ -78,7 +83,7 @@ function normalizeRunState(input) {
 function decodeRun(raw) {
   try {
     const data=JSON.parse(raw);
-    if(!data || ![1,2].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
+    if(!data || ![1,2,3].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
     data.state=normalizeRunState(data.state);
     const checkpoint=normalizeRunState(JSON.parse(data.checkpoint));
     data.checkpoint=JSON.stringify(checkpoint);
@@ -98,7 +103,7 @@ function readRun() {
 function persistRun() {
   if(!S||MP.on||S.busy||!saveStr) return;
   const state={...S,hand:S.hand.map(c=>c.id),drawPile:S.drawPile.map(c=>c.id),played:[],sellId:null};
-  const raw=JSON.stringify({version:2,cid,state,checkpoint:saveStr,meta:saveMeta});
+  const raw=JSON.stringify({version:3,cid,state,checkpoint:saveStr,meta:saveMeta});
   if(raw===lastWrite) return;
   try {
     const previous=localStorage.getItem(RUN_KEY);
@@ -115,10 +120,11 @@ function refreshTitle() {
   if(slot) $('resumeBtn').textContent='继续游戏 · 底注 '+slot.state.ante+(slot.recovered?' · 备份':'');
 }
 function startSolo(tutorial) {
+  if(!tutorial){openSetup();return;}
   if(readRun()) {
     hide('ovStart'); show('ovRestart');
-    $('confirmNew').onclick=()=>{ hide('ovRestart'); newGame(tutorial); };
-  } else newGame(tutorial);
+    $('confirmNew').onclick=()=>{ hide('ovRestart'); newGame(true,'red'); };
+  } else newGame(true,'red');
 }
 function resumeGame() {
   const slot=readRun();
