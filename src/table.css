@@ -1,0 +1,201 @@
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:100%; height:100%; overflow:hidden; background:#0d1a12;
+    font-family:"Courier New","Microsoft YaHei",monospace; color:#eee; user-select:none; font-weight:bold; }
+  body::after { content:''; position:fixed; inset:0; pointer-events:none; z-index:200;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.12) 0 1px, transparent 1px 3px); }
+  #game { display:flex; width:100%; height:100%;
+    background:radial-gradient(ellipse at 50% 30%, #24503a 0%, #17352a 55%, #0d1f18 100%); }
+
+  /* ============ 左侧栏 ============ */
+  #side { width:230px; min-width:230px; background:#141b22; border-right:4px solid #000;
+    padding:10px; display:flex; flex-direction:column; gap:8px; overflow-y:auto; z-index:5; }
+  .panel { background:#1c2530; border:3px solid #000; box-shadow:3px 3px 0 rgba(0,0,0,.55); padding:8px; }
+  #blindName { font-size:17px; color:#ffd54a; text-shadow:2px 2px 0 #000; }
+  #bossDesc { font-size:12px; color:#ff8f8f; margin-top:4px; line-height:1.4; display:none; }
+  .lbl { font-size:11px; color:#8fa3b8; }
+  #targetVal { font-size:22px; color:#ff5b5b; text-shadow:2px 2px 0 #000; }
+  #scoreVal { font-size:22px; color:#ffd54a; text-shadow:2px 2px 0 #000; }
+  #scorebarWrap { height:10px; background:#000; margin-top:4px; border:2px solid #000; }
+  #scorebar { height:100%; width:0%; background:linear-gradient(#ffd54a,#d69a2b); transition:width .3s; }
+  #prevName { font-size:16px; color:#fff; }
+  #prevLvl { font-size:11px; color:#57e6ff; }
+  #prevCalc { display:flex; align-items:center; gap:6px; margin-top:4px; }
+  .chipbox { flex:1; text-align:center; padding:5px 0; font-size:20px; border:3px solid #000; text-shadow:2px 2px 0 rgba(0,0,0,.6); }
+  #prevChips { background:#2b6cb0; }
+  #prevMult { background:#c53030; }
+  .xsign { font-size:18px; color:#ffd54a; }
+  .statrow { display:flex; justify-content:space-between; font-size:14px; padding:2px 0; }
+  .statrow b { color:#ffd54a; }
+  .sbtn { display:block; width:100%; margin-top:5px; padding:7px; font-family:inherit; font-weight:bold;
+    font-size:13px; background:#2a3a4a; color:#eee; border:3px solid #000; box-shadow:2px 2px 0 #000; cursor:pointer; }
+  .sbtn:hover { background:#3a5a6a; }
+
+  /* ============ 主区域 ============ */
+  #main { flex:1; display:flex; flex-direction:column; position:relative; min-width:0; }
+  #jokerBar { display:flex; justify-content:space-between; padding:10px 14px 0; }
+  #jokerRow, #consRow { display:flex; gap:8px; }
+  .jslot { width:64px; height:86px; border:3px dashed rgba(255,255,255,.18); border-radius:6px;
+    display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.18); font-size:11px; }
+  .joker { width:64px; height:86px; border:3px solid #000; border-radius:6px; cursor:pointer; position:relative;
+    background:linear-gradient(#3a2a5a,#241a3a); box-shadow:3px 3px 0 rgba(0,0,0,.55);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; transition:transform .12s; }
+  .joker:hover { transform:translateY(-4px); }
+  .joker .ic { font-size:28px; }
+  .joker .nm { font-size:10px; color:#ffd54a; text-align:center; line-height:1.1; }
+  .joker.pulse { animation:jpulse .35s; }
+  @keyframes jpulse { 40% { transform:scale(1.18) rotate(-4deg); } }
+  .joker .sellbadge { position:absolute; inset:auto 0 -2px 0; background:#c53030; color:#fff; font-size:11px;
+    text-align:center; padding:2px 0; border-top:2px solid #000; }
+  .cons { background:linear-gradient(#1a3a5a,#12243a); }
+  .cons.tarot { background:linear-gradient(#3a1a4a,#22102e); }
+
+  #playArea { flex:1; display:flex; align-items:center; justify-content:center; position:relative; min-height:120px; }
+  #playedRow { display:flex; gap:10px; }
+  #totalPop { position:absolute; left:50%; top:12%; transform:translateX(-50%); font-size:40px; color:#ffd54a;
+    text-shadow:3px 3px 0 #7a2020, 5px 5px 0 #000; display:none; z-index:10; white-space:nowrap; }
+
+  #handWrap { padding:0 14px 8px; }
+  #handRow { display:flex; justify-content:center; gap:6px; min-height:100px; align-items:flex-end; }
+  #btnRow { display:flex; justify-content:center; gap:10px; padding:8px 0 14px; }
+  .bigbtn { padding:12px 26px; font-family:inherit; font-weight:bold; font-size:17px; border:3px solid #000;
+    box-shadow:0 4px 0 #000; cursor:pointer; color:#fff; }
+  .bigbtn:active { transform:translateY(3px); box-shadow:0 1px 0 #000; }
+  #btnPlay { background:#2b6cb0; } #btnPlay:hover { background:#3a80c8; }
+  #btnDiscard { background:#c53030; } #btnDiscard:hover { background:#d84545; }
+  .bigbtn:disabled { background:#444 !important; color:#888; cursor:not-allowed; }
+  .midbtn { padding:12px 12px; font-size:13px; background:#2a3a4a; }
+
+  /* ============ 扑克牌 ============ */
+  .card { width:56px; height:78px; background:#f4efe2; border:3px solid #23232f; border-radius:5px;
+    position:relative; cursor:pointer; transition:transform .13s; box-shadow:3px 3px 0 rgba(0,0,0,.5); flex-shrink:0; }
+  .card.sel { transform:translateY(-18px); border-color:#ffd54a; box-shadow:0 0 0 2px #ffd54a, 3px 3px 0 rgba(0,0,0,.5); }
+  .card .rk { position:absolute; top:3px; left:5px; font-size:17px; }
+  .card .st { position:absolute; bottom:3px; right:5px; font-size:24px; line-height:1; }
+  .card .st2 { position:absolute; top:4px; right:5px; font-size:12px; }
+  .card.red { color:#c53030; } .card.blk { color:#23232f; }
+  .card.wild { border-color:#a05fd0; background:linear-gradient(135deg,#f4efe2 60%,#e8d0ff); }
+  .card .en { position:absolute; bottom:3px; left:4px; font-size:10px; padding:0 3px; border-radius:3px; color:#fff; }
+  .en.b { background:#2b6cb0; } .en.m { background:#c53030; } .en.w { background:#a05fd0; }
+  .card.debuff { filter:grayscale(1) brightness(.55); }
+  .card.dealt { animation:dealIn .25s backwards; }
+  @keyframes dealIn { from { transform:translateY(40px); opacity:0; } }
+  .pwrap { position:relative; }
+  .scorepop { position:absolute; left:50%; top:-8px; transform:translateX(-50%); font-size:14px;
+    text-shadow:2px 2px 0 #000; animation:rise .8s forwards; pointer-events:none; white-space:nowrap; z-index:9; }
+  @keyframes rise { to { transform:translate(-50%,-26px); opacity:0; } }
+  .jpop { position:absolute; left:50%; top:-6px; transform:translateX(-50%); font-size:13px; color:#ffd54a;
+    text-shadow:2px 2px 0 #000; animation:rise .9s forwards; pointer-events:none; white-space:nowrap; z-index:9; }
+
+  /* ============ 覆盖层 ============ */
+  .ov { position:fixed; inset:0; display:none; align-items:center; justify-content:center; flex-direction:column;
+    background:rgba(4,8,6,.82); z-index:50; text-align:center; }
+  .box { background:#141b22; border:4px solid #000; box-shadow:6px 6px 0 rgba(0,0,0,.6); padding:26px 34px; max-width:640px; }
+  .box h1 { color:#ffd54a; font-size:34px; letter-spacing:4px; text-shadow:3px 3px 0 #7a2020,5px 5px 0 #000; margin-bottom:12px; }
+  .box h2 { color:#57e6ff; font-size:22px; text-shadow:2px 2px 0 #000; margin-bottom:10px; }
+  .box p { color:#bcc8d4; font-size:14px; line-height:1.8; margin:5px 0; }
+  .gold { color:#ffd54a; } .red { color:#ff6b6b; } .blue { color:#57e6ff; } .green { color:#7ddf8f; }
+  .pxbtn { margin:14px 6px 0; padding:11px 30px; font-size:16px; font-weight:bold; font-family:inherit;
+    color:#141b22; background:#ffd54a; border:0; box-shadow:0 5px 0 #a8842a; cursor:pointer; }
+  .pxbtn:hover { transform:translateY(2px); box-shadow:0 3px 0 #a8842a; }
+  .pxbtn.gray { background:#8fa3b8; box-shadow:0 5px 0 #4a5a68; }
+
+  /* 商店 */
+  #shopItems { display:flex; gap:14px; justify-content:center; margin:14px 0; flex-wrap:wrap; }
+  .shopItem { width:110px; background:#1c2530; border:3px solid #000; box-shadow:3px 3px 0 rgba(0,0,0,.5);
+    padding:10px 6px; cursor:pointer; }
+  .shopItem:hover { border-color:#ffd54a; }
+  .shopItem .ic { font-size:34px; } .shopItem .nm { color:#ffd54a; font-size:13px; margin:4px 0; }
+  .shopItem .ds { color:#9ab; font-size:11px; line-height:1.4; min-height:44px; }
+  .shopItem .pr { color:#7ddf8f; font-size:15px; margin-top:4px; }
+  .shopItem.sold { opacity:.25; pointer-events:none; }
+  .shopItem.noafford .pr { color:#ff6b6b; }
+
+  /* 牌型表 */
+  table { border-collapse:collapse; margin:8px auto; }
+  td,th { border:2px solid #2a3a4a; padding:5px 12px; font-size:13px; }
+  th { color:#57e6ff; } td { color:#cdd6e0; }
+  td.hn { color:#ffd54a; }
+
+  /* 教程 */
+  #tutBox { position:fixed; left:50%; bottom:30px; transform:translateX(-50%); width:520px; max-width:92vw;
+    background:#141b22; border:4px solid #ffd54a; box-shadow:6px 6px 0 rgba(0,0,0,.7); padding:18px 22px;
+    z-index:120; display:none; text-align:left; }
+  #tutBox h3 { color:#ffd54a; font-size:17px; margin-bottom:8px; text-shadow:2px 2px 0 #000; }
+  #tutBox .body { color:#cdd6e0; font-size:13px; line-height:1.8; min-height:70px; }
+  #tutBox .nav { display:flex; justify-content:space-between; margin-top:10px; align-items:center; }
+  #tutBox .step { color:#57a; font-size:12px; }
+  .tbtn { padding:6px 16px; font-family:inherit; font-weight:bold; font-size:13px; border:2px solid #000;
+    background:#2b6cb0; color:#fff; cursor:pointer; box-shadow:2px 2px 0 #000; margin-left:6px; }
+  .tbtn.gray { background:#4a5a68; }
+  .tut-hl { position:relative; z-index:115 !important; outline:4px solid #ffd54a !important;
+    box-shadow:0 0 0 6px rgba(255,213,74,.35) !important; }
+  #tutDim { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:110; display:none; }
+
+  #infobar { position:fixed; bottom:0; left:230px; right:0; background:#0c1116; border-top:3px solid #000;
+    padding:5px 14px; font-size:13px; color:#8fa3b8; z-index:6; min-height:26px; }
+  #infobar.warn { color:#ff8f8f; }
+
+  #deckGrid { display:grid; grid-template-columns:repeat(14,26px); gap:2px; margin:10px auto; }
+  #deckGrid div { font-size:11px; padding:3px 0; text-align:center; background:#1c2530; border:1px solid #000; }
+  #deckGrid .hd { color:#57e6ff; } #deckGrid .gone { opacity:.2; }
+
+  /* ============ 扩展：稀有度 / 版本 / 蜡封 / 强化 ============ */
+  .joker.ru, .shopItem.ru { border-color:#2f9e68; }
+  .joker.rr, .shopItem.rr { border-color:#c53030; }
+  .edfx { position:absolute; inset:0; pointer-events:none; border-radius:inherit; }
+  .edfx.f { background:linear-gradient(115deg, transparent 30%, rgba(120,200,255,.4) 45%, transparent 60%);
+    background-size:250% 100%; animation:foilSweep 2.6s linear infinite; }
+  @keyframes foilSweep { from { background-position:120% 0; } to { background-position:-120% 0; } }
+  .edfx.h { background:linear-gradient(135deg, rgba(255,120,220,.28), rgba(120,255,240,.28)); }
+  .edfx.p { background:conic-gradient(from 0deg, rgba(255,0,0,.22), rgba(255,255,0,.22), rgba(0,255,120,.22),
+    rgba(0,180,255,.22), rgba(200,0,255,.22), rgba(255,0,0,.22)); animation:polyHue 3s linear infinite; }
+  @keyframes polyHue { to { filter:hue-rotate(360deg); } }
+  .seal { position:absolute; top:26px; right:4px; width:11px; height:11px; border-radius:50%;
+    border:2px solid #23232f; z-index:2; }
+  .seal.red { background:#e33b3b; } .seal.gold { background:#ffd54a; }
+  .card.steel { background:linear-gradient(160deg,#e8edf5,#a8b4c8); }
+  .card.glass { background:rgba(190,228,255,.4); border-color:#8fd0ff; }
+  .card.goldc { background:linear-gradient(160deg,#f5dc8f,#dcae49); }
+
+  /* 悬浮提示 */
+  #tip { position:fixed; z-index:150; display:none; max-width:250px; background:#141b22;
+    border:3px solid #ffd54a; box-shadow:4px 4px 0 rgba(0,0,0,.6); padding:8px 10px;
+    font-size:12px; line-height:1.6; color:#cdd6e0; pointer-events:none; }
+  #tip .tn { color:#ffd54a; font-size:13px; } #tip .tr { font-size:11px; }
+  .rc0 { color:#8fa3b8; } .rc1 { color:#7ddf8f; } .rc2 { color:#ff6b6b; }
+
+  /* 盲注选择 */
+  #blindCols { display:flex; gap:14px; justify-content:center; margin:14px 0; }
+  .bcol { width:200px; background:#1c2530; border:3px solid #000; box-shadow:3px 3px 0 rgba(0,0,0,.5);
+    padding:12px 10px; display:flex; flex-direction:column; gap:6px; }
+  .bcol.cur { border-color:#ffd54a; box-shadow:0 0 0 2px rgba(255,213,74,.4), 3px 3px 0 rgba(0,0,0,.5); }
+  .bcol.done { opacity:.4; } .bcol.todo { opacity:.65; }
+  .bcol .bname { font-size:15px; color:#ffd54a; }
+  .bcol .btgt { font-size:19px; color:#ff5b5b; }
+  .bcol .brw { font-size:12px; color:#7ddf8f; }
+  .bcol .bbs { font-size:11px; color:#ff8f8f; line-height:1.5; min-height:32px; }
+  .bcol .st { font-size:12px; color:#8fa3b8; }
+  .bbtn { padding:8px 4px; font-family:inherit; font-weight:bold; font-size:13px; border:3px solid #000;
+    box-shadow:2px 2px 0 #000; cursor:pointer; color:#fff; background:#2b6cb0; }
+  .bbtn:hover { background:#3a80c8; }
+  .bbtn.skip { background:#4a3a5a; font-size:12px; } .bbtn.skip:hover { background:#5a4a6e; }
+
+  /* 商店分区 & 卡包 */
+  .shopSec { color:#57e6ff; font-size:12px; margin:10px 0 4px; letter-spacing:2px; }
+  #shopPacks, #shopVouch { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+  #packCards { display:flex; gap:14px; justify-content:center; margin:14px 0; flex-wrap:wrap; }
+  #packCards .pk { width:120px; cursor:pointer; }
+  #packCards .pk .card { margin:0 auto; }
+  #packCards .pk:hover .card { border-color:#ffd54a; }
+  #packCards .pkds { color:#9ab; font-size:11px; line-height:1.5; margin-top:6px; }
+
+  /* 大分数特效 */
+  #totalPop.big { animation:bigShake .5s; color:#ff9d3c; }
+  @keyframes bigShake { 0%,100%{ transform:translateX(-50%) scale(1);} 30%{ transform:translateX(-52%) scale(1.25) rotate(-2deg);} 60%{ transform:translateX(-48%) scale(1.15) rotate(2deg);} }
+
+  /* 多人对战 */
+  .mpin { font-family:inherit; font-weight:bold; padding:8px 10px; font-size:15px; background:#0c1116;
+    border:3px solid #000; color:#ffd54a; width:230px; outline:none; }
+  .mpin:focus { border-color:#ffd54a; }
+  #oppBox { border-color:#7a2020; }
+  #oppScoreV { font-size:17px; color:#ffd54a; text-shadow:2px 2px 0 #000; }

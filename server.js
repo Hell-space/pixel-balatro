@@ -61,7 +61,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') { cors(res); res.writeHead(204); return res.end(); }
 
   // —— 托管游戏页面 ——
-  if (req.method === 'GET' && (u.pathname === '/' || u.pathname === '/balatro.html')) {
+  if (req.method === 'GET' && ['/', '/index.html', '/balatro.html'].includes(u.pathname)) {
     return fs.readFile(HTML, (e, d) => {
       if (e) { res.writeHead(404); return res.end('balatro.html not found - 请把本服务器和 balatro.html 放在同一目录'); }
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
@@ -73,7 +73,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && u.pathname === '/api/create') {
     const b = await readBody(req).catch(() => null);
     if (!b) return json(res, 400, { err: '请求格式错误' });
-    if (rooms.size > 500) return json(res, 503, { err: '房间数已达上限' });
+    if (rooms.size >= 500) return json(res, 503, { err: '房间数已达上限' });
     const code = genCode(), pid = genPid();
     rooms.set(code, {
       members: new Map([[pid, { name: String(b.name || '玩家').slice(0, 12), res: null }]]),

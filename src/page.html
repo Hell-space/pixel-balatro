@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#173c35">
+<title>像素小丑牌</title>
+<style>
+/* STYLES */
+</style>
+</head>
+<body>
+<!-- ART -->
+<div id="game">
+  <header id="rail"><span class="wordmark"><svg aria-hidden="true" viewBox="0 0 80 80"><use href="#jester"/></svg>像素小丑牌</span>
+    <button id="menuBtn" class="railbtn" onclick="show('ovMenu')">菜单 ☰</button></header>
+  <div id="side">
+    <div class="panel" id="blindBox">
+      <div id="blindName">🔸 小盲注</div>
+      <div id="bossDesc"></div>
+      <div class="lbl" id="targetLbl" style="margin-top:5px">目标分数</div>
+      <div id="targetVal">300</div>
+      <div class="lbl">当前得分</div>
+      <div id="scoreVal">0</div>
+      <div id="scorebarWrap"><div id="scorebar"></div></div>
+    </div>
+    <div class="panel" id="oppBox" style="display:none">
+      <div class="lbl">⚔️ 对手</div>
+      <div id="oppNameV" style="font-size:15px;color:#57e6ff"></div>
+      <div id="oppLivesV" style="font-size:13px"></div>
+      <div id="oppPhaseV" class="lbl" style="margin-top:3px"></div>
+      <div id="oppScoreV"></div>
+    </div>
+    <div class="panel" id="statsBox">
+      <div class="statrow"><span>出牌</span><b id="handsVal">4</b></div>
+      <div class="statrow"><span>弃牌</span><b id="discVal">3</b></div>
+      <div class="statrow"><span>金币</span><b id="moneyVal">$4</b></div>
+      <div class="statrow"><span>手牌上限</span><b id="handSizeVal">8</b></div>
+      <div class="statrow"><span>底注</span><b id="anteVal">1 / 8</b></div>
+      <div class="statrow" id="livesRow" style="display:none"><span>❤️ 生命</span><b id="livesVal"></b></div>
+      <div class="statrow"><span>牌库</span><b id="deckVal">44/52</b></div>
+    </div>
+
+  </div>
+
+  <div id="main">
+    <div id="jokerBar">
+      <div id="jokerRow"></div>
+      <div id="consRow"></div>
+    </div>
+    <div id="playArea"><div class="tableSeal" aria-hidden="true"><svg viewBox="0 0 80 80"><use href="#jester"/></svg></div>
+      <div id="playedRow"></div>
+      <div id="totalPop"></div>
+    </div>
+    <div class="panel" id="previewBox">
+      <div id="prevName">选择手牌</div>
+      <div id="prevLvl"></div>
+      <span id="selCount" aria-label="选中张数"></span>
+      <div id="prevCalc">
+        <div class="chipbox" id="prevChips">0</div>
+        <div class="xsign">×</div>
+        <div class="chipbox" id="prevMult">0</div>
+      </div>
+    </div>
+    <div id="handWrap"><div id="handRow" role="group" aria-label="手牌"></div></div>
+    <div id="btnRow">
+      <button class="bigbtn midbtn" onclick="setSort('rank')">按点数</button>
+      <button class="bigbtn" id="btnPlay" disabled onclick="doPlay()">出牌</button>
+      <button class="bigbtn" id="btnDiscard" disabled onclick="doDiscard()">弃牌</button>
+      <button class="bigbtn midbtn" onclick="setSort('suit')">按花色</button>
+    </div>
+  </div>
+</div>
+<div id="infobar" role="status">选 1–5 张手牌，可出牌或弃牌</div>
+<div id="tip"></div>
+
+<!-- 开始 -->
+<div class="ov" id="ovStart" style="display:flex"><div class="titleScreen">
+  <div class="titleArt" aria-hidden="true"><i class="backCard backA"></i><i class="backCard backB"></i>
+    <div class="faceCard"><span>J<br>♦</span><svg viewBox="0 0 80 80"><use href="#jester"/></svg><span>J<br>♦</span></div>
+  </div>
+  <h1>像素小丑牌</h1>
+  <div class="titleActions">
+    <button class="pxbtn" id="resumeBtn" hidden onclick="resumeGame()">继续游戏</button>
+    <button class="pxbtn" id="newBtn" onclick="startSolo(false)">开始游戏</button>
+    <div><button class="pxbtn gray" onclick="startSolo(true)">新手教学</button>
+    <button class="pxbtn gray" onclick="openMpLobby()">多人对战</button></div>
+  </div>
+</div></div>
+
+<div class="ov" id="ovMenu"><div class="box"><h2>牌桌菜单</h2>
+    <div class="menuList">
+      <button class="sbtn" onclick="hide('ovMenu'); openChart()">📖 牌型表 / 等级</button>
+      <button class="sbtn" onclick="hide('ovMenu'); openDeck()">🂠 查看剩余牌库</button>
+      <button class="sbtn" onclick="hide('ovMenu'); openInfo()">📊 本局信息 / 优惠券</button>
+      <button class="sbtn" onclick="hide('ovMenu'); tutStart()">❓ 新手教程</button>
+      <button class="sbtn" id="muteBtn" onclick="toggleMute()">🔊 音乐：开</button>
+    </div>
+  <button class="pxbtn" onclick="hide('ovMenu')">回到牌桌</button>
+</div></div>
+<div class="ov" id="ovRestart"><div class="box"><h2>重新开局？</h2>
+  <p>新的一局会替换已保存的单人进度。</p>
+  <button class="pxbtn gray" onclick="hide('ovRestart');show('ovStart')">保留进度</button>
+  <button class="pxbtn" id="confirmNew">重新开局</button>
+</div></div>
+
+<!-- 盲注选择 -->
+<div class="ov" id="ovBlinds"><div class="box" style="max-width:760px">
+  <h2 class="blindHeading">选择盲注 <span>底注 <b id="bsAnte">1</b></span></h2>
+  <div id="blindCols"></div>
+  <p style="color:#9caeb1;font-size:12px">跳过小盲注或大盲注可获得标签，但没有金币奖励。</p>
+</div></div>
+
+<!-- 结算 -->
+<div class="ov" id="ovCash"><div class="box">
+  <h2>✅ 盲注击败！</h2>
+  <div id="cashRows" style="text-align:left; display:inline-block"></div>
+  <br><button class="pxbtn" onclick="openShop()">前往商店 🛒</button>
+</div></div>
+
+<!-- 商店 -->
+<div class="ov" id="ovShop"><div class="box" style="max-width:760px">
+  <h2>🛒 商店</h2>
+  <p>金钱：<span class="green" id="shopMoney"></span>　小丑槽位：<span class="blue" id="shopSlots"></span>　消耗牌槽位：<span class="blue" id="shopCons"></span></p>
+  <div class="shopSec">— 小丑牌 & 消耗牌 —</div>
+  <div id="shopItems"></div>
+  <div class="shopSec">— 🎁 卡包 —</div>
+  <div id="shopPacks"></div>
+  <div class="shopSec">— 🎟️ 优惠券（每底注一张 · 永久生效）—</div>
+  <div id="shopVouch"></div>
+  <div id="shopOwned"></div>
+  <p style="color:#9caeb1;font-size:12px">刷新只更换小丑牌和消耗牌。</p>
+  <div class="shopActions"><button class="pxbtn gray" id="rerollBtn" onclick="doReroll()">🎲 刷新 $5</button>
+  <button class="pxbtn" onclick="leaveShop()">下一盲注 ▶</button></div>
+</div></div>
+
+<!-- 开卡包 -->
+<div class="ov" id="ovPack" style="z-index:60"><div class="box" style="max-width:720px">
+  <h2 id="packTitle"></h2>
+  <p id="packHint" style="color:#9ab;font-size:12px"></p>
+  <div id="packCards"></div>
+  <button class="pxbtn gray" onclick="closePack()">不选了，离开</button>
+</div></div>
+
+<!-- 本局信息 -->
+<div class="ov" id="ovInfo"><div class="box" style="max-width:560px">
+  <h2>📊 本局信息</h2>
+  <div id="infoBody"></div>
+  <button class="pxbtn" onclick="hide('ovInfo')">关闭</button>
+</div></div>
+
+<!-- 失败 -->
+<div class="ov" id="ovOver"><div class="box">
+  <h2 class="red" style="color:#ff5b5b">💀 失败…</h2>
+  <p id="overStats"></p>
+  <button class="pxbtn" id="btnRestore" style="display:none" onclick="restoreCheckpoint()">⏪ 回到保存点</button>
+  <button class="pxbtn gray" onclick="location.reload()">再来一局</button>
+</div></div>
+
+<!-- 胜利 -->
+<div class="ov" id="ovWin"><div class="box">
+  <h1>🏆 胜利！</h1>
+  <p>你击败了全部 8 个底注！</p>
+  <p id="winStats"></p>
+  <button class="pxbtn" onclick="continueEndless()">♾️ 继续无尽模式</button>
+  <button class="pxbtn gray" onclick="location.reload()">重新开始</button>
+</div></div>
+
+<!-- 牌型表 -->
+<div class="ov" id="ovChart"><div class="box" style="max-width:560px">
+  <h2>📖 牌型表</h2>
+  <div id="chartBody"></div>
+  <p style="color:#9caeb1;font-size:12px">得分 = (牌型筹码 + 牌面筹码) × 倍率。星球牌可提升牌型等级。</p>
+  <button class="pxbtn" onclick="hide('ovChart')">关闭</button>
+</div></div>
+
+<!-- 牌库 -->
+<div class="ov" id="ovDeck"><div class="box" style="max-width:560px">
+  <h2>🂠 剩余牌库</h2>
+  <div id="deckGrid"></div>
+  <p style="color:#9caeb1;font-size:12px">变暗 = 已抽出/已打出。弃掉的牌本盲注内不会回来。</p>
+  <button class="pxbtn" onclick="hide('ovDeck')">关闭</button>
+</div></div>
+
+<!-- 多人大厅 -->
+<div class="ov" id="ovMpLobby"><div class="box" style="max-width:540px">
+  <h2>⚔️ 多人对战</h2>
+  <p style="font-size:13px;text-align:left">双方各自闯关：小盲/大盲照常打（失败不扣❤️，只是<span class="red">无奖励、不进商店</span>）；<br>
+  <span class="gold">Boss 盲注变为对决</span>——面对同一 Boss 各打完所有出牌次数拼总分，<br>
+  低分方 <span class="red">-1❤️</span>，高分方 <span class="green">+$3</span>。每人 2❤️，<span class="gold">生命耗尽者败！</span></p>
+  <div style="margin:12px 0">
+    <label class="lbl" for="mpName">昵称</label>
+    <input class="mpin" id="mpName" maxlength="8" placeholder="玩家">
+    <label class="lbl" for="mpServer">对战服务器地址</label>
+    <input class="mpin" id="mpServer" type="url" placeholder="填写对战服务器的网址">
+  </div>
+  <button class="pxbtn" onclick="mpCreate()">创建房间</button>
+  <span style="margin:0 10px;color:#667">或</span>
+  <input class="mpin" id="mpCode" aria-label="房间码" autocapitalize="characters" autocomplete="off" maxlength="4" placeholder="房间码" style="width:110px;text-transform:uppercase">
+  <button class="pxbtn" onclick="mpJoin()">加入</button>
+  <p id="mpStatus" style="color:#57e6ff;min-height:22px;margin-top:10px"></p>
+  <button class="pxbtn gray" onclick="mpCancel()">返回标题</button>
+</div></div>
+
+<!-- 多人结果 / 等待 -->
+<div class="ov" id="ovMpRes" style="z-index:70"><div class="box" style="max-width:560px">
+  <h2 id="mpResTitle"></h2>
+  <div id="mpResBody" style="font-size:15px;line-height:2"></div>
+  <button class="pxbtn" id="mpResBtn"></button>
+</div></div>
+
+<!-- 教程 -->
+<div id="tutDim"></div>
+<div id="tutBox">
+  <h3 id="tutTitle"></h3>
+  <div class="body" id="tutBody"></div>
+  <div class="nav">
+    <span class="step" id="tutStep"></span>
+    <span>
+      <button class="tbtn gray" onclick="tutEnd()">跳过</button>
+      <button class="tbtn gray" id="tutPrev" onclick="tutMove(-1)">上一步</button>
+      <button class="tbtn" id="tutNext" onclick="tutMove(1)">下一步</button>
+    </span>
+  </div>
+</div>
+
+<script>
+/* SCRIPTS */
+</script>
+</body>
+</html>

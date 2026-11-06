@@ -1,0 +1,210 @@
+/* Felt, ivory stock, brass trim and the two ink colours from the original game. */
+:root {
+  --felt:#17493d; --deep:#102d2b; --slate:#1c3037; --paper:#f5ead0;
+  --brass:#f2c769; --light:#e6efe1; --muted:#b5c7bc; --seam:#395950;
+  --mono:Consolas,"Courier New",monospace;
+  --ui:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body {height:100%; margin:0; background:var(--deep);font-family:var(--ui);color:var(--light)}
+button,input {font:inherit}
+button {touch-action:manipulation;cursor:pointer}
+button:focus-visible,[tabindex]:focus-visible,input:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
+[hidden]{display:none!important}
+body::after {display:none}
+#game,#ovStart {
+  background-color:var(--felt);
+  background-image:repeating-linear-gradient(48deg,transparent 0 3px,#c5e8c205 3px 4px),
+    radial-gradient(ellipse at 50% 36%,#295e4e 0%,#17493d 44%,#102f2c 100%);
+}
+#game {height:100vh;height:100dvh;display:grid;grid-template-columns:210px minmax(0,1fr);grid-template-rows:54px minmax(0,1fr);overflow:auto}
+#rail {grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;background:#142e2c;
+  border-bottom:1px solid #70907c66;padding:0 max(20px,env(safe-area-inset-right)) 0 max(18px,env(safe-area-inset-left))}
+.wordmark {display:flex;gap:9px;align-items:center;color:var(--paper);font-size:19px;letter-spacing:2px}
+.wordmark svg {width:35px;height:35px}
+.railbtn {min-height:44px;padding:0 12px;color:var(--light);background:none;border:0;font-size:14px}
+#side {width:auto;min-width:0;border:0;border-right:1px solid #71917e44;background:#122d2bea;
+  padding:20px 14px;gap:14px;z-index:auto}
+.panel {border:1px solid var(--seam);border-radius:6px;background:#182f32;box-shadow:none;padding:14px}
+#blindName {color:var(--paper);font-size:19px;text-shadow:none}
+#targetVal,#scoreVal {font-family:var(--mono);font-size:26px;text-shadow:none}
+#targetVal {color:#f3b4a0} #scoreVal {color:var(--brass)}
+.lbl {color:var(--muted)}
+#scorebarWrap {border:0;height:5px;background:#0b2422;margin-top:8px}
+#scorebar {background:var(--brass)}
+#statsBox {display:flex;flex-direction:column;gap:3px}
+.statrow {padding:4px 1px;font-size:14px}.statrow b {color:var(--paper);font-family:var(--mono)}
+#main {min-height:0;padding:clamp(10px,2.4vh,24px) clamp(12px,3vw,52px) 39px;align-items:center}
+#jokerBar {align-self:stretch;padding:0;gap:9px;min-height:min-content}
+#jokerRow,#consRow {gap:5px;flex-wrap:wrap}
+#consRow {justify-content:flex-end}
+.jslot,.joker {width:clamp(44px,5.7vw,68px);height:clamp(50px,7.1vw,84px);flex-shrink:0}
+.jslot {border:1px dashed #9abd9c66;color:#b4cbb1a8;font-size:11px}
+.joker {font-family:var(--ui);border:2px solid #7b6783;color:var(--paper);box-shadow:0 2px 0 #0e221f}
+.joker .nm {line-height:1.2;color:var(--paper)}
+#playArea {width:100%;min-height:92px;isolation:isolate}
+.tableSeal {position:absolute;inset:0;display:grid;place-content:center;pointer-events:none;z-index:-1;opacity:.14}
+.tableSeal svg {width:clamp(68px,16vh,136px);filter:grayscale(1) sepia(.6)}
+#playArea:has(#playedRow:not(:empty)) .tableSeal {opacity:.04}
+#playedRow {gap:6px} #playedRow .card {transform:none}
+#totalPop {font-family:var(--mono);font-size:clamp(22px,5vw,42px)}
+#previewBox {width:min(100%,515px);display:flex;align-items:center;gap:7px;padding:5px 11px;margin-bottom:10px;
+  border:0;border-top:1px solid #b0c5a44d;border-bottom:1px solid #b0c5a44d;border-radius:0;background:#10372e66;min-height:40px}
+#prevName {font-size:15px;color:var(--paper)} #prevLvl {font-size:12px;color:#bfd8b9}
+#prevCalc {margin:0 0 0 auto;gap:5px}.chipbox {min-width:38px;padding:2px 6px;border:0;border-radius:3px;font:700 18px var(--mono);color:white}
+#handWrap {width:100%;padding:0 0 4px}
+#handRow {padding-top:14px;min-height:100px;gap:clamp(4px,.65vw,11px);flex-wrap:wrap}
+.card {width:clamp(51px,6vw,78px);height:clamp(75px,8.5vw,109px);padding:0;
+  border:2px solid #39403e;border-radius:6px;background-color:var(--paper);box-shadow:2px 3px 0 #0a2824;font-family:var(--mono)}
+.card.red {color:#af352f}.card.blk {color:#243a44}
+.card .rk {left:5px;top:1px;font-size:18px;line-height:1.1;font-weight:900}
+.card .st2 {right:4px;top:2px;font-size:13px}.card .st {right:4px;bottom:2px;font-size:15px}
+.card.sel {transform:translateY(-8px);border-color:#d59127;box-shadow:0 0 0 2px #ffe19a,1px 4px 0 #16322a}
+.pips {position:absolute;inset:26% 19% 19%;display:block;pointer-events:none}
+.pips i {position:absolute;transform:translate(-50%,-50%);font:900 clamp(11px,1.4vw,20px)/1 Georgia,serif;font-style:normal}
+.pips .acePip {font-size:clamp(22px,2.6vw,33px)}
+.facePip {position:absolute;inset:24% 18% 18%;display:grid;place-content:center;text-align:center;
+  border:1px solid currentColor;line-height:.95;font:900 clamp(19px,2.5vw,32px)/1 Georgia,serif}
+.facePip small {font:700 9px/1 var(--mono)}
+#btnRow {padding:8px 0 4px;gap:8px;align-items:stretch}
+.bigbtn,.pxbtn,.bbtn,.sbtn,.tbtn {border-radius:5px;border:1px solid #739283;font-family:var(--ui);text-shadow:none}
+.bigbtn,.pxbtn,.bbtn,.sbtn {min-height:44px}
+.bigbtn {padding:8px 24px;box-shadow:0 3px 0 #0c2825}
+#btnPlay,#btnPlay:hover,.bbtn:not(.skip) {background:#397aa1;border-color:#81b6cc}
+#btnDiscard,#btnDiscard:hover {background:#a54940;border-color:#d28c77}
+.bigbtn:disabled {background:#29453e!important;color:#93aca1;border-color:#4a685d;box-shadow:0 2px 0 #123329}
+.midbtn {padding:7px 13px;color:#dae5d9;background:#244238}
+#infobar {z-index:6;left:210px;border:0;background:#102c27;color:#cedeCD;text-align:center;padding:5px 10px max(5px,env(safe-area-inset-bottom));font-size:12px;pointer-events:none}
+#infobar.warn,#infobar.transient {z-index:106;max-width:min(90vw,420px);width:max-content;left:50%;right:auto;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:8px 14px;border:1px solid var(--seam);border-radius:6px;color:var(--paper);box-shadow:0 3px 12px #0005}
+#infobar.warn {color:#ffd0be;border-color:#bc7963}
+.ov {padding:max(12px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));background:#081d1bea}
+.box {width:max-content;max-width:min(100%,700px)!important;max-height:100%;min-height:0;overflow:auto;overscroll-behavior:contain;
+  border:1px solid #608276;border-radius:11px;background:#1b3034;box-shadow:0 6px 0 #081f1d88;padding:clamp(15px,3vw,30px);scrollbar-width:thin}
+.box h2 {font-size:clamp(19px,3vw,25px);color:var(--paper);text-shadow:none}
+.box p {color:#c2d3c7;font-weight:500;line-height:1.6}
+#cashRows {min-width:175px}
+#cashRows p {display:flex;justify-content:space-between;gap:24px}
+#cashRows b {color:#a8dbad;font-family:var(--mono)}
+#cashRows p:last-child {margin-top:8px;padding-top:7px;border-top:1px solid var(--seam)}
+#cashRows p:last-child b {color:var(--brass);font-size:20px}
+.pxbtn {margin:10px 4px 4px;background:var(--brass);border-color:#e5c687;color:#262c28;box-shadow:0 3px 0 #8d6c36}
+.pxbtn.gray,.sbtn,.bbtn.skip,.tbtn.gray {background:#2e4846;color:#e5ebdc;border-color:#607d70;box-shadow:0 2px 0 #132925}
+.pxbtn:hover {transform:none}
+.menuList {display:grid;gap:4px;min-width:min(240px,67vw)}
+#ovStart {z-index:55;overflow:auto}
+.titleScreen {margin:auto;display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0}
+.titleArt {position:relative;width:210px;height:156px;margin:0 auto 9px}
+.faceCard,.backCard {position:absolute;left:50%;top:4px;width:102px;height:142px;
+  border-radius:7px;box-shadow:3px 5px 0 #0c312b;transform:translateX(-50%) rotate(-4deg)}
+.backCard {border:4px solid #e2d1a5;outline:2px solid #243b39;
+  background:repeating-linear-gradient(45deg,transparent 0 5px,#f0c78055 5px 7px),
+  repeating-linear-gradient(-45deg,#913e3e 0 5px,#b8674d 5px 7px)}
+.backA {transform:translate(-82%,9px) rotate(-21deg)}.backB {transform:translate(-19%,11px) rotate(15deg)}
+.faceCard {background:var(--paper);outline:2px solid #263b39;border:4px double #9e794c;display:grid;place-items:center}
+.faceCard>svg {width:82%;height:auto}.faceCard>span {position:absolute;top:3px;left:5px;font:900 13px/.9 var(--mono);color:#a53f37}
+.faceCard>span:last-child {inset:auto 5px 3px auto;transform:rotate(180deg)}
+.titleScreen h1 {font:900 clamp(37px,7vw,64px)/1.2 var(--ui);letter-spacing:.09em;color:#fff2ce;text-shadow:0 3px #96683b,0 6px #12362f}
+.titleActions {width:min(282px,80vw);display:grid;gap:10px;margin-top:15px}
+.titleActions div {display:grid;grid-template-columns:1fr 1fr;gap:9px}.titleActions .pxbtn {margin:0;min-height:46px;padding:9px}
+.titleActions #resumeBtn:not([hidden]) ~ #newBtn {background:#315449;color:var(--paper);border-color:#719582;box-shadow:0 2px 0 #142f28}
+.blindHeading {display:flex;align-items:center;justify-content:space-between;gap:20px;text-align:left}
+.blindHeading span {font:600 13px var(--ui);color:var(--brass);background:#263f39;border:1px solid #66806b;padding:4px 9px;border-radius:20px}
+#blindCols {gap:10px}
+.bcol {position:relative;width:180px;padding:12px 10px;background:#253b3c;border:1px solid #526e66;border-radius:7px;box-shadow:none}
+.bcol.cur {border:2px solid var(--brass);box-shadow:none;background:#2e423b}
+.bcol.done,.bcol.todo {opacity:1}.bcol:not(.cur) {background:#1b3032}
+.bcol .bname {color:var(--paper)}.bcol .btgt {font:800 24px var(--mono);color:#ffcca3}
+.bcol .brw {color:#b2d7b3}.bcol .bbs {min-height:0;color:#f6b9aa}.bbs:empty {display:none}
+.bcol .st {color:var(--muted)}.bcol .bbtn {margin-top:2px;min-width:0}
+.bcol .btgt::after {content:" 分";font:500 12px var(--ui)}
+#deckGrid {max-width:100%;width:min(400px,100%);grid-template-columns:repeat(14,minmax(0,1fr))}
+#deckGrid div {overflow:hidden} #chartBody {overflow-x:auto}
+#shopItems,#shopPacks,#shopVouch,#packCards {gap:8px}
+.shopItem {border:1px solid #57746a;border-radius:5px;background:#273e3d;color:var(--paper);width:124px}
+.shopItem .ds,.pkds {color:#c3d1c6}.shopItem .pr {font-family:var(--mono)}
+.shopItem.sold {opacity:.55}.shopSec {color:#d2dfd5}
+#shopOwned:not(:empty) {margin:12px auto 0;padding-top:7px;border-top:1px solid var(--seam)}
+#shopOwned button {display:inline-block;width:auto;font-size:12px;margin:3px;padding:5px 9px}
+#ovMpLobby label {display:block;margin:7px 0 3px;text-align:left}
+.mpin {max-width:100%;min-height:44px;font-size:16px;border:1px solid #739283;border-radius:4px}
+#mpServer,#mpName {width:100%}
+#tip {max-width:min(245px,85vw);background:#1b3133;color:var(--paper);border:1px solid var(--brass);border-radius:5px}
+#tutBox {max-height:85vh;overflow:auto;bottom:max(12px,env(safe-area-inset-bottom));border-width:2px;border-radius:8px}
+#tutBox .tbtn {min-height:40px}.ov a {color:var(--brass)}
+#tutBox.guideTop {top:max(10px,env(safe-area-inset-top));bottom:auto}
+#tutBox .body {min-height:0;max-height:calc(var(--guide-room,85vh) - 120px);overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:760px),(max-width:1000px) and (max-height:540px) {
+  #game {display:flex;flex-direction:column;overflow:auto;padding-bottom:env(safe-area-inset-bottom)}
+  #rail {flex:none;min-height:44px;padding-top:env(safe-area-inset-top);padding-inline:max(12px,env(safe-area-inset-left)) max(10px,env(safe-area-inset-right))}
+  .wordmark {font-size:16px}.wordmark svg {width:28px;height:28px}
+  #side {flex:none;display:block;background:#163a33;border:0;border-bottom:1px solid #54736366;padding:6px max(12px,env(safe-area-inset-right)) 7px max(12px,env(safe-area-inset-left));overflow:visible}
+  #blindBox {display:grid;grid-template-columns:minmax(80px,1fr) auto auto;align-items:baseline;gap:0 7px;padding:0;background:none;border:0}
+  #blindName {grid-column:1;grid-row:1/3;align-self:center;font-size:16px}
+  #targetLbl,#blindBox>.lbl {margin:0!important;font-size:10px;text-align:right}
+  #targetLbl,#targetVal {grid-column:3}#blindBox>.lbl:not(#targetLbl),#scoreVal {grid-column:2}
+  #blindBox>.lbl {grid-row:1} #targetVal,#scoreVal {grid-row:2;font-size:18px;text-align:right}
+  #scorebarWrap {grid-column:1/-1;grid-row:3;margin-top:3px;height:3px}#bossDesc {grid-column:1/-1;grid-row:4;font-size:12px}
+  #statsBox {flex-direction:row;flex-wrap:wrap;gap:2px 10px;align-items:center;border:0;background:none;padding:5px 0 0}
+  .statrow {font-size:12px;gap:4px;padding:0}.statrow span {color:#c0d0be}.statrow b {color:var(--brass)}
+  #statsBox .statrow:nth-child(4) {display:none}
+  #oppBox {margin:4px 0 0;padding:3px 6px;font-size:12px}#oppBox>* {display:inline!important;margin:0 5px 0 0}
+  #main {flex:1 0 auto;min-height:min-content;padding:8px max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))}
+  #jokerBar {justify-content:center;gap:12px} #jokerRow,#consRow {gap:3px}
+  .jslot,.joker {width:clamp(33px,9.8vw,50px);height:clamp(44px,12vw,60px);min-height:44px}
+  .joker .ic {font-size:20px}.joker .nm {font-size:9px}
+  #playArea {min-height:76px}
+  #previewBox {max-width:490px;margin-bottom:4px;min-height:34px}
+  #handWrap {padding:0;max-width:540px}
+  #handRow {display:grid;grid-template-columns:repeat(4,minmax(42px,72px));justify-content:center;align-items:end;gap:9px 7px;min-height:0;padding:8px 3px 1px}
+  #handRow .card {width:100%;height:clamp(70px,12vh,101px)}
+  .card.sel {transform:translateY(-5px)}
+  .pips i {font-size:15px}.pips .acePip {font-size:24px}
+  #btnRow {width:min(100%,490px);display:grid;grid-template-columns:auto 1fr 1fr auto;padding:8px 0;gap:6px}
+  .bigbtn,.midbtn {padding:5px 8px}.midbtn {font-size:12px}
+  #infobar {position:static;margin:0;background:#122f2a;padding:3px 6px;min-height:21px}
+  #game {height:calc(100vh - 21px);height:calc(100dvh - 21px)}
+  #infobar.transient,#infobar.warn {position:fixed}
+  #blindCols {display:grid;grid-template-columns:1fr;gap:8px}
+  #ovBlinds .box {width:min(100%,440px)}
+  .bcol {width:100%;display:grid;grid-template-columns:1fr auto;text-align:left;align-items:center;gap:3px 8px;padding:8px 12px}
+  .bname {grid-column:1;grid-row:1}.btgt {grid-column:2;grid-row:1/3;text-align:right}
+  .bcol .bbs,.bcol .st {grid-column:1/-1}.bcol .brw {grid-column:1;grid-row:2}
+  .bcol .bbtn {grid-column:1/-1}.bcol.cur {padding:10px 12px}
+  .box {padding:16px;max-width:100%!important}
+  #shopItems,#packCards {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+  #shopItems .shopItem,#packCards .pk {width:100%} #shopPacks .shopItem {max-width:47%}
+  .shopItem {padding:7px}.shopItem .ds {min-height:0}
+  th,td {padding:4px;font-size:11px}
+  #tutBox {padding:12px}.tbtn {padding:5px 9px}
+}
+@media(max-width:370px) {
+  #main {padding-inline:8px}.bcol .bname {font-size:14px}#statsBox {gap:2px 7px}
+  #ovMpLobby .pxbtn {padding-inline:12px}
+}
+@media(min-width:580px) and (max-width:1000px) and (max-height:540px) {
+  #game {display:grid;grid-template-columns:155px minmax(0,1fr);grid-template-rows:44px 1fr}
+  #rail {grid-column:1/-1} #side {padding:9px;border-right:1px solid var(--seam)}
+  #statsBox {gap:5px;flex-direction:column;align-items:stretch}
+  #blindBox {grid-template-columns:1fr 1fr}#blindName {grid-column:1/-1;grid-row:1}
+  #blindBox>#targetLbl,#blindBox>.lbl:not(#targetLbl) {grid-row:2}
+  #blindBox>#targetLbl,#targetVal {grid-column:2}#blindBox>.lbl:not(#targetLbl),#scoreVal {grid-column:1}
+  #targetVal,#scoreVal {grid-row:3}#scorebarWrap {grid-row:4}#bossDesc {grid-row:5}
+  #main {min-height:fit-content;padding:4px 8px}#jokerBar {min-height:44px}
+  #playArea {min-height:46px}#playedRow .card {height:56px}
+  #handRow {display:flex;flex-wrap:wrap;gap:4px;padding-top:6px}
+  #handRow .card {width:clamp(40px,6.4vw,56px);height:58px}
+  #previewBox {min-height:28px;margin:0}#btnRow {padding:4px 0}#infobar {font-size:11px}
+  .tableSeal svg {width:45px}.titleArt {zoom:.65}.titleScreen {gap:5px;padding:0}
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
+}
+
+#selCount {font:600 12px var(--mono);color:#b6cdbb}
+.shopActions {position:sticky;bottom:0;padding:4px 0;background:#1b3034;box-shadow:0 -1px #57746a;z-index:2}
+.shopActions .pxbtn {padding-inline:14px;margin:4px}
+@media (max-width:760px),(max-width:1000px) and (max-height:540px) {
+  #ovShop .box {padding-bottom:4px}
+  .shopActions {margin:0 -5px;padding:4px;display:flex;gap:6px}
+  .shopActions .pxbtn {flex:1;margin:0;min-width:0}
+}
