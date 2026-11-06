@@ -439,7 +439,7 @@ body::after {display:none}
   display:grid;grid-template-rows:32px 40px minmax(0,1fr) 48px;gap:8px}
 .shopHeader {display:flex;align-items:center;justify-content:space-between;gap:12px}
 .shopHeader h2 {margin:0;font-size:21px}.shopHeader strong {font:700 22px var(--mono);color:#a8dbad}
-.shopTabs {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.shopTabs {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .shopTabs button {border:1px solid #607d70;border-radius:5px;background:#223d39;color:var(--light);font-size:14px;min-width:0}
 .shopTabs [aria-selected=true] {background:#3a5545;border-color:var(--brass);color:var(--brass)}
 .shopBody {min-height:0;display:grid;grid-template-rows:minmax(0,1fr) 120px;gap:10px}
@@ -645,6 +645,69 @@ body::after {display:none}
 @media(prefers-reduced-motion:reduce) {
   *,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* The workshop is a card tray, with the transaction always in reach. */
+.tacticsEntry {display:block;width:100%;margin:10px 0 0;min-height:40px;border:1px solid #879e80;border-radius:5px;background:#234b3b;color:var(--paper);font-size:13px;padding:7px}
+.tacticsBox {width:640px;max-width:100%!important;display:flex;flex-direction:column;overflow:hidden;padding:16px!important;max-height:100%}
+.tacticsBox h2 {margin:0 0 10px}.tacticsBox h3 {font-size:15px;margin:0 0 4px;color:var(--brass)}
+.tacticsBody {min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left;padding:3px}
+.tacticsBody p {font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 8px}
+.tacticChoice {width:100%;display:flex;flex-direction:column;gap:4px;border:1px solid #688974;border-radius:5px;background:#173b31;color:var(--paper);padding:10px;margin:0 0 6px;text-align:left;min-height:42px}
+.tacticChoice b {font-size:14px}.tacticChoice span,.tacticChoice small {font-size:12px;line-height:1.4;color:var(--muted)}
+.tacticChoice[aria-pressed=true] {border-color:var(--brass);background:#3b5139;box-shadow:inset 3px 0 var(--brass)}
+.tacticChoice:disabled {opacity:.5}
+.tacticsBox>.pxbtn {flex-shrink:0;margin:10px 0 0;min-height:44px}
+#tacticsStatus {color:var(--brass);font-size:11px;line-height:1.5;grid-column:1/-1;grid-row:5}
+@media(min-width:580px) and (max-width:1000px) and (max-height:540px) {#tacticsStatus {grid-row:6}}
+@media(max-width:579px) {.tacticsBody {grid-template-columns:1fr;gap:12px}.tacticsBox h2 {font-size:20px}}
+#ovShop #shopWorkshop {grid-template-columns:minmax(0,1fr);grid-template-rows:auto repeat(3,minmax(0,1fr));gap:6px}
+.workshopStatus {margin:0;font-size:12px;line-height:1.5;color:var(--brass)}
+.workshopService {display:grid;grid-template-columns:26px 1fr auto;gap:2px 8px;align-content:center;align-items:center;
+  border:1px solid #829879;border-radius:6px;background:#22493b;color:var(--paper);padding:6px 8px;text-align:left;min-width:0;min-height:44px}
+.workshopService .serviceIcon {grid-row:1/3;font-size:24px;color:var(--brass)}
+.workshopService b {font-size:14px}.workshopService small {grid-column:2;font-size:11px;line-height:1.4;color:var(--muted)}
+.workshopService strong {grid-column:3;grid-row:1/3;font:700 13px var(--ui);color:var(--brass)}
+.workshopService:disabled {opacity:.55;cursor:default}
+.workshopBox {width:680px;height:min(720px,100%);max-width:100%!important;display:grid;overflow:hidden;
+  grid-template-rows:auto auto 36px minmax(70px,1fr) minmax(32px,80px) auto;gap:8px;padding:16px!important}
+.workshopBox h2 {margin:0;font-size:21px}.workshopBox p {margin:0;font-size:12px;color:var(--muted)}
+.workshopFilters {display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.workshopFilters select,.rewardUpgrade select {font:inherit;color:var(--paper);background:var(--deep);border:1px solid #829879;border-radius:4px;min-height:36px;padding:4px 8px;max-width:100%}
+select:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
+#workshopCards {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-content:start;gap:10px 6px;overflow:auto;min-height:0;padding:7px 5px;overscroll-behavior:contain}
+#workshopCards .card {width:100%;height:auto;aspect-ratio:5/7;min-width:0;margin:0;transform:none}
+#workshopCards .card.sel {transform:none;border-color:var(--brass);box-shadow:0 0 0 3px #edcf7b}
+#workshopPreview {border-top:1px solid var(--seam);padding:6px 2px 0;overflow:auto;text-align:left;font-size:12px;line-height:1.5;min-height:0}
+.workshopActions {display:flex;gap:8px}.workshopActions .pxbtn {margin:0;padding:9px;font-size:13px;min-height:44px}
+#workshopConfirm {flex:1}
+.rewardBox {width:540px;max-width:100%!important;padding:20px!important;overflow:auto}
+.rewardBox h2 {margin:0 0 16px;font-size:22px}
+.rewardChoices {display:grid;gap:12px}
+.rewardChoice {width:100%;display:grid;grid-template-columns:42px 1fr;gap:4px 8px;align-items:center;text-align:left;min-height:80px;
+  border:2px solid #a49167;border-radius:7px;padding:12px;background:linear-gradient(130deg,#f5ead0,#e3d5b3);color:#283e35}
+.rewardChoice b {font-size:17px}.rewardChoice small {font-size:12px;line-height:1.5;grid-column:2}
+.rewardIcon {grid-row:1/3;font:700 32px var(--mono);text-align:center;color:#7c5523}
+.rewardUpgrade {padding:8px;border:1px solid #8da392;border-radius:9px;background:#23483b}
+.rewardUpgrade select {display:block;width:100%;margin-bottom:8px;font-size:14px}
+@media(max-width:579px) {
+  #workshopCards {grid-template-columns:repeat(4,minmax(0,1fr))}
+  #workshopCards .card {font-size:20px}
+  .workshopBox {padding:12px!important;gap:6px}
+  .rewardBox {padding:14px!important}.rewardBox h2 {font-size:20px}
+  .workshopService {grid-template-columns:20px 1fr auto;gap:2px 5px;padding:5px}
+}
+@media(min-width:580px) and (max-height:440px) {
+  .workshopBox {grid-template-rows:26px 32px minmax(0,1fr) 44px;grid-template-columns:minmax(0,1fr) 175px;gap:6px;padding:10px!important}
+  .workshopBox h2 {font-size:18px}.workshopBox h2,.workshopFilters {grid-column:1}
+  #workshopRule {grid-column:2;grid-row:1/3;align-self:center}
+  #workshopCards {grid-column:1;grid-row:3/5;grid-template-columns:repeat(5,minmax(0,1fr))}
+  #workshopPreview {grid-column:2;grid-row:3;max-height:none}
+  .workshopActions {grid-column:2;grid-row:4;gap:5px}.workshopActions .pxbtn {font-size:11px;padding:4px}
+  .rewardBox {padding:12px!important}.rewardBox h2 {font-size:18px;margin-bottom:8px}
+  .rewardChoices {gap:6px}.rewardChoice {min-height:52px;padding:6px 10px;gap:1px 6px}
+  .rewardChoice b {font-size:14px}.rewardUpgrade {padding:5px;display:grid;grid-template-columns:130px 1fr;gap:6px}
+  .rewardUpgrade select {margin:0;font-size:12px}.rewardIcon {font-size:25px}
+}
 </style>
 </head>
 <body>
@@ -680,6 +743,7 @@ body::after {display:none}
     <div class="panel" id="blindBox">
       <div id="blindName">🔸 小盲注</div>
       <div id="bossDesc"></div>
+      <div id="tacticsStatus" hidden></div>
       <div class="lbl" id="targetLbl" style="margin-top:5px">目标分数</div>
       <div id="targetVal">300</div>
       <div class="lbl">当前得分</div>
@@ -810,7 +874,16 @@ body::after {display:none}
 <div class="ov" id="ovBlinds"><div class="box" style="max-width:760px">
   <h2 class="blindHeading">选择盲注 <span>底注 <b id="bsAnte">1</b></span></h2>
   <div id="blindCols"></div>
-  <p style="color:#9caeb1;font-size:12px">跳过小盲注或大盲注可获得标签，但没有金币奖励。</p>
+  <button class="tacticsEntry" id="tacticsEntry" onclick="openTactics()">备战 · 选择节奏与悬赏</button>
+</div></div>
+
+<div class="ov" id="ovTactics"><div class="box tacticsBox">
+  <h2>盲注备战</h2>
+  <div class="tacticsBody">
+    <section><h3>出牌节奏</h3><p>从第二手起连招；断连或换盲清零。倍率在计分牌之后、小丑之前增加。</p><div id="rhythmChoices"></div></section>
+    <section><h3>盲注悬赏</h3><p>开打扣 $2；达标过关返还奖金（含押金），未完成不返。跳过不扣钱。</p><div id="contractChoices"></div></section>
+  </div>
+  <button class="pxbtn" onclick="hide('ovTactics')">完成备战</button>
 </div></div>
 
 <!-- 结算 -->
@@ -828,12 +901,14 @@ body::after {display:none}
     <button id="shopTabCons" role="tab" aria-controls="shopItems" aria-selected="false" onclick="selectShopTab('cons')">消耗牌</button>
     <button id="shopTabPacks" role="tab" aria-controls="shopPacks" aria-selected="false" onclick="selectShopTab('packs')">卡包</button>
     <button id="shopTabVoucher" role="tab" aria-controls="shopVouch" aria-selected="false" onclick="selectShopTab('voucher')">优惠券</button>
+    <button id="shopTabWorkshop" role="tab" aria-controls="shopWorkshop" aria-selected="false" onclick="selectShopTab('workshop')">工坊</button>
   </nav>
   <div class="shopBody">
     <div class="shopStock">
       <div id="shopItems" role="tabpanel" aria-labelledby="shopTabCards"></div>
       <div id="shopPacks" role="tabpanel" aria-labelledby="shopTabPacks" hidden></div>
       <div id="shopVouch" role="tabpanel" aria-labelledby="shopTabVoucher" hidden></div>
+      <div id="shopWorkshop" role="tabpanel" aria-labelledby="shopTabWorkshop" hidden></div>
     </div>
     <section class="shopInventory" aria-label="持有牌">
       <div class="shopInventoryTitle"><span>小丑 <b id="shopSlots"></b></span><span>消耗牌 <b id="shopCons"></b></span></div>
@@ -845,6 +920,29 @@ body::after {display:none}
 </div></div>
 
 <!-- 开卡包 -->
+<div class="ov" id="ovWorkshop"><div class="box workshopBox">
+  <h2 id="workshopTitle"></h2>
+  <p id="workshopRule"></p>
+  <div class="workshopFilters"><select id="workshopSuit" aria-label="筛选花色" onchange="renderWorkshopCards()">
+    <option value="all">全部花色</option><option value="0">黑桃 ♠</option><option value="1">红桃 ♥</option><option value="2">梅花 ♣</option><option value="3">方块 ♦</option>
+  </select><span id="workshopCount"></span></div>
+  <div id="workshopCards" role="group" aria-label="选择要改造的牌"></div>
+  <div id="workshopPreview" aria-live="polite"></div>
+  <div class="workshopActions"><button class="pxbtn gray" onclick="closeWorkshop()">取消</button><button class="pxbtn" id="workshopConfirm" onclick="confirmWorkshop()" disabled>确认改造</button></div>
+</div></div>
+
+<div class="ov" id="ovReward"><div class="box rewardBox">
+  <h2>Boss 战利品 · 三选一</h2>
+  <div class="rewardChoices">
+    <button class="rewardChoice" data-reward="cash" onclick="chooseBossReward('cash')"><span class="rewardIcon" aria-hidden="true">$</span><b>领取 $8</b><small id="rewardCashDetail"></small></button>
+    <section class="rewardUpgrade">
+      <select id="rewardHand" aria-label="选择升级的牌型" onchange="selectRewardHand(this.value)"></select>
+      <button class="rewardChoice" data-reward="level" onclick="chooseBossReward('level')"><span class="rewardIcon" aria-hidden="true">↑</span><b id="rewardLevel"></b><small id="rewardLevelDetail"></small></button>
+    </section>
+    <button class="rewardChoice" data-reward="workshop" onclick="chooseBossReward('workshop')"><span class="rewardIcon" aria-hidden="true">✦</span><b>免费改造两次</b><small id="rewardWorkshopDetail"></small></button>
+  </div>
+</div></div>
+
 <div class="ov" id="ovPack" style="z-index:60"><div class="box" style="max-width:720px">
   <h2 id="packTitle"></h2>
   <p id="packHint" style="color:#9ab;font-size:12px"></p>
@@ -1171,6 +1269,7 @@ function freshDeck() {
 }
 function newGame(withTut, deckId='classic', stakeId='white') {
   initAudio();
+  workshopDraft=null;
   const deck=DECKS.find(d=>d.id===deckId),stake=STAKES.find(s=>s.id===stakeId)||STAKES[0];
   S = {
     deckAll: freshDeck(), money: 4, ante: 1, blindIdx: 0,
@@ -1185,6 +1284,8 @@ function newGame(withTut, deckId='classic', stakeId='white') {
     investN: 0, nextShopHalf: false, nextShopUnc: false,
     anteBoss: null, anteVoucher: null, skipTags: [],
     deckId:deck?.id||'classic',stakeId:stake.id,tarotsUsed:0,blindPlayed:[],bossHistory:[],
+    workshopCredits:0,bossReward:null,
+    rhythmMode:'none',rhythm:{lastKey:null,chain:0},contractChoice:null,contract:null,
   };
   S.money=deck?.money??4;
   S.baseHands+=deck?.hands||0; S.baseDisc+=(deck?.disc||0)+(stake.disc||0);
@@ -1308,12 +1409,15 @@ function showBlindSelect() {
     }
     cols.appendChild(d);
   }
+  renderTacticsEntry();
   renderStats();
   show('ovBlinds');
   saveCheckpoint();   // 静默存档：只保留最新一个保存点
   mpSendState();
 }
 function skipBlind(tg) {
+  if(S.screen!=='select'||S.blindIdx>=2)return;
+  S.contractChoice=null;
   hideTip();
   applyTag(tg);
   sfxCash();
@@ -1322,6 +1426,8 @@ function skipBlind(tg) {
   showBlindSelect();
 }
 function chooseBlind() {
+  if(S.screen!=='select')return;
+  if(S.contractChoice&&S.money<2)return msg('悬赏需要 $2，可以在备战中取消。',1);
   hideTip();
   hide('ovBlinds');
   startBlind();
@@ -1329,6 +1435,7 @@ function chooseBlind() {
 }
 function effHandSize() { return S.handSize - (S.boss && S.boss.id === 'manacle' ? 1 : 0); }
 function startBlind() {
+  startTactics();
   const m = blindMeta();
   S.boss = S.blindIdx === 2 ? S.anteBoss : null;
   S.target = m.target;
@@ -1589,6 +1696,7 @@ function renderStats() {
   const bd = $('bossDesc');
   if (S.boss) { bd.style.display = 'block'; bd.textContent = S.boss.desc; }
   else bd.style.display = 'none';
+  const tactics=tacticsStatus();$('tacticsStatus').textContent=tactics;$('tacticsStatus').hidden=!tactics;
 }
 function jokerDesc(j) {
   let d = j.desc;
@@ -1651,6 +1759,13 @@ function renderAll() { renderStats(); renderJokers(); renderCons(); renderHand()
 
 // ── score-engine ──
 // Pure scoring: animation, previews and tests consume the same calculation.
+function rhythmForHand(state,key) {
+  const mode=state.rhythmMode,previous=state.rhythm||{lastKey:null,chain:0};
+  if(!['focus','flow'].includes(mode))return {lastKey:null,chain:0,bonus:0};
+  const continues=previous.lastKey&&(mode==='focus'?previous.lastKey===key:previous.lastKey!==key);
+  const chain=continues?Math.min(5,previous.chain+1):1;
+  return {lastKey:key,chain,bonus:(chain-1)*2};
+}
 function jokerStateForHand(joker, hand, cards) {
   const value=joker.state||0;
   if(joker.id==='green') return value+1;
@@ -1706,6 +1821,11 @@ function scoreHand(state, cards, random = Math.random) {
     const times=c.seal==='red'?2:1;
     mult*=Math.pow(1.5,times); emit('held',c.id,times===2?'×2.25 钢铁 + 红封':'×1.5 钢铁');
   }
+  const rhythm=rhythmForHand(state,hand.key);
+  if(rhythm.bonus) {
+    mult+=rhythm.bonus;
+    emit('rhythm',null,(state.rhythmMode==='focus'?'专注':'变奏')+' '+rhythm.chain+' 连 · +'+rhythm.bonus+' 倍率');
+  }
   for (const j of state.jokers) {
     let c=0,m=0,x=1;
     switch (j.id) {
@@ -1755,7 +1875,7 @@ function scoreHand(state, cards, random = Math.random) {
     if(j.ed===2) { mult+=10; emit('joker',j.uid,'+10 全息'); }
     if(j.ed===3) { mult*=1.5; emit('joker',j.uid,'×1.5 多彩'); }
   }
-  return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events};
+  return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events,rhythm};
 }
 
 // ── scoring ──
@@ -1844,6 +1964,7 @@ async function doPlay() {
   S.money+=result.money;
   S.lastResult={name:HANDS[ev.key].name,total:result.total,chips,mult,money:result.money,
     events:result.events.map(e=>({text:e.text,chips:e.chips,mult:e.mult}))};
+  S.rhythm=result.rhythm;
 
   // —— 总分 ——
   const total = Math.floor(chips * mult);
@@ -1902,6 +2023,7 @@ function doDiscard() {
   if (!sel.length) { msg('请先选择要弃掉的牌', 1); return; }
   animateDiscard(sel);
   S.discLeft--;
+  if(S.contract)S.contract.discards++;
   S.hand = S.hand.filter(c => !c.sel);
   S.jokers.forEach(j => { if (j.id === 'green' && j.state) { j.state = 0; jokerPop(j, '清零!'); } });
   sfxBad();
@@ -1924,12 +2046,13 @@ function beatBlind() {
   const handBonus = S.handsLeft*(green?2:1),discardBonus=green?S.discLeft:0;
   let invest = 0;
   if (S.boss && S.investN) { invest = S.investN * 15; S.investN = 0; }
-  const total = m.reward + bounty + goldenN + interest + handBonus + invest + discardBonus;
+  let total = m.reward + bounty + goldenN + interest + handBonus + invest + discardBonus;
   S.payout = [['盲注奖励',m.reward], ['剩余出牌 '+S.handsLeft+' × $'+(green?2:1),handBonus], ['利息',interest]];
   if(green)S.payout.push(['剩余弃牌',discardBonus]);
   for (const [name,value] of [['赏金猎人',bounty],['黄金小丑',goldenN],['投资标签',invest]]) {
     if (value) S.payout.push([name,value]);
   }
+  total+=settleContract();
   S.payout.push(['合计',total]);
   renderPayout();
   S.money += total;
@@ -1941,6 +2064,7 @@ function beatBlind() {
   });
   S.boss = null;   // 清除 Boss 效果，避免商店里的卡牌仍显示"被禁用"
   S.screen = 'cash';
+  prepareBossReward();
   const wasWin = !MP.on && S.ante === 8 && S.blindIdx === 2;
   S.winPending=wasWin;
   if (wasWin) {
@@ -1991,7 +2115,7 @@ function gameLost(restoring=false) {
 
 // ── shop ──
 let shopTab='cards';
-const SHOP_TABS=[['cards','shopTabCards','shopItems'],['cons','shopTabCons','shopItems'],['packs','shopTabPacks','shopPacks'],['voucher','shopTabVoucher','shopVouch']];
+const SHOP_TABS=[['cards','shopTabCards','shopItems'],['cons','shopTabCons','shopItems'],['packs','shopTabPacks','shopPacks'],['voucher','shopTabVoucher','shopVouch'],['workshop','shopTabWorkshop','shopWorkshop']];
 function selectShopTab(tab) {
   const selected=SHOP_TABS.find(([key])=>key===tab);
   if(!selected) return;
@@ -2052,13 +2176,14 @@ function genShopMain() {
   ];
 }
 function openShop() {
-  if(S.screen!=='cash') return;
+  if(S.screen!=='cash'||S.winPending) return;
+  if(S.bossReward) return openBossReward();
   hide('ovCash');
   S.shop = {
     disc: S.discount * (S.nextShopHalf ? 0.5 : 1),
     unc: S.nextShopUnc, freeUsed: false,
     rerollCost: S.rerollBase, voucherSold: false,
-    packs: [],
+    packs: [], workshopUsed:false,
   };
   if (S.nextShopHalf) msg('🏷️ 优惠标签生效：本商店全场半价！');
   if (S.nextShopUnc) msg('🃏 珍稀标签生效：小丑全为罕见以上，第一张免费！');
@@ -2120,6 +2245,7 @@ function renderShop() {
       (S.anteVoucher ? '本底注的优惠券已购买 ✔' : '优惠券已全部收集！') + '</p>';
   }
   renderInventory($('shopOwned'));
+  renderWorkshop();
   selectShopTab(shopTab);
   renderJokers(); renderCons(); renderStats();
 }
@@ -2186,7 +2312,7 @@ function doReroll() {
   renderShop();
 }
 function leaveShop() {
-  if(S.screen!=='shop' || S.pack) return;
+  if(S.screen!=='shop' || S.pack || workshopDraft) return;
   hide('ovShop');
   S.shop = null;
   S.blindIdx++;
@@ -2437,6 +2563,225 @@ function useCons(i) {
   if(t.id==='tower') { drawTo(effHandSize()); renderHand(); checkStuck(); }
   persistRun();
   if (t.id !== 'judge' && t.id !== 'emperor') msg(t.ic + ' ' + t.name + ' 已生效！');
+}
+
+// ── workshop ──
+// Deterministic deck building: the player chooses both the service and the card.
+const WORKSHOP = [
+  {id:'remove',name:'删去一张牌',price:4,icon:'✂',desc:'永久移出牌组，至少保留 5 张'},
+  {id:'copy',name:'复制一张牌',price:6,icon:'▣',desc:'保留原牌，并复制全部强化、版本和蜡封'},
+  {id:'polish',name:'强化一张牌',price:5,icon:'✦',desc:'计分时额外 +30 筹码，可叠加'},
+];
+let workshopDraft=null;
+let shopClickUntil=0;
+function workshopCost(service) { return S.workshopCredits>0?0:shopPrice(service.price); }
+function workshopIssue(service,cardId) {
+  if(!service||S.screen!=='shop'||!S.shop||S.busy||S.pack) return '当前无法改造';
+  if(S.shop.workshopUsed) return '本店已完成改造';
+  if(service.id==='remove'&&S.deckAll.length<=5) return '牌组至少保留 5 张';
+  if(S.money<workshopCost(service)) return '金币不足';
+  if(cardId!==undefined&&!S.deckAll.some(c=>c.id===cardId)) return '请选择一张牌';
+  return '';
+}
+function renderWorkshop() {
+  const box=$('shopWorkshop'); box.replaceChildren();
+  const status=document.createElement('p'); status.className='workshopStatus';
+  status.setAttribute('role','status');
+  status.textContent=S.shop.workshopUsed?S.shop.workshopReceipt||'本店已完成改造':
+    '每店一次 · 牌组 '+S.deckAll.length+' 张'+(S.workshopCredits?' · 免费 '+S.workshopCredits+' 次':'');
+  box.append(status);
+  for(const service of WORKSHOP) {
+    const button=document.createElement('button'),issue=workshopIssue(service);
+    button.className='workshopService'; button.dataset.service=service.id; button.disabled=!!issue;
+    button.innerHTML='<span class="serviceIcon" aria-hidden="true">'+service.icon+'</span><b>'+service.name+'</b><small>'+service.desc+'</small><strong>'+
+      (S.shop.workshopUsed?'已完成':issue|| (workshopCost(service)?'$'+workshopCost(service):'免费'))+'</strong>';
+    button.onclick=()=>openWorkshop(service.id); box.append(button);
+  }
+}
+function openWorkshop(serviceId) {
+  const service=WORKSHOP.find(w=>w.id===serviceId);
+  if(workshopIssue(service)) return false;
+  workshopDraft={service:serviceId,cardId:null};
+  $('workshopTitle').textContent=service.name;
+  $('workshopRule').textContent=service.desc;
+  $('workshopSuit').value='all';
+  renderWorkshopCards(); show('ovWorkshop'); return true;
+}
+function renderWorkshopCards() {
+  if(!workshopDraft) return;
+  const grid=$('workshopCards'),filter=$('workshopSuit').value;
+  grid.replaceChildren();
+  const cards=S.deckAll.filter(c=>filter==='all'||c.suit===Number(filter)||c.wild)
+    .slice().sort((a,b)=>b.rank-a.rank||a.suit-b.suit||a.id-b.id);
+  $('workshopCount').textContent=cards.length+' / '+S.deckAll.length+' 张';
+  for(const card of cards) {
+    const el=cardEl({...card,sel:false,justDealt:false},true);
+    el.setAttribute('aria-label',cardLabel(card));
+    el.setAttribute('aria-pressed',String(card.id===workshopDraft.cardId));
+    el.classList.toggle('sel',card.id===workshopDraft.cardId);
+    el.onclick=()=>{
+      workshopDraft.cardId=card.id;
+      for(const other of grid.children) {
+        const selected=other.dataset.cardId===String(card.id);
+        other.classList.toggle('sel',selected);other.setAttribute('aria-pressed',String(selected));
+      }
+      hideTip();renderWorkshopPreview();
+    };
+    grid.append(el);
+  }
+  renderWorkshopPreview();
+}
+function cardLabel(card) { return (card.wild?'百搭花色 ':['黑桃 ','红桃 ','梅花 ','方块 '][card.suit])+rankName(card.rank); }
+function renderWorkshopPreview() {
+  const service=WORKSHOP.find(w=>w.id===workshopDraft.service),card=S.deckAll.find(c=>c.id===workshopDraft.cardId);
+  const confirm=$('workshopConfirm'); confirm.disabled=!card||!!workshopIssue(service,card?.id);
+  $('workshopPreview').innerHTML=card?cardTipHTML(card):'选择要'+({remove:'删去',copy:'复制',polish:'强化'}[service.id])+'的牌';
+  const result=card?(service.id==='remove'?'删去 '+cardLabel(card):service.id==='copy'?'复制 '+cardLabel(card):cardLabel(card)+' · +30 筹码'):'确认改造';
+  confirm.textContent=result+' · '+(workshopCost(service)?'$'+workshopCost(service):'免费');
+}
+function closeWorkshop() { workshopDraft=null;shopClickUntil=Date.now()+350;hideTip();hide('ovWorkshop'); }
+function confirmWorkshop() { if(workshopDraft) return applyWorkshop(workshopDraft.service,workshopDraft.cardId); return false; }
+function applyWorkshop(serviceId,cardId) {
+  const service=WORKSHOP.find(w=>w.id===serviceId);
+  if(workshopIssue(service,cardId)) return false;
+  const card=S.deckAll.find(c=>c.id===cardId);
+  if(!card) return false;
+  const cost=workshopCost(service);
+  // Validate before changing money or references; one synchronous commit prevents double taps.
+  if(S.workshopCredits>0) S.workshopCredits--; else S.money-=cost;
+  if(serviceId==='remove') {
+    S.deckAll=S.deckAll.filter(c=>c!==card);
+    S.hand=S.hand.filter(c=>c!==card); S.drawPile=S.drawPile.filter(c=>c!==card);
+  } else if(serviceId==='copy') {
+    S.deckAll.push({...card,id:++cid,sel:false,justDealt:false}); S.cardsAdded++;
+  } else card.bonus+=30;
+  S.shop.workshopUsed=true;
+  S.shop.workshopReceipt=({remove:'已删去 ',copy:'已复制 ',polish:'已强化 '}[serviceId])+cardLabel(card)+' · 牌组 '+S.deckAll.length+' 张';
+  closeWorkshop(); sfxUp(); renderShop(); persistRun(); mpSendState(); return true;
+}
+
+function prepareBossReward() {
+  if(MP.on||S.blindIdx!==2) return;
+  const keys=availablePlanets().map(p=>p.key);
+  // Stable tie break follows the planet list; no reward rerolls or hidden randomness.
+  const handKey=keys.slice().sort((a,b)=>S.playCounts[b]-S.playCounts[a])[0];
+  S.bossReward={ante:S.ante,handKey};
+}
+function openBossReward() {
+  if(!S.bossReward||S.screen!=='cash'||S.winPending||MP.on) return false;
+  hide('ovCash');
+  const select=$('rewardHand'); select.replaceChildren();
+  for(const planet of availablePlanets()) {
+    const option=document.createElement('option'); option.value=planet.key;
+    option.textContent=HANDS[planet.key].name+' · '+S.levels[planet.key]+' 级';select.append(option);
+  }
+  select.value=S.bossReward.handKey; renderBossReward(); show('ovReward');return true;
+}
+function selectRewardHand(key) {
+  if(!S.bossReward||!availablePlanets().some(p=>p.key===key)) return;
+  S.bossReward.handKey=key;renderBossReward();persistRun();
+}
+function renderBossReward() {
+  const key=S.bossReward.handKey,h=HANDS[key],base=handBase(key);
+  $('rewardLevel').textContent=h.name+' '+base.lv+' → '+(base.lv+2)+' 级';
+  $('rewardLevelDetail').textContent='筹码 '+base.chips+' → '+(base.chips+2*h.incC)+' · 倍率 '+base.mult+' → '+(base.mult+2*h.incM);
+  $('rewardCashDetail').textContent='$'+S.money+' → $'+(S.money+8);
+  $('rewardWorkshopDetail').textContent='免费次数 '+S.workshopCredits+' → '+(S.workshopCredits+2)+' · 每店用一次';
+}
+function chooseBossReward(choice) {
+  if(MP.on||S.screen!=='cash'||S.winPending||!S.bossReward||!['cash','level','workshop'].includes(choice)) return false;
+  const key=S.bossReward.handKey;
+  if(choice==='cash') S.money+=8;
+  if(choice==='level') S.levels[key]+=2;
+  if(choice==='workshop') S.workshopCredits+=2;
+  S.bossReward=null;
+  shopClickUntil=Date.now()+350;
+  hide('ovReward');sfxUp();openShop();persistRun();return true;
+}
+
+// ── tactics ──
+const CONTRACTS=[
+  {id:'first',name:'一手过关',payout:8,desc:'只出一手牌就击败盲注'},
+  {id:'clean',name:'不弃一牌',payout:6,desc:'不使用弃牌，击败盲注'},
+  {id:'variety',name:'三路出击',payout:9,desc:'打出至少三种不同牌型，再击败盲注'},
+];
+const RHYTHMS=[
+  {id:'none',name:'常规',desc:'沿用普通计分'},
+  {id:'focus',name:'专注',desc:'连续同牌型，每次 +2 倍率，最多 +8'},
+  {id:'flow',name:'变奏',desc:'连续换牌型，每次 +2 倍率，最多 +8'},
+];
+function contractAvailable(contract) {
+  if(contract.id==='variety'&&S.blindIdx===2&&S.anteBoss?.id==='needle')return false;
+  if(contract.id==='clean'&&((S.blindIdx===2&&S.anteBoss?.id==='water')||S.baseDisc===0))return false;
+  return true;
+}
+function renderTacticsEntry() {
+  $('tacticsEntry').hidden=MP.on;
+  const rhythm=RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0],contract=CONTRACTS.find(c=>c.id===S.contractChoice);
+  $('tacticsEntry').textContent='备战 · '+rhythm.name+(contract?' · '+contract.name+' 押 $2':' · 选择悬赏');
+}
+function openTactics() {
+  if(S.screen!=='select'||MP.on) return;
+  renderTactics();show('ovTactics');
+}
+function renderTactics() {
+  const modes=$('rhythmChoices');modes.replaceChildren();
+  for(const rhythm of RHYTHMS) {
+    const button=document.createElement('button');button.className='tacticChoice';button.dataset.rhythm=rhythm.id;
+    button.setAttribute('aria-pressed',String(S.rhythmMode===rhythm.id));
+    button.innerHTML='<b>'+rhythm.name+'</b><span>'+rhythm.desc+'</span>';
+    button.onclick=()=>selectRhythm(rhythm.id);modes.append(button);
+  }
+  const offers=$('contractChoices');offers.replaceChildren();
+  const skip=document.createElement('button');skip.className='tacticChoice';skip.dataset.contract='none';
+  skip.setAttribute('aria-pressed',String(!S.contractChoice));skip.textContent='不接悬赏';skip.onclick=()=>selectContract(null);offers.append(skip);
+  for(const contract of CONTRACTS) {
+    const button=document.createElement('button');button.className='tacticChoice';button.dataset.contract=contract.id;
+    button.disabled=!contractAvailable(contract)||S.money<2;
+    button.setAttribute('aria-pressed',String(S.contractChoice===contract.id));
+    button.innerHTML='<b>'+contract.name+' · 返 $'+contract.payout+'</b><span>'+contract.desc+'</span>'+
+      (button.disabled?'<small>'+(!contractAvailable(contract)?'本盲注不适用':'需要 $2 押金')+'</small>':'');
+    button.onclick=()=>selectContract(contract.id);offers.append(button);
+  }
+}
+function selectRhythm(mode) {
+  if(S.screen!=='select'||MP.on||!RHYTHMS.some(r=>r.id===mode))return false;
+  S.rhythmMode=mode;renderTactics();renderTacticsEntry();saveCheckpoint();persistRun();return true;
+}
+function selectContract(id) {
+  const def=CONTRACTS.find(c=>c.id===id);
+  if(S.screen!=='select'||MP.on||(id!==null&&(!def||!contractAvailable(def)||S.money<2)))return false;
+  S.contractChoice=id;renderTactics();renderTacticsEntry();saveCheckpoint();persistRun();return true;
+}
+function startTactics() {
+  S.rhythm={lastKey:null,chain:0};S.contract=null;
+  if(!MP.on&&S.contractChoice) {
+    const def=CONTRACTS.find(c=>c.id===S.contractChoice);
+    if(def&&contractAvailable(def)&&S.money>=2) {
+      S.money-=2;S.contract={id:def.id,discards:0,settled:false};
+    }
+  }
+  S.contractChoice=null;
+}
+function contractResult() {
+  if(!S.contract)return null;
+  const def=CONTRACTS.find(c=>c.id===S.contract.id);
+  const count=S.blindPlayed.length,distinct=new Set(S.blindPlayed).size;
+  const met=def.id==='first'?count===1:def.id==='clean'?S.contract.discards===0:distinct>=3;
+  return {def,met,detail:def.id==='first'?(count>1?'已失约':count+' / 1 手'):def.id==='clean'?(S.contract.discards?'已失约':'尚未弃牌'):distinct+' / 3 牌型'};
+}
+function settleContract() {
+  if(MP.on||!S.contract||S.contract.settled)return 0;
+  const result=contractResult();S.contract.settled=true;
+  S.payout.push(['悬赏 · '+result.def.name+(result.met?'':'（未完成）'),result.met?result.def.payout:0]);
+  return result.met?result.def.payout:0;
+}
+function tacticsStatus() {
+  if(MP.on||S.screen!=='play')return '';
+  const rhythm=RHYTHMS.find(r=>r.id===S.rhythmMode),parts=[];
+  if(rhythm&&rhythm.id!=='none')parts.push(rhythm.name+' '+(S.rhythm?.chain||0)+' 连');
+  const contract=contractResult();if(contract)parts.push(contract.def.name+' · '+contract.detail);
+  return parts.join(' ｜ ');
 }
 
 // ── guide ──
@@ -2801,6 +3146,16 @@ function normalizeRunState(input) {
   if(!input || !Array.isArray(input.deckAll) || !Array.isArray(input.hand) || !Array.isArray(input.drawPile)) throw Error('牌组格式');
   const s=input, finite=n=>Number.isFinite(n)&&n>=0;
   s.deckId??='classic'; s.stakeId??='white'; s.tarotsUsed??=0; s.blindPlayed??=[];s.bossHistory??=[];
+  s.workshopCredits??=0; s.bossReward??=null;
+  s.rhythmMode??='none'; s.rhythm??={lastKey:null,chain:0};s.contractChoice??=null;s.contract??=null;
+  if(!RHYTHMS.some(r=>r.id===s.rhythmMode)||!Number.isInteger(s.rhythm.chain)||s.rhythm.chain<0||s.rhythm.chain>5||
+    (s.rhythm.lastKey!==null&&!HORDER.includes(s.rhythm.lastKey))||
+    (s.contractChoice!==null&&!CONTRACTS.some(c=>c.id===s.contractChoice))||
+    (s.contract&&(!CONTRACTS.some(c=>c.id===s.contract.id)||!Number.isInteger(s.contract.discards)||s.contract.discards<0||typeof s.contract.settled!=='boolean')))
+    throw Error('备战规则损坏');
+  if(!Number.isSafeInteger(s.workshopCredits)||s.workshopCredits<0) throw Error('工坊次数损坏');
+  if(s.bossReward && (s.screen!=='cash'||s.blindIdx!==2||s.bossReward.ante!==s.ante||
+    !HORDER.includes(s.bossReward.handKey))) throw Error('成长奖励损坏');
   if(!['classic',...DECKS.map(d=>d.id)].includes(s.deckId)||!STAKES.some(t=>t.id===s.stakeId)||
     !Number.isInteger(s.tarotsUsed)||s.tarotsUsed<0||!Array.isArray(s.blindPlayed)||
     s.blindPlayed.some(k=>!HORDER.includes(k))||!Array.isArray(s.bossHistory)||
@@ -2840,6 +3195,8 @@ function normalizeRunState(input) {
   }
   if(s.screen==='shop' && !s.shop) throw Error('商店损坏');
   if(s.shop) {
+    s.shop.workshopUsed=!!s.shop.workshopUsed;
+    if(s.shop.workshopReceipt!==undefined&&typeof s.shop.workshopReceipt!=='string') throw Error('工坊记录损坏');
     if(!finite(s.shop.disc)||!finite(s.shop.rerollCost)) throw Error('价格损坏');
     s.shop.jokers=s.shop.jokers.map(j=>{
       if(!finite(j.price)||![0,1,2,3].includes(j.ed??0)) throw Error('商品损坏');
@@ -2882,7 +3239,7 @@ function normalizeRunState(input) {
 function decodeRun(raw) {
   try {
     const data=JSON.parse(raw);
-    if(!data || ![1,2,3].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
+    if(!data || ![1,2,3,4].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
     data.state=normalizeRunState(data.state);
     const checkpoint=normalizeRunState(JSON.parse(data.checkpoint));
     data.checkpoint=JSON.stringify(checkpoint);
@@ -2902,7 +3259,7 @@ function readRun() {
 function persistRun() {
   if(!S||MP.on||S.busy||!saveStr) return;
   const state={...S,hand:S.hand.map(c=>c.id),drawPile:S.drawPile.map(c=>c.id),played:[],sellId:null};
-  const raw=JSON.stringify({version:3,cid,state,checkpoint:saveStr,meta:saveMeta});
+  const raw=JSON.stringify({version:4,cid,state,checkpoint:saveStr,meta:saveMeta});
   if(raw===lastWrite) return;
   try {
     const previous=localStorage.getItem(RUN_KEY);
@@ -2931,6 +3288,7 @@ function resumeGame() {
   const state=slot.state, byId=new Map(state.deckAll.map(c=>[c.id,c]));
   state.hand=state.hand.map(id=>byId.get(id)); state.drawPile=state.drawPile.map(id=>byId.get(id));
   S=state; cid=slot.cid; saveStr=slot.checkpoint; saveMeta=slot.meta;
+  workshopDraft=null;
   initAudio(); hide('ovStart'); renderAll();
   switch(S.screen) {
     case 'select': showBlindSelect(); break;
@@ -2941,7 +3299,8 @@ function resumeGame() {
       if(S.winPending) {
         $('winStats').textContent='最高单次得分：'+fmt(S.bestHand)+'　总出牌数：'+S.totHands;
         show('ovWin');
-      } else show('ovCash');
+      } else if(S.bossReward) openBossReward();
+      else show('ovCash');
       break;
     case 'over': gameLost(true); break;
   }
@@ -3045,6 +3404,12 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)$('feedback
 // ── controls ──
 const SETTINGS_KEY='pixel-balatro.settings.v1';
 const settings={speed:1,music:true,sound:true};
+// A second tap from the dismissed picker must not activate a different shop action underneath it.
+document.addEventListener('click',e=>{
+  if(Date.now()<shopClickUntil&&e.target.closest('#ovShop')) {
+    e.preventDefault();e.stopImmediatePropagation();
+  }
+},true);
 try {
   const saved=JSON.parse(localStorage.getItem(SETTINGS_KEY));
   if(saved) {
@@ -3111,8 +3476,9 @@ addEventListener('keydown',e=>{
       e.preventDefault(); controls[e.shiftKey?controls.length-1:0].focus();
     }
   }
-  if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection'].includes(top.id)) hide(top.id);
+  if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovTactics'].includes(top.id)) hide(top.id);
   if(e.key==='Escape'&&top.id==='ovSetup'){hide('ovSetup');show('ovStart');}
+  if(e.key==='Escape'&&top.id==='ovWorkshop')closeWorkshop();
 });
 let owned=null, sellConfirm=false;
 function openMenu() {
@@ -3290,8 +3656,9 @@ function nativeBack(){
   if(top?.id==='ovSetup'){hide('ovSetup');show('ovStart');return false;}
   if(top?.id==='ovMpLobby'){mpCancel();return false;}
   if(top?.id==='ovRestart'){hide('ovRestart');show('ovStart');return false;}
-  if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave'].includes(top.id)){hide(top.id);return false;}
+  if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave','ovTactics'].includes(top.id)){hide(top.id);return false;}
   if(top?.id==='ovPack'){closePack();return false;}
+  if(top?.id==='ovWorkshop'){closeWorkshop();return false;}
   openMenu();return false;
 }
 </script>

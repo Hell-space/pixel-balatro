@@ -1,4 +1,11 @@
 // Pure scoring: animation, previews and tests consume the same calculation.
+function rhythmForHand(state,key) {
+  const mode=state.rhythmMode,previous=state.rhythm||{lastKey:null,chain:0};
+  if(!['focus','flow'].includes(mode))return {lastKey:null,chain:0,bonus:0};
+  const continues=previous.lastKey&&(mode==='focus'?previous.lastKey===key:previous.lastKey!==key);
+  const chain=continues?Math.min(5,previous.chain+1):1;
+  return {lastKey:key,chain,bonus:(chain-1)*2};
+}
 function jokerStateForHand(joker, hand, cards) {
   const value=joker.state||0;
   if(joker.id==='green') return value+1;
@@ -54,6 +61,11 @@ function scoreHand(state, cards, random = Math.random) {
     const times=c.seal==='red'?2:1;
     mult*=Math.pow(1.5,times); emit('held',c.id,times===2?'×2.25 钢铁 + 红封':'×1.5 钢铁');
   }
+  const rhythm=rhythmForHand(state,hand.key);
+  if(rhythm.bonus) {
+    mult+=rhythm.bonus;
+    emit('rhythm',null,(state.rhythmMode==='focus'?'专注':'变奏')+' '+rhythm.chain+' 连 · +'+rhythm.bonus+' 倍率');
+  }
   for (const j of state.jokers) {
     let c=0,m=0,x=1;
     switch (j.id) {
@@ -103,5 +115,5 @@ function scoreHand(state, cards, random = Math.random) {
     if(j.ed===2) { mult+=10; emit('joker',j.uid,'+10 全息'); }
     if(j.ed===3) { mult*=1.5; emit('joker',j.uid,'×1.5 多彩'); }
   }
-  return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events};
+  return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events,rhythm};
 }

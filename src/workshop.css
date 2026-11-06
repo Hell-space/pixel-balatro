@@ -1,0 +1,62 @@
+/* The workshop is a card tray, with the transaction always in reach. */
+.tacticsEntry {display:block;width:100%;margin:10px 0 0;min-height:40px;border:1px solid #879e80;border-radius:5px;background:#234b3b;color:var(--paper);font-size:13px;padding:7px}
+.tacticsBox {width:640px;max-width:100%!important;display:flex;flex-direction:column;overflow:hidden;padding:16px!important;max-height:100%}
+.tacticsBox h2 {margin:0 0 10px}.tacticsBox h3 {font-size:15px;margin:0 0 4px;color:var(--brass)}
+.tacticsBody {min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left;padding:3px}
+.tacticsBody p {font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 8px}
+.tacticChoice {width:100%;display:flex;flex-direction:column;gap:4px;border:1px solid #688974;border-radius:5px;background:#173b31;color:var(--paper);padding:10px;margin:0 0 6px;text-align:left;min-height:42px}
+.tacticChoice b {font-size:14px}.tacticChoice span,.tacticChoice small {font-size:12px;line-height:1.4;color:var(--muted)}
+.tacticChoice[aria-pressed=true] {border-color:var(--brass);background:#3b5139;box-shadow:inset 3px 0 var(--brass)}
+.tacticChoice:disabled {opacity:.5}
+.tacticsBox>.pxbtn {flex-shrink:0;margin:10px 0 0;min-height:44px}
+#tacticsStatus {color:var(--brass);font-size:11px;line-height:1.5;grid-column:1/-1;grid-row:5}
+@media(min-width:580px) and (max-width:1000px) and (max-height:540px) {#tacticsStatus {grid-row:6}}
+@media(max-width:579px) {.tacticsBody {grid-template-columns:1fr;gap:12px}.tacticsBox h2 {font-size:20px}}
+#ovShop #shopWorkshop {grid-template-columns:minmax(0,1fr);grid-template-rows:auto repeat(3,minmax(0,1fr));gap:6px}
+.workshopStatus {margin:0;font-size:12px;line-height:1.5;color:var(--brass)}
+.workshopService {display:grid;grid-template-columns:26px 1fr auto;gap:2px 8px;align-content:center;align-items:center;
+  border:1px solid #829879;border-radius:6px;background:#22493b;color:var(--paper);padding:6px 8px;text-align:left;min-width:0;min-height:44px}
+.workshopService .serviceIcon {grid-row:1/3;font-size:24px;color:var(--brass)}
+.workshopService b {font-size:14px}.workshopService small {grid-column:2;font-size:11px;line-height:1.4;color:var(--muted)}
+.workshopService strong {grid-column:3;grid-row:1/3;font:700 13px var(--ui);color:var(--brass)}
+.workshopService:disabled {opacity:.55;cursor:default}
+.workshopBox {width:680px;height:min(720px,100%);max-width:100%!important;display:grid;overflow:hidden;
+  grid-template-rows:auto auto 36px minmax(70px,1fr) minmax(32px,80px) auto;gap:8px;padding:16px!important}
+.workshopBox h2 {margin:0;font-size:21px}.workshopBox p {margin:0;font-size:12px;color:var(--muted)}
+.workshopFilters {display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.workshopFilters select,.rewardUpgrade select {font:inherit;color:var(--paper);background:var(--deep);border:1px solid #829879;border-radius:4px;min-height:36px;padding:4px 8px;max-width:100%}
+select:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
+#workshopCards {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-content:start;gap:10px 6px;overflow:auto;min-height:0;padding:7px 5px;overscroll-behavior:contain}
+#workshopCards .card {width:100%;height:auto;aspect-ratio:5/7;min-width:0;margin:0;transform:none}
+#workshopCards .card.sel {transform:none;border-color:var(--brass);box-shadow:0 0 0 3px #edcf7b}
+#workshopPreview {border-top:1px solid var(--seam);padding:6px 2px 0;overflow:auto;text-align:left;font-size:12px;line-height:1.5;min-height:0}
+.workshopActions {display:flex;gap:8px}.workshopActions .pxbtn {margin:0;padding:9px;font-size:13px;min-height:44px}
+#workshopConfirm {flex:1}
+.rewardBox {width:540px;max-width:100%!important;padding:20px!important;overflow:auto}
+.rewardBox h2 {margin:0 0 16px;font-size:22px}
+.rewardChoices {display:grid;gap:12px}
+.rewardChoice {width:100%;display:grid;grid-template-columns:42px 1fr;gap:4px 8px;align-items:center;text-align:left;min-height:80px;
+  border:2px solid #a49167;border-radius:7px;padding:12px;background:linear-gradient(130deg,#f5ead0,#e3d5b3);color:#283e35}
+.rewardChoice b {font-size:17px}.rewardChoice small {font-size:12px;line-height:1.5;grid-column:2}
+.rewardIcon {grid-row:1/3;font:700 32px var(--mono);text-align:center;color:#7c5523}
+.rewardUpgrade {padding:8px;border:1px solid #8da392;border-radius:9px;background:#23483b}
+.rewardUpgrade select {display:block;width:100%;margin-bottom:8px;font-size:14px}
+@media(max-width:579px) {
+  #workshopCards {grid-template-columns:repeat(4,minmax(0,1fr))}
+  #workshopCards .card {font-size:20px}
+  .workshopBox {padding:12px!important;gap:6px}
+  .rewardBox {padding:14px!important}.rewardBox h2 {font-size:20px}
+  .workshopService {grid-template-columns:20px 1fr auto;gap:2px 5px;padding:5px}
+}
+@media(min-width:580px) and (max-height:440px) {
+  .workshopBox {grid-template-rows:26px 32px minmax(0,1fr) 44px;grid-template-columns:minmax(0,1fr) 175px;gap:6px;padding:10px!important}
+  .workshopBox h2 {font-size:18px}.workshopBox h2,.workshopFilters {grid-column:1}
+  #workshopRule {grid-column:2;grid-row:1/3;align-self:center}
+  #workshopCards {grid-column:1;grid-row:3/5;grid-template-columns:repeat(5,minmax(0,1fr))}
+  #workshopPreview {grid-column:2;grid-row:3;max-height:none}
+  .workshopActions {grid-column:2;grid-row:4;gap:5px}.workshopActions .pxbtn {font-size:11px;padding:4px}
+  .rewardBox {padding:12px!important}.rewardBox h2 {font-size:18px;margin-bottom:8px}
+  .rewardChoices {gap:6px}.rewardChoice {min-height:52px;padding:6px 10px;gap:1px 6px}
+  .rewardChoice b {font-size:14px}.rewardUpgrade {padding:5px;display:grid;grid-template-columns:130px 1fr;gap:6px}
+  .rewardUpgrade select {margin:0;font-size:12px}.rewardIcon {font-size:25px}
+}

@@ -1,5 +1,5 @@
 let shopTab='cards';
-const SHOP_TABS=[['cards','shopTabCards','shopItems'],['cons','shopTabCons','shopItems'],['packs','shopTabPacks','shopPacks'],['voucher','shopTabVoucher','shopVouch']];
+const SHOP_TABS=[['cards','shopTabCards','shopItems'],['cons','shopTabCons','shopItems'],['packs','shopTabPacks','shopPacks'],['voucher','shopTabVoucher','shopVouch'],['workshop','shopTabWorkshop','shopWorkshop']];
 function selectShopTab(tab) {
   const selected=SHOP_TABS.find(([key])=>key===tab);
   if(!selected) return;
@@ -60,13 +60,14 @@ function genShopMain() {
   ];
 }
 function openShop() {
-  if(S.screen!=='cash') return;
+  if(S.screen!=='cash'||S.winPending) return;
+  if(S.bossReward) return openBossReward();
   hide('ovCash');
   S.shop = {
     disc: S.discount * (S.nextShopHalf ? 0.5 : 1),
     unc: S.nextShopUnc, freeUsed: false,
     rerollCost: S.rerollBase, voucherSold: false,
-    packs: [],
+    packs: [], workshopUsed:false,
   };
   if (S.nextShopHalf) msg('🏷️ 优惠标签生效：本商店全场半价！');
   if (S.nextShopUnc) msg('🃏 珍稀标签生效：小丑全为罕见以上，第一张免费！');
@@ -128,6 +129,7 @@ function renderShop() {
       (S.anteVoucher ? '本底注的优惠券已购买 ✔' : '优惠券已全部收集！') + '</p>';
   }
   renderInventory($('shopOwned'));
+  renderWorkshop();
   selectShopTab(shopTab);
   renderJokers(); renderCons(); renderStats();
 }
@@ -194,7 +196,7 @@ function doReroll() {
   renderShop();
 }
 function leaveShop() {
-  if(S.screen!=='shop' || S.pack) return;
+  if(S.screen!=='shop' || S.pack || workshopDraft) return;
   hide('ovShop');
   S.shop = null;
   S.blindIdx++;

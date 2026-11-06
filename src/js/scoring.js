@@ -83,6 +83,7 @@ async function doPlay() {
   S.money+=result.money;
   S.lastResult={name:HANDS[ev.key].name,total:result.total,chips,mult,money:result.money,
     events:result.events.map(e=>({text:e.text,chips:e.chips,mult:e.mult}))};
+  S.rhythm=result.rhythm;
 
   // —— 总分 ——
   const total = Math.floor(chips * mult);
@@ -141,6 +142,7 @@ function doDiscard() {
   if (!sel.length) { msg('请先选择要弃掉的牌', 1); return; }
   animateDiscard(sel);
   S.discLeft--;
+  if(S.contract)S.contract.discards++;
   S.hand = S.hand.filter(c => !c.sel);
   S.jokers.forEach(j => { if (j.id === 'green' && j.state) { j.state = 0; jokerPop(j, '清零!'); } });
   sfxBad();
@@ -163,12 +165,13 @@ function beatBlind() {
   const handBonus = S.handsLeft*(green?2:1),discardBonus=green?S.discLeft:0;
   let invest = 0;
   if (S.boss && S.investN) { invest = S.investN * 15; S.investN = 0; }
-  const total = m.reward + bounty + goldenN + interest + handBonus + invest + discardBonus;
+  let total = m.reward + bounty + goldenN + interest + handBonus + invest + discardBonus;
   S.payout = [['盲注奖励',m.reward], ['剩余出牌 '+S.handsLeft+' × $'+(green?2:1),handBonus], ['利息',interest]];
   if(green)S.payout.push(['剩余弃牌',discardBonus]);
   for (const [name,value] of [['赏金猎人',bounty],['黄金小丑',goldenN],['投资标签',invest]]) {
     if (value) S.payout.push([name,value]);
   }
+  total+=settleContract();
   S.payout.push(['合计',total]);
   renderPayout();
   S.money += total;
@@ -180,6 +183,7 @@ function beatBlind() {
   });
   S.boss = null;   // 清除 Boss 效果，避免商店里的卡牌仍显示"被禁用"
   S.screen = 'cash';
+  prepareBossReward();
   const wasWin = !MP.on && S.ante === 8 && S.blindIdx === 2;
   S.winPending=wasWin;
   if (wasWin) {

@@ -19,6 +19,7 @@
     <div class="panel" id="blindBox">
       <div id="blindName">🔸 小盲注</div>
       <div id="bossDesc"></div>
+      <div id="tacticsStatus" hidden></div>
       <div class="lbl" id="targetLbl" style="margin-top:5px">目标分数</div>
       <div id="targetVal">300</div>
       <div class="lbl">当前得分</div>
@@ -149,7 +150,16 @@
 <div class="ov" id="ovBlinds"><div class="box" style="max-width:760px">
   <h2 class="blindHeading">选择盲注 <span>底注 <b id="bsAnte">1</b></span></h2>
   <div id="blindCols"></div>
-  <p style="color:#9caeb1;font-size:12px">跳过小盲注或大盲注可获得标签，但没有金币奖励。</p>
+  <button class="tacticsEntry" id="tacticsEntry" onclick="openTactics()">备战 · 选择节奏与悬赏</button>
+</div></div>
+
+<div class="ov" id="ovTactics"><div class="box tacticsBox">
+  <h2>盲注备战</h2>
+  <div class="tacticsBody">
+    <section><h3>出牌节奏</h3><p>从第二手起连招；断连或换盲清零。倍率在计分牌之后、小丑之前增加。</p><div id="rhythmChoices"></div></section>
+    <section><h3>盲注悬赏</h3><p>开打扣 $2；达标过关返还奖金（含押金），未完成不返。跳过不扣钱。</p><div id="contractChoices"></div></section>
+  </div>
+  <button class="pxbtn" onclick="hide('ovTactics')">完成备战</button>
 </div></div>
 
 <!-- 结算 -->
@@ -167,12 +177,14 @@
     <button id="shopTabCons" role="tab" aria-controls="shopItems" aria-selected="false" onclick="selectShopTab('cons')">消耗牌</button>
     <button id="shopTabPacks" role="tab" aria-controls="shopPacks" aria-selected="false" onclick="selectShopTab('packs')">卡包</button>
     <button id="shopTabVoucher" role="tab" aria-controls="shopVouch" aria-selected="false" onclick="selectShopTab('voucher')">优惠券</button>
+    <button id="shopTabWorkshop" role="tab" aria-controls="shopWorkshop" aria-selected="false" onclick="selectShopTab('workshop')">工坊</button>
   </nav>
   <div class="shopBody">
     <div class="shopStock">
       <div id="shopItems" role="tabpanel" aria-labelledby="shopTabCards"></div>
       <div id="shopPacks" role="tabpanel" aria-labelledby="shopTabPacks" hidden></div>
       <div id="shopVouch" role="tabpanel" aria-labelledby="shopTabVoucher" hidden></div>
+      <div id="shopWorkshop" role="tabpanel" aria-labelledby="shopTabWorkshop" hidden></div>
     </div>
     <section class="shopInventory" aria-label="持有牌">
       <div class="shopInventoryTitle"><span>小丑 <b id="shopSlots"></b></span><span>消耗牌 <b id="shopCons"></b></span></div>
@@ -184,6 +196,29 @@
 </div></div>
 
 <!-- 开卡包 -->
+<div class="ov" id="ovWorkshop"><div class="box workshopBox">
+  <h2 id="workshopTitle"></h2>
+  <p id="workshopRule"></p>
+  <div class="workshopFilters"><select id="workshopSuit" aria-label="筛选花色" onchange="renderWorkshopCards()">
+    <option value="all">全部花色</option><option value="0">黑桃 ♠</option><option value="1">红桃 ♥</option><option value="2">梅花 ♣</option><option value="3">方块 ♦</option>
+  </select><span id="workshopCount"></span></div>
+  <div id="workshopCards" role="group" aria-label="选择要改造的牌"></div>
+  <div id="workshopPreview" aria-live="polite"></div>
+  <div class="workshopActions"><button class="pxbtn gray" onclick="closeWorkshop()">取消</button><button class="pxbtn" id="workshopConfirm" onclick="confirmWorkshop()" disabled>确认改造</button></div>
+</div></div>
+
+<div class="ov" id="ovReward"><div class="box rewardBox">
+  <h2>Boss 战利品 · 三选一</h2>
+  <div class="rewardChoices">
+    <button class="rewardChoice" data-reward="cash" onclick="chooseBossReward('cash')"><span class="rewardIcon" aria-hidden="true">$</span><b>领取 $8</b><small id="rewardCashDetail"></small></button>
+    <section class="rewardUpgrade">
+      <select id="rewardHand" aria-label="选择升级的牌型" onchange="selectRewardHand(this.value)"></select>
+      <button class="rewardChoice" data-reward="level" onclick="chooseBossReward('level')"><span class="rewardIcon" aria-hidden="true">↑</span><b id="rewardLevel"></b><small id="rewardLevelDetail"></small></button>
+    </section>
+    <button class="rewardChoice" data-reward="workshop" onclick="chooseBossReward('workshop')"><span class="rewardIcon" aria-hidden="true">✦</span><b>免费改造两次</b><small id="rewardWorkshopDetail"></small></button>
+  </div>
+</div></div>
+
 <div class="ov" id="ovPack" style="z-index:60"><div class="box" style="max-width:720px">
   <h2 id="packTitle"></h2>
   <p id="packHint" style="color:#9ab;font-size:12px"></p>

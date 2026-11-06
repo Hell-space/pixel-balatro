@@ -229,7 +229,7 @@ body::after {display:none}
   display:grid;grid-template-rows:32px 40px minmax(0,1fr) 48px;gap:8px}
 .shopHeader {display:flex;align-items:center;justify-content:space-between;gap:12px}
 .shopHeader h2 {margin:0;font-size:21px}.shopHeader strong {font:700 22px var(--mono);color:#a8dbad}
-.shopTabs {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.shopTabs {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .shopTabs button {border:1px solid #607d70;border-radius:5px;background:#223d39;color:var(--light);font-size:14px;min-width:0}
 .shopTabs [aria-selected=true] {background:#3a5545;border-color:var(--brass);color:var(--brass)}
 .shopBody {min-height:0;display:grid;grid-template-rows:minmax(0,1fr) 120px;gap:10px}

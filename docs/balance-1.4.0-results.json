@@ -1,0 +1,245 @@
+{
+  "runs": 64,
+  "reports": [
+    {
+      "version": "1.3.2",
+      "deck": "red",
+      "stake": "white",
+      "route": "balanced",
+      "rhythm": "none",
+      "contract": "none",
+      "count": 8,
+      "wins": 6,
+      "reached": [
+        8,
+        7,
+        7,
+        7,
+        7,
+        7,
+        6,
+        6
+      ],
+      "failures": {
+        "hook": 1,
+        "needle": 1
+      },
+      "limits": "Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.",
+      "workshopOperations": 0,
+      "bossChoices": 0,
+      "contractsTaken": 0,
+      "contractsCompleted": 0,
+      "sourceReport": ".qa/v140/baseline-red-white.json"
+    },
+    {
+      "version": "1.4.0",
+      "deck": "red",
+      "stake": "white",
+      "route": "cash",
+      "rhythm": "none",
+      "contract": "none",
+      "count": 8,
+      "wins": 4,
+      "reached": [
+        8,
+        7,
+        7,
+        7,
+        7,
+        7,
+        6,
+        5
+      ],
+      "failures": {
+        "hook": 1,
+        "manacle": 1,
+        "needle": 1,
+        "window": 1
+      },
+      "limits": "Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.",
+      "workshopOperations": 117,
+      "bossChoices": 46,
+      "contractsTaken": 0,
+      "contractsCompleted": 0,
+      "sourceReport": ".qa/v140/cash-control.json"
+    },
+    {
+      "version": "1.4.0",
+      "deck": "red",
+      "stake": "white",
+      "route": "cash",
+      "rhythm": "focus",
+      "contract": "first",
+      "count": 8,
+      "wins": 7,
+      "reached": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        7,
+        7
+      ],
+      "failures": {
+        "needle": 1
+      },
+      "limits": "Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.",
+      "workshopOperations": 155,
+      "bossChoices": 54,
+      "contractsTaken": 183,
+      "contractsCompleted": 138,
+      "sourceReport": ".qa/v140/cash-red-white.json"
+    },
+    {
+      "version": "1.4.0",
+      "deck": "black",
+      "stake": "gold",
+      "route": "balanced",
+      "rhythm": "none",
+      "contract": "none",
+      "count": 8,
+      "wins": 6,
+      "reached": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        7
+      ],
+      "failures": {
+        "hook": 1,
+        "flint": 1
+      },
+      "limits": "Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.",
+      "workshopOperations": 124,
+      "bossChoices": 55,
+      "contractsTaken": 0,
+      "contractsCompleted": 0,
+      "sourceReport": ".qa/v140/hard-control.json"
+    },
+    {
+      "version": "1.4.0",
+      "deck": "red",
+      "stake": "white",
+      "route": "level",
+      "rhythm": "none",
+      "contract": "none",
+      "count": 8,
+      "wins": 7,
+      "reached": [
+        8,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "failures": {
+        "hook": 1
+      },
+      "limits": "Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.",
+      "workshopOperations": 108,
+      "bossChoices": 49,
+      "contractsTaken": 0,
+      "contractsCompleted": 0,
+      "sourceReport": ".qa/v140/level-control.json"
+    },
+    {
+      "version": "1.4.0",
+      "deck": "red",
+      "stake": "white",
+      "route": "level",
+      "rhythm": "flow",
+      "contract": "variety",
+      "count": 8,
+      "wins": 3,
+      "reached": [
+        8,
+        8,
+        8,
+        8,
+        7,
+        5,
+        5,
+        5
+      ],
+      "failures": {
+        "water": 2,
+        "window": 1,
+        "wall": 1,
+        "flint": 1
+      },
+      "limits": "Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.",
+      "workshopOperations": 37,
+      "bossChoices": 46,
+      "contractsTaken": 137,
+      "contractsCompleted": 4,
+      "sourceReport": ".qa/v140/level-red-white.json"
+    },
+    {
+      "version": "1.4.0",
+      "deck": "black",
+      "stake": "gold",
+      "route": "workshop",
+      "rhythm": "focus",
+      "contract": "clean",
+      "count": 8,
+      "wins": 7,
+      "reached": [
+        8,
+        8,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "failures": {
+        "hearts": 1
+      },
+      "limits": "Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.",
+      "workshopOperations": 134,
+      "bossChoices": 50,
+      "contractsTaken": 153,
+      "contractsCompleted": 114,
+      "sourceReport": ".qa/v140/workshop-black-gold.json"
+    },
+    {
+      "version": "1.4.0",
+      "deck": "red",
+      "stake": "white",
+      "route": "workshop",
+      "rhythm": "none",
+      "contract": "none",
+      "count": 8,
+      "wins": 7,
+      "reached": [
+        8,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "failures": {
+        "hook": 1
+      },
+      "limits": "Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.",
+      "workshopOperations": 134,
+      "bossChoices": 49,
+      "contractsTaken": 0,
+      "contractsCompleted": 0,
+      "sourceReport": ".qa/v140/workshop-control.json"
+    }
+  ]
+}

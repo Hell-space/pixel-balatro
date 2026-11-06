@@ -5,6 +5,16 @@ function normalizeRunState(input) {
   if(!input || !Array.isArray(input.deckAll) || !Array.isArray(input.hand) || !Array.isArray(input.drawPile)) throw Error('牌组格式');
   const s=input, finite=n=>Number.isFinite(n)&&n>=0;
   s.deckId??='classic'; s.stakeId??='white'; s.tarotsUsed??=0; s.blindPlayed??=[];s.bossHistory??=[];
+  s.workshopCredits??=0; s.bossReward??=null;
+  s.rhythmMode??='none'; s.rhythm??={lastKey:null,chain:0};s.contractChoice??=null;s.contract??=null;
+  if(!RHYTHMS.some(r=>r.id===s.rhythmMode)||!Number.isInteger(s.rhythm.chain)||s.rhythm.chain<0||s.rhythm.chain>5||
+    (s.rhythm.lastKey!==null&&!HORDER.includes(s.rhythm.lastKey))||
+    (s.contractChoice!==null&&!CONTRACTS.some(c=>c.id===s.contractChoice))||
+    (s.contract&&(!CONTRACTS.some(c=>c.id===s.contract.id)||!Number.isInteger(s.contract.discards)||s.contract.discards<0||typeof s.contract.settled!=='boolean')))
+    throw Error('备战规则损坏');
+  if(!Number.isSafeInteger(s.workshopCredits)||s.workshopCredits<0) throw Error('工坊次数损坏');
+  if(s.bossReward && (s.screen!=='cash'||s.blindIdx!==2||s.bossReward.ante!==s.ante||
+    !HORDER.includes(s.bossReward.handKey))) throw Error('成长奖励损坏');
   if(!['classic',...DECKS.map(d=>d.id)].includes(s.deckId)||!STAKES.some(t=>t.id===s.stakeId)||
     !Number.isInteger(s.tarotsUsed)||s.tarotsUsed<0||!Array.isArray(s.blindPlayed)||
     s.blindPlayed.some(k=>!HORDER.includes(k))||!Array.isArray(s.bossHistory)||
@@ -44,6 +54,8 @@ function normalizeRunState(input) {
   }
   if(s.screen==='shop' && !s.shop) throw Error('商店损坏');
   if(s.shop) {
+    s.shop.workshopUsed=!!s.shop.workshopUsed;
+    if(s.shop.workshopReceipt!==undefined&&typeof s.shop.workshopReceipt!=='string') throw Error('工坊记录损坏');
     if(!finite(s.shop.disc)||!finite(s.shop.rerollCost)) throw Error('价格损坏');
     s.shop.jokers=s.shop.jokers.map(j=>{
       if(!finite(j.price)||![0,1,2,3].includes(j.ed??0)) throw Error('商品损坏');
@@ -86,7 +98,7 @@ function normalizeRunState(input) {
 function decodeRun(raw) {
   try {
     const data=JSON.parse(raw);
-    if(!data || ![1,2,3].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
+    if(!data || ![1,2,3,4].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
     data.state=normalizeRunState(data.state);
     const checkpoint=normalizeRunState(JSON.parse(data.checkpoint));
     data.checkpoint=JSON.stringify(checkpoint);
@@ -106,7 +118,7 @@ function readRun() {
 function persistRun() {
   if(!S||MP.on||S.busy||!saveStr) return;
   const state={...S,hand:S.hand.map(c=>c.id),drawPile:S.drawPile.map(c=>c.id),played:[],sellId:null};
-  const raw=JSON.stringify({version:3,cid,state,checkpoint:saveStr,meta:saveMeta});
+  const raw=JSON.stringify({version:4,cid,state,checkpoint:saveStr,meta:saveMeta});
   if(raw===lastWrite) return;
   try {
     const previous=localStorage.getItem(RUN_KEY);
@@ -135,6 +147,7 @@ function resumeGame() {
   const state=slot.state, byId=new Map(state.deckAll.map(c=>[c.id,c]));
   state.hand=state.hand.map(id=>byId.get(id)); state.drawPile=state.drawPile.map(id=>byId.get(id));
   S=state; cid=slot.cid; saveStr=slot.checkpoint; saveMeta=slot.meta;
+  workshopDraft=null;
   initAudio(); hide('ovStart'); renderAll();
   switch(S.screen) {
     case 'select': showBlindSelect(); break;
@@ -145,7 +158,8 @@ function resumeGame() {
       if(S.winPending) {
         $('winStats').textContent='最高单次得分：'+fmt(S.bestHand)+'　总出牌数：'+S.totHands;
         show('ovWin');
-      } else show('ovCash');
+      } else if(S.bossReward) openBossReward();
+      else show('ovCash');
       break;
     case 'over': gameLost(true); break;
   }

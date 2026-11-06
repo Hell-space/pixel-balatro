@@ -43,8 +43,28 @@ function portfolio(g,s,random){
       if(['golden','bounty','egg'].includes(j.id)&&s.ante<5)sum+=.8;}
     return sum/hands.length;};
 }
-function shop(g,s,random){
+function improveDeck(g,s,route,log){
+  if(typeof g.applyWorkshop!=='function'||s.shop.workshopUsed)return;
+  const fav=Object.keys(s.playCounts).sort((a,b)=>s.playCounts[b]-s.playCounts[a])[0];
+  const ranks={},suits={};s.deckAll.forEach(c=>{ranks[c.rank]=(ranks[c.rank]||0)+1;suits[c.suit]=(suits[c.suit]||0)+1;});
+  const rank=Number(Object.keys(ranks).sort((a,b)=>ranks[b]-ranks[a]||b-a)[0]);
+  const suit=Number(Object.keys(suits).sort((a,b)=>suits[b]-suits[a])[0]);
+  const value=c=>c.rank+c.bonus+c.multB*5+c.ed*20+(c.seal?30:0)+(c.steel?35:0)+(c.glass?25:0)+
+    (['pair','trips','four','five','twopair','fh'].includes(fav)&&c.rank===rank?40:0)+(fav==='flush'&&(c.suit===suit||c.wild)?45:0);
+  const cards=s.deckAll.slice().sort((a,b)=>value(b)-value(a));
+  const service=route==='workshop'?'copy':route==='level'?'polish':s.deckAll.length>38?'remove':'polish';
+  const card=service==='remove'?cards.at(-1):cards[0];
+  const cost={remove:4,copy:6,polish:5}[service];
+  if(!s.workshopCredits&&s.money<g.shopPrice(cost)+10)return;
+  const before={money:s.money,size:s.deckAll.length,credits:s.workshopCredits};
+  if(g.applyWorkshop(service,card.id))log.push({kind:'workshop',ante:s.ante,blind:s.blindIdx,service,card:card.id,before,after:{money:s.money,size:s.deckAll.length,credits:s.workshopCredits}});
+}
+function shop(g,s,random,options,log){
   g.openShop();
+  if(s.bossReward){
+    const route=options.route||'balanced',choice=route==='balanced'?['level','workshop','cash'][(s.ante-1)%3]:route;
+    const key=s.bossReward.handKey;g.chooseBossReward(choice);log.push({kind:'reward',ante:s.ante,choice,key});
+  }
   for(let pass=0;pass<3;pass++){
     const value=portfolio(g,s,random);let current=value(s.jokers),choice=null,gain=.035;
     s.shop.jokers.forEach((j,i)=>{
@@ -68,12 +88,17 @@ function shop(g,s,random){
     g.buyPack(i);const n=s.pack.options.findIndex(p=>p.key===fav);g.pickPack(n>=0?n:0);
   }
   if(s.anteVoucher&&['grabber','paint','anti','seed','sale'].includes(s.anteVoucher.id)&&s.money>=g.shopPrice(10)+10)g.buyVoucher();
+  improveDeck(g,s,options.route||'balanced',log);
   g.leaveShop();
 }
 async function simulate(seed,options={}){
   const {game:g,random}=harness(seed,options.root);g.newGame(false,options.deck||'red',options.stake||'white');
-  const s=g.getState(),rounds=[];
+  const s=g.getState(),rounds=[],choices=[];
   for(let round=0;round<24;round++){
+    if(typeof g.selectRhythm==='function'){
+      g.selectRhythm(options.rhythm||'none');
+      if(options.contract&&options.contract!=='none')g.selectContract(options.contract);
+    }
     g.chooseBlind();let actions=0;
     while(s.screen==='play'&&actions++<32){
       const best=chooser(g,s);if(!best.cards.length)break;
@@ -82,20 +107,22 @@ async function simulate(seed,options={}){
       g.selectCards(discard||best.cards.map(c=>c.id));
       if(discard)g.doDiscard();else await g.doPlay();
     }
-    rounds.push({ante:s.ante,blind:s.blindIdx,boss:s.anteBoss.id,win:s.screen==='cash',score:s.score,target:s.target,money:s.money});
-    if(s.screen!=='cash')return {seed,win:false,rounds,jokers:s.jokers.map(j=>j.id)};
-    if(s.ante===8&&s.blindIdx===2)return {seed,win:true,rounds,jokers:s.jokers.map(j=>j.id)};
-    shop(g,s,random);
+    rounds.push({ante:s.ante,blind:s.blindIdx,boss:s.anteBoss.id,win:s.screen==='cash',score:s.score,target:s.target,money:s.money,
+      contract:s.contract?.id,contractPaid:s.contract?.settled?s.payout?.find(([label])=>label.startsWith('悬赏'))?.[1]:0,rhythm:s.rhythmMode,deckSize:s.deckAll.length});
+    if(s.screen!=='cash')return {seed,win:false,rounds,choices,jokers:s.jokers.map(j=>j.id)};
+    if(s.ante===8&&s.blindIdx===2)return {seed,win:true,rounds,choices,jokers:s.jokers.map(j=>j.id)};
+    shop(g,s,random,options,choices);
   }
 }
 async function main(){
-  const count=Number(process.argv[2]||32),deck=process.argv[3]||'red',stake=process.argv[4]||'white';
-  const runs=[];for(let seed=1;seed<=count;seed++){runs.push(await simulate(seed,{deck,stake}));if(seed%8===0)console.log(`${deck}/${stake}: ${seed}/${count}`);}
-  const report={version:require('../package.json').version,deck,stake,count,wins:runs.filter(r=>r.win).length,
+  const count=Number(process.argv[2]||32),deck=process.argv[3]||'red',stake=process.argv[4]||'white',route=process.argv[5]||'balanced',rhythm=process.argv[6]||'none',contract=process.argv[7]||'none';
+  const root=process.env.BALANCE_ROOT;
+  const runs=[];for(let seed=1;seed<=count;seed++){runs.push(await simulate(seed,{deck,stake,route,rhythm,contract,root}));if(seed%8===0)console.log(`${deck}/${stake}/${route}: ${seed}/${count}`);}
+  const report={version:root?JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version:require('../package.json').version,deck,stake,route,rhythm,contract,count,wins:runs.filter(r=>r.win).length,
     reached:Array.from({length:8},(_,i)=>runs.filter(r=>r.rounds.some(x=>x.ante===i+1)).length),
     failures:Object.fromEntries([...new Set(runs.filter(r=>!r.win).map(r=>r.rounds.at(-1).boss))].map(id=>[id,runs.filter(r=>!r.win&&r.rounds.at(-1).boss===id).length])),
     limits:'Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.',runs};
-  const out=process.env.BALANCE_OUTPUT||`.qa/balance-${report.version}-${deck}-${stake}.json`;fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2));console.log(JSON.stringify({...report,runs:undefined}));
+  const out=process.env.BALANCE_OUTPUT||`.qa/balance-${report.version}-${deck}-${stake}-${route}-${rhythm}-${contract}.json`;fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2));console.log(JSON.stringify({...report,runs:undefined}));
 }
 if(require.main===module)main().catch(e=>{console.error(e);process.exitCode=1;});
 module.exports={simulate,chooser};

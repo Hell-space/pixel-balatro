@@ -13,6 +13,7 @@ function freshDeck() {
 }
 function newGame(withTut, deckId='classic', stakeId='white') {
   initAudio();
+  workshopDraft=null;
   const deck=DECKS.find(d=>d.id===deckId),stake=STAKES.find(s=>s.id===stakeId)||STAKES[0];
   S = {
     deckAll: freshDeck(), money: 4, ante: 1, blindIdx: 0,
@@ -27,6 +28,8 @@ function newGame(withTut, deckId='classic', stakeId='white') {
     investN: 0, nextShopHalf: false, nextShopUnc: false,
     anteBoss: null, anteVoucher: null, skipTags: [],
     deckId:deck?.id||'classic',stakeId:stake.id,tarotsUsed:0,blindPlayed:[],bossHistory:[],
+    workshopCredits:0,bossReward:null,
+    rhythmMode:'none',rhythm:{lastKey:null,chain:0},contractChoice:null,contract:null,
   };
   S.money=deck?.money??4;
   S.baseHands+=deck?.hands||0; S.baseDisc+=(deck?.disc||0)+(stake.disc||0);
@@ -150,12 +153,15 @@ function showBlindSelect() {
     }
     cols.appendChild(d);
   }
+  renderTacticsEntry();
   renderStats();
   show('ovBlinds');
   saveCheckpoint();   // 静默存档：只保留最新一个保存点
   mpSendState();
 }
 function skipBlind(tg) {
+  if(S.screen!=='select'||S.blindIdx>=2)return;
+  S.contractChoice=null;
   hideTip();
   applyTag(tg);
   sfxCash();
@@ -164,6 +170,8 @@ function skipBlind(tg) {
   showBlindSelect();
 }
 function chooseBlind() {
+  if(S.screen!=='select')return;
+  if(S.contractChoice&&S.money<2)return msg('悬赏需要 $2，可以在备战中取消。',1);
   hideTip();
   hide('ovBlinds');
   startBlind();
@@ -171,6 +179,7 @@ function chooseBlind() {
 }
 function effHandSize() { return S.handSize - (S.boss && S.boss.id === 'manacle' ? 1 : 0); }
 function startBlind() {
+  startTactics();
   const m = blindMeta();
   S.boss = S.blindIdx === 2 ? S.anteBoss : null;
   S.target = m.target;
