@@ -33,3 +33,9 @@ APK 1.7.1 / 10701，94,750 字节，SHA-256 `aa8fbaa78185e54287561dc8b8e3774bbe9
 
 - 真人试玩手感、实体手机和 Android 15/16 未测。
 - 平衡结论来自自动玩家。悬赏模拟中自动玩家每关都接悬赏，也不会为了达成条件调整打法，所以“三路出击”的低达成率部分来自这个限制；删除它主要是因为这个条件本身鼓励故意打弱牌。
+
+## 发布
+
+[v1.7.1](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.7.1) 已正式发布并标记为 Latest（非草稿、非预发布），标签指向游戏提交 `ebee09d66e3d174fe4e85058d6d67acac211558f`。发布运行 `42384383941` 成功，临时分支 `codex/release-v1.7.1` 已自动删除，远端只剩 main。
+
+在未登录状态下载 APK（94,750 字节）、HTML（263,567 字节）和校验文本（176 字节），三者都返回 200，并与本地验收文件逐字节一致，记录在 `.qa/v171/release-download-verification.json`。Pages 运行 `42384114946` 成功，在线 `balatro.html` 的 SHA-256 与最终 HTML 一致。
