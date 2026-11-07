@@ -22,7 +22,7 @@ const PACKS = [
 ];
 function rollJokerItem(forceUnc, exclude=[]) {
   const owned = new Set([...S.jokers.map(j => j.id),...exclude]);
-  let pool = JDEFS.filter(j => !owned.has(j.id));
+  let pool = JDEFS.filter(j => !owned.has(j.id) && jokerOffered(j));
   if (forceUnc) pool = pool.filter(j => j.rar >= 1);
   if (!pool.length) pool = JDEFS.slice();
   const r = Math.random();
@@ -36,6 +36,8 @@ function rollJokerItem(forceUnc, exclude=[]) {
   else if (e < 0.17) { def.ed = 1; def.price += 2; }
   return def;
 }
+// Rhythm is a single-player tactic, so its joker is not offered in matches.
+function jokerOffered(def) { return !(MP.on && def.id === 'metronome'); }
 function addJoker(def) {
   S.jokers.push({ ...def, uid: ++cid, state: def.state || 0,
     sell: Math.max(1, Math.ceil((def.price || 4) / 2)) });
@@ -134,6 +136,7 @@ function renderShop() {
   renderWorkshop();
   selectShopTab(shopTab);
   renderJokers(); renderCons(); renderStats();
+  shopEnterFx();
 }
 function buyJoker(i) {
   if(!shopActionReady()||!S.shop.jokers[i])return false;
@@ -419,7 +422,7 @@ function useCons(i) {
     case 'judge': {
       if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满，无法使用审判', 1); return; }
       const owned = new Set(S.jokers.map(j => j.id));
-      const pool = JDEFS.filter(j => !owned.has(j.id));
+      const pool = JDEFS.filter(j => !owned.has(j.id) && jokerOffered(j));
       const j = randOf(pool);
       if(!j) return;
       addJoker({ ...j });

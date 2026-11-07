@@ -61,7 +61,7 @@ function syncDialogs() {
       if(!previousDialog) returnFocus=document.activeElement;
       (focusables(top)[0]||top).focus({preventScroll:true});
       if(Number(top.dataset.order)>animatedDialogOrder) {
-        feedback(top.querySelector('.box'),[{transform:'scale(.97)'},{transform:'scale(1)'}],150);
+        feedback(top.querySelector('.box'),[{transform:'translateY(10px) scale(.96)',opacity:.5},{transform:'none',opacity:1}],170);
         animatedDialogOrder=Number(top.dataset.order);
       }
     } else if(returnFocus?.isConnected) returnFocus.focus({preventScroll:true});

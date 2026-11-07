@@ -21,7 +21,8 @@ function harness(seed=1,root=path.join(__dirname,'..')) {
     for(const key of ['initAudio','sfxDeal','sfxCash','sfxUp','sfxBad','sfxWin','sfxTick','sfxJok','sfxTarot','sfxSel',
       'renderStats','renderJokers','renderCons','renderHand','renderAll','renderInventory','hideTip','bindTip',
       'mpSendState','persistRun','tutStart','syncDialogs','updatePreview','feedback','handPositions','renderReserveEntry',
-      'animatePlayed','animateDiscard','totalFeedback','scoreFeedback','moneyFeedback','acquireFeedback']) globalThis[key]=()=>{};
+      'animatePlayed','animateDiscard','totalFeedback','scoreFeedback','moneyFeedback','acquireFeedback',
+      'calcPunch','jokerFx','scoreEventFx','totalFx','celebrateBlind','lossFx','dealFx','hintFx','setNumber','trackMoney','shopEnterFx']) globalThis[key]=()=>{};
     renderShop=()=>{}; popAt=()=>{}; jokerPop=()=>{}; globalThis.cardEl=()=>document.createElement('div');globalThis.cardTipHTML=()=>'';globalThis.suitSVG=()=>'';
     globalThis.sellPrice=j=>j.sell??Math.max(1,Math.ceil(j.price/2));
     globalThis.getState=()=>S;

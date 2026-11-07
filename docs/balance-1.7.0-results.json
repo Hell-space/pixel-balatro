@@ -1,0 +1,174 @@
+{
+  "version": "1.7.0",
+  "seeds": "1-24 for each case; 1.6.0 and 1.7.0 use the same seeds and the same bot",
+  "totalRuns": 144,
+  "limits": "Greedy bot maximises the immediate expected score (so it uses Boss weak points automatically), three discard samples, no tarot or skip optimisation. Shop draws diverge between versions because six jokers were added. Not a human win-rate estimate.",
+  "cases": [
+    {
+      "version": "1.6.0",
+      "deck": "red",
+      "stake": "white",
+      "route": "balanced",
+      "rhythm": "focus",
+      "contract": "none",
+      "reserve": "off",
+      "count": 24,
+      "wins": 22,
+      "reached": [
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        22
+      ],
+      "failures": {
+        "flint": 1,
+        "needle": 1
+      }
+    },
+    {
+      "version": "1.6.0",
+      "deck": "red",
+      "stake": "gold",
+      "route": "balanced",
+      "rhythm": "focus",
+      "contract": "none",
+      "reserve": "off",
+      "count": 24,
+      "wins": 16,
+      "reached": [
+        24,
+        24,
+        24,
+        24,
+        24,
+        23,
+        20,
+        17
+      ],
+      "failures": {
+        "needle": 4,
+        "flint": 2,
+        "psychic": 1,
+        "spades": 1
+      }
+    },
+    {
+      "version": "1.6.0",
+      "deck": "black",
+      "stake": "gold",
+      "route": "balanced",
+      "rhythm": "focus",
+      "contract": "none",
+      "reserve": "off",
+      "count": 24,
+      "wins": 15,
+      "reached": [
+        24,
+        24,
+        24,
+        24,
+        23,
+        22,
+        20,
+        16
+      ],
+      "failures": {
+        "water": 1,
+        "wall": 3,
+        "spades": 1,
+        "flint": 1,
+        "needle": 1,
+        "hearts": 1,
+        "club": 1
+      }
+    },
+    {
+      "version": "1.7.0",
+      "deck": "red",
+      "stake": "white",
+      "route": "balanced",
+      "rhythm": "focus",
+      "contract": "none",
+      "reserve": "off",
+      "count": 24,
+      "wins": 23,
+      "reached": [
+        24,
+        24,
+        24,
+        24,
+        24,
+        24,
+        23,
+        23
+      ],
+      "failures": {
+        "flint": 1
+      }
+    },
+    {
+      "version": "1.7.0",
+      "deck": "red",
+      "stake": "gold",
+      "route": "balanced",
+      "rhythm": "focus",
+      "contract": "none",
+      "reserve": "off",
+      "count": 24,
+      "wins": 18,
+      "reached": [
+        24,
+        24,
+        24,
+        24,
+        24,
+        23,
+        22,
+        18
+      ],
+      "failures": {
+        "wall": 1,
+        "manacle": 1,
+        "eye": 1,
+        "spades": 1,
+        "mark": 1,
+        "flint": 1
+      }
+    },
+    {
+      "version": "1.7.0",
+      "deck": "black",
+      "stake": "gold",
+      "route": "balanced",
+      "rhythm": "focus",
+      "contract": "none",
+      "reserve": "off",
+      "count": 24,
+      "wins": 16,
+      "reached": [
+        24,
+        22,
+        22,
+        22,
+        22,
+        21,
+        19,
+        18
+      ],
+      "failures": {
+        "club": 1,
+        "psychic": 1,
+        "needle": 1,
+        "wall": 1,
+        "spades": 1,
+        "hook": 1,
+        "arm": 1,
+        "manacle": 1
+      }
+    }
+  ]
+}

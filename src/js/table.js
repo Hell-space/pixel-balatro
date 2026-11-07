@@ -86,26 +86,43 @@ function cardEl(c, interactive = false) {
   bindTip(d, () => cardTipHTML(c));
   return d;
 }
+// One entry point for taps, swipes, keys and hints keeps the five-card limit consistent.
+function toggleHandCard(c, el, want = !c.sel) {
+  if (!S || S.busy || S.screen !== 'play' || !S.hand.includes(c) || !!c.sel === want) return false;
+  if (want && S.hand.filter(x => x.sel).length >= 5) { msg('最多只能选 5 张牌', 1); return false; }
+  c.sel = want;
+  sfxSel();
+  if (el) { el.classList.toggle('sel', want); el.setAttribute('aria-pressed',String(want)); }
+  updatePreview();
+  return true;
+}
+function handCardEl(id) { return $('handRow').querySelector('[data-card-id="'+id+'"]'); }
 function renderHand() {
   const row = $('handRow');
   row.style.setProperty('--hand-columns',S.hand.length>8?5:4);
   row.innerHTML = '';
-  S.hand.forEach(c => {
+  const mid=(S.hand.length-1)/2;
+  S.hand.forEach((c,i) => {
     const el = cardEl(c, true);
-    if(el.classList.contains('dealt')) el.style.setProperty('--deal-delay',(row.children.length*22)+'ms');
+    if(el.classList.contains('dealt')) el.style.setProperty('--deal-delay',(row.children.length*45)+'ms');
+    el.style.setProperty('--i',i); el.style.setProperty('--k',(i-mid).toFixed(2)); el.style.setProperty('--k2',((i-mid)*(i-mid)).toFixed(2));
     el.setAttribute('aria-label', (c.wild?'百搭花色，点数':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank));
     el.setAttribute('aria-pressed',String(!!c.sel)); el.disabled=S.busy;
-    el.onclick = () => {
-      if (S.busy) return;
-      if (!c.sel && S.hand.filter(x => x.sel).length >= 5) { msg('最多只能选 5 张牌', 1); return; }
-      c.sel = !c.sel;
-      sfxSel();
-      el.classList.toggle('sel'); el.setAttribute('aria-pressed',String(c.sel));
-      updatePreview();
-    };
+    el.onclick = () => toggleHandCard(c, el);
     row.appendChild(el);
   });
+  dealFx(row);
   updatePreview();
+}
+function applyHint() {
+  if (!S || S.screen !== 'play' || S.busy || MP.over) return false;
+  const best = bestSelection(S);
+  if (!best) { msg('当前没有可以打出的组合', 1); return false; }
+  const ids = new Set(best.ids);
+  S.hand.forEach(c => c.sel = ids.has(c.id));
+  sfxSel(); renderHand(); hintFx(best.ids);
+  msg('推荐：' + HANDS[best.key].name + '，至少 ' + fmt(best.total) + ' 分');
+  return true;
 }
 function updatePreview() {
   const sel = S.hand.filter(c => c.sel);
@@ -125,6 +142,14 @@ function updatePreview() {
     $('prevMult').textContent = lo.mult===hi.mult?fmtM(lo.mult):fmtM(lo.mult)+'–'+fmtM(hi.mult);
     $('scoreEstimate').textContent=(lo.total===hi.total?fmt(lo.total):fmt(lo.total)+'–'+fmt(hi.total))+' 分';
   }
+  const scoringIds=new Set(sel.length&&!S.busy?evalHand(sel).scoring.map(c=>c.id):[]);
+  for(const el of $('handRow').children) {
+    const id=Number(el.dataset.cardId),picked=sel.some(c=>c.id===id);
+    el.classList.toggle('scoring',picked&&scoringIds.has(id));
+    el.classList.toggle('kicker',picked&&!scoringIds.has(id));
+  }
+  const weakHit=!S.busy&&sel.length&&S.boss&&bossWeakKey(S.boss)===evalHand(sel).key;
+  $('previewBox').classList.toggle('weakHit',!!weakHit);
   const repeated=S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key);
   const needFive=S.boss?.id==='psychic'&&sel.length!==5;
   const forbidden=repeated||needFive;
@@ -132,9 +157,12 @@ function updatePreview() {
   else if(!S.busy&&needFive)$('scoreEstimate').textContent='需选满 5 张牌';
   $('btnPlay').disabled = S.busy || !sel.length || S.handsLeft <= 0 || forbidden;
   $('btnDiscard').disabled = S.busy || !sel.length || S.discLeft <= 0;
+  $('btnPlay').classList.toggle('ready',!$('btnPlay').disabled);
+  $('btnHint').disabled = S.busy || S.screen !== 'play' || !S.hand.length || S.handsLeft <= 0;
 }
 function renderStats() {
   $('game').classList.toggle('isScoring',!!S.busy);
+  if(S.screen!=='over')$('game').classList.remove('lost');
   renderReserveEntry();
   for(const mode of ['rank','suit']) {
     const button=$(mode==='rank'?'btnSortRank':'btnSortSuit');
@@ -146,7 +174,10 @@ function renderStats() {
   $('handSizeVal').textContent = effHandSize();
   $('anteVal').textContent = MP.on ? S.ante + ' ⚔️' : (S.ante > 8 ? S.ante + ' ♾️' : S.ante + ' / 8');
   $('deckVal').textContent = (S.screen==='select'?S.deckAll.length:S.drawPile.length) + '/' + S.deckAll.length;
-  $('scoreVal').textContent = fmt(S.score);
+  $('deckPileCount').textContent = S.screen==='select'?S.deckAll.length:S.drawPile.length;
+  $('deckPile').classList.toggle('empty', S.screen==='play' && !S.drawPile.length);
+  setNumber($('scoreVal'), S.score);
+  trackMoney();
   // 对决盲注：目标栏实时显示对手分数
   const duel = MP.on && S.blindIdx === 2 && (S.screen === 'play' || S.screen === 'duelwait');
   const oppSc = duel && MP.opp.ante === S.ante && MP.opp.blind === 2 ? MP.opp.score : 0;
@@ -155,11 +186,12 @@ function renderStats() {
   $('blindBox').classList.toggle('largeScore',Math.max(fmt(S.score).length,fmt(duel?oppSc:target).length)>6);
   $('targetVal').textContent = fmt(duel ? oppSc : target);
   $('scorebar').style.width = Math.min(100, S.score / Math.max(1, duel ? oppSc : S.target) * 100) + '%';
+  $('scorebar').classList.toggle('cleared', !duel && S.screen==='play' && S.score >= S.target);
   if (MP.on) $('livesVal').textContent = '❤️'.repeat(Math.max(0, MP.lives)) || '💀';
   const m = blindMeta();
   $('blindName').textContent = S.boss ? S.boss.name + (MP.on ? ' ⚔️对决' : ' (Boss)') : m.name;
   const bd = $('bossDesc');
-  if (S.boss) { bd.style.display = 'block'; bd.textContent = S.boss.desc; }
+  if (S.boss) { bd.style.display = 'block'; bd.textContent = S.boss.desc + '｜🎯 ' + bossWeakLabel(S.boss); }
   else bd.style.display = 'none';
   const tactics=tacticsStatus();$('tacticsStatus').textContent=tactics;$('tacticsStatus').hidden=!tactics;
 }

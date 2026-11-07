@@ -50,12 +50,14 @@
       <div id="jokerRow"></div>
       <div id="consRow"></div>
     </div>
-    <div id="playArea"><div class="tableSeal" aria-hidden="true"><svg viewBox="0 0 80 80"><use href="#jester"/></svg></div>
+    <div id="playArea"><div class="tableGlow" aria-hidden="true"></div><div class="tableSeal" aria-hidden="true"><svg viewBox="0 0 80 80"><use href="#jester"/></svg></div>
       <div id="playedRow"></div>
+      <button id="deckPile" onclick="openDeck()" aria-label="查看剩余牌库"><span class="pileStack" aria-hidden="true"><i></i><i></i><i></i></span><b id="deckPileCount">52</b></button>
       <div id="totalPop"></div>
       <button id="reserveBtn" onclick="openReserve()" hidden>底牌 · 藏入</button>
     </div>
     <div class="panel" id="previewBox">
+      <button id="btnHint" class="hintBtn" onclick="applyHint()" aria-label="推荐本手最高分的出牌组合" title="推荐出牌（H）">✦ 推荐</button>
       <div id="prevName">选择手牌</div>
       <div id="prevLvl"></div>
       <span id="selCount" aria-label="选中张数"></span>

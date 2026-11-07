@@ -4,7 +4,17 @@
 
 **在线游戏：https://hell-space.github.io/pixel-balatro/**
 
-**Android 下载：[GitHub Release v1.6.0](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.6.0)** · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.6.0/PixelBalatro-1.6.0-android.apk)
+**Android 下载：[GitHub Release v1.7.0](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.7.0)** · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.7.0/PixelBalatro-1.7.0-android.apk)
+
+## 1.7.0
+
+- **Boss 破绽**：每个 Boss 有一个固定破绽牌型，在 Boss 盲注打出该牌型时最终倍率 ×1.5。选盲注、对局说明栏、本局信息和图鉴都会显示。
+- **碾压奖励**：过关时得分达到目标 2 倍 / 3 倍 / 4 倍，结算额外 +$1 / $2 / $3。
+- **6 张原创小丑**：破绽猎手、碾压锤、节拍器、压轴、棱镜、同心结，小丑总数增至 55 张。
+- **更顺手的选牌**：「✦ 推荐」按保底得分选出本手最佳组合；按住滑过手牌可连续多选；参与计分的选中牌发金光；左下角牌堆显示余量并可查看牌库；新增数字键选牌、H 推荐、S 切换排序、Esc 取消选择。
+- **全新动画**：发牌从牌堆飞出并翻面，宽屏手牌呈扇形；计分时有彩色像素粒子、倍率框抖动、分数滚动、火焰光和震屏；破绽、过关和碾压有印章；金币飞向金钱栏，结算逐行出现；商店商品翻入，标题页花色飘过。
+
+计分速度选“立即”或系统开启“减少动态效果”时，这些装饰动画会跳过。规则细节见 [玩法与动效](docs/upgrade.md)，测试与检查范围见 [1.7.0 验证记录](docs/verification-1.7.0.md)。1.6.0 及更早的存档可以继续玩。
 
 ## 1.6.0
 
@@ -47,7 +57,7 @@
 - 统一纸牌、绿毡、黄铜边框和计分区域，新增出牌移动、弃牌离场、筹码计分、购买入槽等反馈；支持减少动态和立即计分。
 
 - 5 种起始牌组、白/红/金 3 种难度，8 个底注后可继续无尽模式。
-- 49 张小丑、17 张塔罗、12 张星球、14 种 Boss，另有幻灵牌、卡包、优惠券和跳关标签。
+- 55 张小丑、17 张塔罗、12 张星球、14 种 Boss（各有破绽牌型），另有幻灵牌、卡包、优惠券和跳关标签。
 - 新增学者、二重奏、部族、秩序、黑板、长靴、占卜师、罗盘，以及补齐四花色转换的塔罗。
 - 商店候选去重；首个普通商店提供 $4 计分小丑。Boss 分阶段出现，同一轮候选用尽前不重复；之针降低目标。
 - 图鉴可搜索卡名与效果，记录各牌组/难度的通关结果。
@@ -73,13 +83,13 @@
 
 菜单包含牌型表、剩余牌库、图鉴、计分明细、音乐/音效开关，以及 1×/2×/4×/立即四档计分速度。键盘支持 Tab 聚焦、Enter 出牌和 X 弃牌。
 
-Android 用户可在 GitHub 手机端打开仓库的 Releases → v1.6.0 → Assets，下载 `PixelBalatro-1.6.0-android.apk`。已有 1.3.x / 1.4.0 / 1.5.0 直接覆盖安装，不要先卸载。Release 同时提供离线 HTML 和 SHA-256 校验文件。
+Android 用户可在 GitHub 手机端打开仓库的 Releases → v1.7.0 → Assets，下载 `PixelBalatro-1.7.0-android.apk`。已有 1.3.x 到 1.6.0 直接覆盖安装，不要先卸载。Release 同时提供离线 HTML 和 SHA-256 校验文件。
 
-本地交付文件为 `outputs/PixelBalatro-1.6.0-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
+本地交付文件为 `outputs/PixelBalatro-1.7.0-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
 
 ## 存档与兼容
 
-单人进度自动保存，标题页可继续游戏。1.6.0 兼容 1.1/1.2/1.3.x/1.4.0/1.5.0 存档，旧局保留既有次数、经济和持有牌，早期存档底牌默认可用，不倒补 Boss 奖励。底牌、工坊次数、待选战利品、连招与悬赏进度都保存。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽；旧标准包尚未选取的普通候选会补上强化。
+单人进度自动保存，标题页可继续游戏。1.7.0 兼容 1.1 到 1.6.0 的存档，旧局保留既有次数、经济和持有牌，早期存档底牌默认可用，不倒补 Boss 奖励。底牌、工坊次数、待选战利品、连招与悬赏进度都保存。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽；旧标准包尚未选取的普通候选会补上强化。
 
 计分动画中途退出会恢复到该次出牌前的稳定状态。设置和通关记录独立保存，不因开新局清除。清除网站或应用数据会丢失存档；同签名 APK 覆盖更新保留数据。
 
@@ -113,7 +123,7 @@ npm test
 npm run balance -- 24 red white
 ```
 
-`npm test` 检查生成文件一致性、所有 49 张小丑、牌型/新内容/经济规则，以及真实 Node SSE 房间的生命周期和重连去重。模拟器调用实际游戏流程至胜利或失败，不提高金币、次数或分数，输出原始结果到忽略的 `.qa/`；它是有限策略的自动玩家，不是人类胜率预测。
+`npm test` 检查生成文件一致性、所有 55 张小丑、Boss 破绽、碾压奖励、推荐选牌、牌型/新内容/经济规则，以及真实 Node SSE 房间的生命周期和重连去重。模拟器调用实际游戏流程至胜利或失败，不提高金币、次数或分数，输出原始结果到忽略的 `.qa/`；它是有限策略的自动玩家，不是人类胜率预测。
 
 已有 Python Playwright 和 Chromium 兼容浏览器时：
 
@@ -126,15 +136,15 @@ python tests/browser_motion.py --browser "浏览器可执行文件" --output-dir
 python tests/browser_gameplay.py --browser "浏览器可执行文件" --mode fixed --output-dir .qa/browser-gameplay
 ```
 
-本轮实际验证范围和限制见 [1.4.0 验证记录](docs/verification-1.4.0.md)。历史记录：[1.3.2 玩法修复](docs/verification-1.3.2.md)、[1.3.1 商店与视觉](docs/verification-1.3.1.md)、[1.3.0 内容与平衡](docs/verification.md)。
+本轮实际验证范围和限制见 [1.7.0 验证记录](docs/verification-1.7.0.md)。历史记录：[1.6.0 界面](docs/verification-1.6.0.md)、[1.5.0 底牌](docs/verification-1.5.0.md)、[1.4.0 构筑](docs/verification-1.4.0.md)、[1.3.2 玩法修复](docs/verification-1.3.2.md)、[1.3.1 商店与视觉](docs/verification-1.3.1.md)、[1.3.0 内容与平衡](docs/verification.md)。
 
 ## 目录
 
 | 路径 | 用途 |
 | --- | --- |
 | `index.html`、`balatro.html` | 在线入口与生成的便携 HTML |
-| `src/page.html`、`src/*.css`、`src/jester.svg` | 页面、布局、像素图案和矢量花色 |
-| `src/js/` | 规则、计分、商店、持久化、图鉴、联机及音频 |
+| `src/page.html`、`src/*.css`、`src/jester.svg` | 页面、布局、动画、像素图案和矢量花色 |
+| `src/js/` | 规则、计分、商店、持久化、图鉴、联机、动画及音频 |
 | `android/` | 原生 Android 宿主、Manifest 和图标 |
 | `scripts/` | HTML/APK 构建及完整对局模拟 |
 | `tests/` | 规则、服务与浏览器测试 |

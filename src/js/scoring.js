@@ -1,5 +1,5 @@
 function popAt(wrap, txt, col) {
-  scoreFeedback(wrap);
+  scoreFeedback(wrap, txt);
   const s = document.createElement('span');
   s.className = 'scorepop';
   s.style.color = col || '#57e6ff';
@@ -11,6 +11,7 @@ function jokerPop(j, txt) {
   const el = $('jk' + j.uid);
   if (!el) return;
   el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+  jokerFx(el, txt);
   const s = document.createElement('span');
   s.className = 'jpop'; s.textContent = txt;
   el.appendChild(s);
@@ -18,12 +19,12 @@ function jokerPop(j, txt) {
   sfxJok();
 }
 function fmtM(m) { return m % 1 ? (Math.round(m * 100) / 100) : m; }
-function setCalc(c, m) {
+function setCalc(c, m, strong=false) {
   const changedC=$('prevChips').textContent!==fmt(c),changedM=$('prevMult').textContent!==String(fmtM(m));
   $('prevChips').textContent = fmt(c);
   $('prevMult').textContent = fmtM(m);
-  if(changedC) feedback($('prevChips'),[{transform:'scale(1.14)'},{transform:'scale(1)'}],160,true);
-  if(changedM) feedback($('prevMult'),[{transform:'scale(1.14)'},{transform:'scale(1)'}],160,true);
+  if(changedC) calcPunch($('prevChips'),false);
+  if(changedM) calcPunch($('prevMult'),strong);
 }
 async function doPlay() {
   if (!S || S.screen !== 'play' || S.busy || S.handsLeft <= 0 || MP.over) return;
@@ -69,14 +70,14 @@ async function doPlay() {
 
   for (const event of result.events) {
     if (S!==activeRun || MP.over) return;
-    setCalc(event.chips,event.mult);
+    setCalc(event.chips,event.mult,event.text.includes('×'));
     if (event.kind==='card') popAt(wraps.get(event.id),event.text);
     else if (event.kind==='joker') {
       const j=S.jokers.find(x=>x.uid===event.id);
       if (j) jokerPop(j,event.text);
-    } else msg(event.text);
+    } else { msg(event.text); scoreEventFx(event); }
     sfxTick(event.chips);
-    await sleep(event.kind==='card'?180:220);
+    await sleep(event.kind==='card'?180:event.kind==='weak'?420:220);
   }
   if (S!==activeRun || MP.over) return;
   chips=result.chips; mult=result.mult;
@@ -93,11 +94,14 @@ async function doPlay() {
   tp.classList.toggle('big', total >= 3000);
   tp.style.display = 'block';
   sfxUp();
+  const scoreBefore=S.score;
   S.score += total;
   renderStats(); totalFeedback();
+  totalFx(total, scoreBefore, S.target);
   await sleep(650);
   if (S!==activeRun || MP.over) return;
   tp.style.display = 'none';
+  $('previewBox').classList.remove('onFire');
   prow.innerHTML = '';
 
   // —— 后处理 ——
@@ -171,6 +175,8 @@ function beatBlind() {
   for (const [name,value] of [['赏金猎人',bounty],['黄金小丑',goldenN],['投资标签',invest]]) {
     if (value) S.payout.push([name,value]);
   }
+  const overkill=overkillBonus(S);
+  if(overkill.money){S.payout.push(['碾压 '+(Math.floor(overkill.ratio*10)/10)+'× 目标',overkill.money]);total+=overkill.money;}
   total+=settleContract();
   S.payout.push(['合计',total]);
   renderPayout();
@@ -191,14 +197,17 @@ function beatBlind() {
     $('winStats').innerHTML = '最高单次得分：<span class="gold">' + fmt(S.bestHand) + '</span>　总出牌数：<span class="blue">' + S.totHands + '</span>';
     show('ovWin');
   } else show('ovCash');
+  celebrateBlind(overkill);
   persistRun();
   renderStats();
   mpSendState();
 }
 function renderPayout() {
   const ledger = $('cashRows'); ledger.replaceChildren();
-  for (const [label,value] of S.payout) {
+  for (const [i,[label,value]] of S.payout.entries()) {
     const line = document.createElement('p'), amount = document.createElement('b');
+    line.style.animationDelay=(i*90)+'ms';
+    if(label.startsWith('碾压'))line.className='overkillRow';
     line.textContent=label; amount.textContent='$'+value; line.append(amount); ledger.append(line);
   }
 }
@@ -220,6 +229,7 @@ function gameLost(restoring=false) {
     return mpPveFail();
   }
   sfxBad();
+  if(!restoring) lossFx();
   S.screen = 'over';
   $('overStats').innerHTML = '倒在了 底注 ' + S.ante + ' 的 ' + (S.boss ? S.boss.name : blindMeta().name) +
     '<br>差 <span class="red">' + fmt(S.target - S.score) + '</span> 分　最高单次：<span class="gold">' + fmt(S.bestHand) + '</span>';

@@ -31,7 +31,7 @@ function fxLayer() {
 function transient(el,frames,duration=300,scoring=false) {
   if(!motionAllowed(scoring)) return;
   const layer=fxLayer();
-  if(layer.childElementCount>=24) layer.firstElementChild.remove();
+  if(layer.childElementCount>=90) layer.firstElementChild.remove();
   layer.append(el);
   const animation=feedback(el,frames,duration,scoring);
   if(!animation){el.remove();return;}

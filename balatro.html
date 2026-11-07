@@ -910,6 +910,126 @@ button:disabled {cursor:default}
   .titleActions {grid-column:2;grid-row:1/3;width:100%;margin:0;gap:8px}
 }
 @media(prefers-reduced-motion:reduce) {.segmented button,.handOption,.pickerTrigger {transition:none}}
+
+/* 1.7.0 motion: springy cards, a dealing shoe, score fireworks and calmer ambient life. */
+:root {--spring:cubic-bezier(.34,1.56,.64,1);--card-back:repeating-linear-gradient(45deg,transparent 0 3px,#f0c78055 3px 4px),repeating-linear-gradient(-45deg,#913e3e 0 3px,#b8674d 3px 4px)}
+
+/* Table ambience and the deck shoe */
+.tableGlow {position:absolute;inset:8%;z-index:-2;pointer-events:none;border-radius:50%;
+  background:radial-gradient(closest-side,#8fe0b21c,transparent 72%);animation:glowDrift 16s ease-in-out infinite alternate}
+@keyframes glowDrift {from{transform:translate(-6%,-4%) scale(.94)}to{transform:translate(6%,5%) scale(1.04)}}
+#deckPile {position:absolute;left:4px;bottom:3px;width:42px;height:56px;padding:0;border:0;background:none;z-index:1;transition:opacity .2s}
+#deckPile .pileStack,#deckPile .pileStack i {position:absolute;inset:0}
+#deckPile .pileStack i {border-radius:5px;border:2px solid #e2d1a5;background:var(--card-back);box-shadow:0 2px 0 #0a2824;transition:transform .2s var(--spring)}
+#deckPile .pileStack i:nth-child(1) {transform:translate(-4px,3px) rotate(-6deg)}
+#deckPile .pileStack i:nth-child(2) {transform:translate(-2px,1px) rotate(-2deg)}
+#deckPile b {position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);min-width:24px;padding:0 5px;border:1px solid #a99b68;border-radius:9px;background:#102c27;color:var(--brass);font:700 11px/16px var(--mono)}
+#deckPile.empty .pileStack {opacity:.25}
+.isScoring #deckPile {opacity:.45;pointer-events:none}
+@media(hover:hover) and (pointer:fine) {#deckPile:hover .pileStack i:nth-child(3) {transform:translateY(-4px) rotate(2deg)}}
+
+/* Hand: fanned on wide tables, gently breathing, spring selection */
+#handRow {--fan:0deg;--arc-step:0px;touch-action:pan-y}
+@media(min-width:761px) and (min-height:541px),(min-width:1001px) {#handRow {--fan:1.7deg;--arc-step:1.2px}}
+#handRow .card {--arc:calc(var(--k2,0) * var(--arc-step));rotate:calc(var(--k,0) * var(--fan));translate:0 var(--arc);
+  transition:transform .28s var(--spring),rotate .25s var(--ease),border-color .12s,box-shadow .2s,filter .2s}
+#handRow .card.sel {rotate:0deg}
+/* A short ripple runs across the hand every few seconds; cards rest (and stay easy to tap) in between. */
+#handRow .card:not(.dealt):not(.sel) {animation:cardIdle 6s ease-in-out infinite;animation-delay:calc(1.2s + var(--i,0) * .11s)}
+@keyframes cardIdle {0%,13%,100%{translate:0 var(--arc)}6%{translate:0 calc(var(--arc) - 5px)}}
+#handRow .card.sel.scoring {box-shadow:0 0 0 2px #ffe19a,0 0 16px 3px #ffcf5a80,1px 4px 0 #16322a}
+#handRow .card.sel.kicker {filter:saturate(.5) brightness(.88);border-color:#8f8a76}
+.isScoring #handRow .card {animation-play-state:paused}
+
+/* Dealing from the shoe: travel, turn edge-on, then show the face */
+#handRow .card.dealt {animation:cardDeal .5s cubic-bezier(.2,.85,.3,1) backwards;animation-delay:var(--deal-delay,0ms)}
+@keyframes cardDeal {
+  0%{transform:translate(var(--dx,18px),var(--dy,-30px)) rotate(-22deg) scale(.5);opacity:0}
+  14%{opacity:1}
+  52%{transform:translate(calc(var(--dx,18px) * .2),calc(var(--dy,-30px) * .2 - 16px)) rotate(-5deg) scale(.06,1)}
+  100%{transform:none;opacity:1}}
+#handRow .card.dealt::before {content:'';position:absolute;inset:-2px;z-index:4;border-radius:inherit;border:2px solid #e2d1a5;
+  background:var(--card-back);opacity:0;pointer-events:none;animation:dealBack .5s linear backwards;animation-delay:var(--deal-delay,0ms)}
+@keyframes dealBack {0%,51%{opacity:1}52%,100%{opacity:0}}
+
+/* Fine pointers: tilt toward the cursor with a moving glare */
+@media(hover:hover) and (pointer:fine) {
+  #handRow .card:not(:disabled):hover {z-index:3;transform:perspective(520px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-7px) scale(1.05)}
+  #handRow .card.sel:not(:disabled):hover {transform:perspective(520px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-13px) scale(1.05)}
+  #handRow .card::after {content:'';position:absolute;inset:0;z-index:3;border-radius:inherit;pointer-events:none;opacity:0;
+    background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),#ffffff70,transparent 58%);transition:opacity .2s}
+  #handRow .card:not(:disabled):hover::after {opacity:1}
+  .joker:not(:disabled):hover {transform:translateY(-5px) rotate(-3deg) scale(1.05)}
+  .bigbtn:not(:disabled):hover,.pxbtn:not(:disabled):hover {filter:brightness(1.08)}
+}
+
+/* Jokers sway a little and spring when they trigger */
+#jokerRow .joker {animation:jokerIdle 7s ease-in-out infinite;animation-delay:2s}
+#jokerRow .joker:nth-child(2n) {animation-delay:4.3s}#jokerRow .joker:nth-child(3n) {animation-delay:5.6s}
+@keyframes jokerIdle {0%,9%,100%{rotate:0deg}2%{rotate:-5deg}4.5%{rotate:4deg}7%{rotate:-2deg}}
+.joker.pulse {animation:jpulse .46s var(--spring)}
+@keyframes jpulse {0%{transform:none}30%{transform:translateY(-9px) scale(1.2) rotate(-8deg);box-shadow:0 0 0 3px #ffe08a,0 0 18px 4px #ffd56a99}
+  65%{transform:translateY(-2px) scale(1.04) rotate(4deg)}100%{transform:none}}
+
+/* Preview: hint, weak point, fire on a winning hand */
+.hintBtn {flex:none;min-height:30px;padding:2px 9px;border:1px solid #c7ad6b;border-radius:15px;background:#1d4236;color:var(--brass);font:700 12px var(--ui);transition:transform .15s var(--spring),background-color .15s}
+.hintBtn:not(:disabled):active {transform:scale(.92)}
+.hintBtn:disabled {opacity:.4;cursor:default}
+@media(hover:hover) and (pointer:fine) {.hintBtn:not(:disabled):hover {background:#2a5545;transform:translateY(-1px)}}
+#previewBox {transition:box-shadow .25s}
+#previewBox.weakHit {box-shadow:inset 0 0 0 1px #ff8d7a,0 0 14px #ff6b5b44}
+#previewBox.weakHit #prevName::after {content:' 🎯破绽';font-size:12px;color:#ffb3a6}
+#previewBox.onFire {animation:fireGlow .42s ease-in-out infinite alternate}
+@keyframes fireGlow {from{box-shadow:0 0 10px 2px #ff9a3c77,inset 0 0 10px #ff5a2a44}to{box-shadow:0 0 24px 7px #ffcc4d99,inset 0 0 20px #ff7a3a66}}
+.weakTag {color:#ffd0a8;font-weight:700}
+#btnPlay.ready {animation:readyGlow 1.8s ease-in-out infinite}
+@keyframes readyGlow {0%,100%{box-shadow:inset 0 1px #ffffff33,0 3px #143c50}50%{box-shadow:inset 0 1px #ffffff33,0 3px #143c50,0 0 14px 2px #7cc8ea88}}
+
+/* Score bar */
+#scorebar {position:relative;overflow:hidden}
+#scorebar::after {content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,#ffffffa0,transparent);transform:translateX(-100%);animation:barShine 2.6s ease-in-out infinite}
+@keyframes barShine {60%,100%{transform:translateX(100%)}}
+#scorebar.cleared {background:linear-gradient(90deg,#f2c769,#fff1b8,#f2c769);box-shadow:0 0 8px #ffd56a}
+
+/* Feedback layer pieces */
+.spark {border-radius:1px;image-rendering:pixelated}
+.stamp {left:50%;padding:6px 22px;white-space:nowrap;border:4px solid currentColor;border-radius:10px;
+  font:900 clamp(30px,8vw,60px)/1.05 var(--ui);letter-spacing:.06em;color:#ffe08a;background:#173a2fe8;
+  text-shadow:0 3px 0 #6b4a1c;box-shadow:0 0 0 3px #0c231d,0 12px 30px #000a}
+.stamp.weak {color:#ff8a72;text-shadow:0 3px 0 #5e1d16}
+.floatText {font:800 15px var(--mono);white-space:nowrap;text-shadow:0 2px 0 #0b241d,0 0 8px #000}
+.floatText.money {color:#ffe28a}.floatText.mult {color:#ff9d8c}.floatText.chips {color:#9fdcff}.floatText.gold {color:#ffe8a3}
+.flyingCoin {width:14px;height:14px;border-radius:50%;border:2px solid #7a5a1f;background:radial-gradient(circle at 35% 35%,#fff6c8,#f2c769 45%,#b8862d)}
+
+/* Results, blinds and packs enter in a quick cascade */
+#cashRows p {animation:rowIn .3s var(--ease) backwards}
+@keyframes rowIn {from{transform:translateX(-14px);opacity:0}}
+#cashRows .overkillRow,#cashRows .overkillRow b {color:#ffb4a0}
+#blindCols .bcol {animation:colIn .22s var(--ease) backwards}
+#blindCols .bcol:nth-child(2) {animation-delay:.04s}#blindCols .bcol:nth-child(3) {animation-delay:.08s}
+@keyframes colIn {from{transform:translateY(14px);opacity:0}}
+#blindCols .bcol.cur .bbtn:not(.skip) {animation:readyGlow 1.8s ease-in-out infinite}
+#packCards>* {animation:packIn .3s var(--spring) backwards}
+#packCards>:nth-child(2) {animation-delay:.06s}#packCards>:nth-child(3) {animation-delay:.12s}
+@keyframes packIn {from{transform:translateY(24px) rotate(-6deg) scale(.85);opacity:0}}
+
+/* Title: drifting suits behind the menu */
+.titleMotes {position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.titleMotes i {position:absolute;left:var(--x);bottom:-40px;font-size:var(--s);font-style:normal;color:#e9dcb43a;
+  animation:moteRise var(--d) linear infinite;animation-delay:var(--delay)}
+.titleMotes i.red {color:#e0796b3a}
+@keyframes moteRise {0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:1}85%{opacity:.8}100%{transform:translate(var(--sway),-115vh) rotate(220deg);opacity:0}}
+#ovStart .titleScreen {position:relative;z-index:1}
+
+#game.lost #main {filter:grayscale(.75) brightness(.8);transition:filter .8s}
+
+@media(max-width:760px),(max-width:1000px) and (max-height:540px) {
+  #deckPile {width:36px;height:48px}
+  .hintBtn {min-height:28px;padding:1px 8px;font-size:11px}
+}
+@media(min-width:580px) and (max-width:1000px) and (max-height:540px) {
+  #deckPile {width:28px;height:38px;bottom:1px}#deckPile b {font-size:10px;line-height:14px}
+}
 </style>
 </head>
 <body>
@@ -976,12 +1096,14 @@ button:disabled {cursor:default}
       <div id="jokerRow"></div>
       <div id="consRow"></div>
     </div>
-    <div id="playArea"><div class="tableSeal" aria-hidden="true"><svg viewBox="0 0 80 80"><use href="#jester"/></svg></div>
+    <div id="playArea"><div class="tableGlow" aria-hidden="true"></div><div class="tableSeal" aria-hidden="true"><svg viewBox="0 0 80 80"><use href="#jester"/></svg></div>
       <div id="playedRow"></div>
+      <button id="deckPile" onclick="openDeck()" aria-label="查看剩余牌库"><span class="pileStack" aria-hidden="true"><i></i><i></i><i></i></span><b id="deckPileCount">52</b></button>
       <div id="totalPop"></div>
       <button id="reserveBtn" onclick="openReserve()" hidden>底牌 · 藏入</button>
     </div>
     <div class="panel" id="previewBox">
+      <button id="btnHint" class="hintBtn" onclick="applyHint()" aria-label="推荐本手最高分的出牌组合" title="推荐出牌（H）">✦ 推荐</button>
       <div id="prevName">选择手牌</div>
       <div id="prevLvl"></div>
       <span id="selCount" aria-label="选中张数"></span>
@@ -1383,6 +1505,13 @@ const JDEFS = [
   { id:'boots', ic:'🥾', name:'长靴', price:6, rar:1, desc:'每持有 $5，+2 倍率' },
   { id:'fortune', ic:'🔮', name:'占卜师', price:5, rar:0, desc:'本局每成功使用 1 张塔罗牌，+1 倍率' },
   { id:'compass', ic:'🧭', name:'罗盘', price:6, rar:1, desc:'本局每打出过 1 种不同牌型，+25 筹码（含本手）' },
+  // —— 1.7.0 原创小丑 ——
+  { id:'weakspot', ic:'🎯', name:'破绽猎手', price:6, rar:1, desc:'打出本底注 Boss 的破绽牌型时 +10 倍率（小盲、大盲同样生效）' },
+  { id:'crusher', ic:'🔨', name:'碾压锤', price:5, rar:0, desc:'碾压奖励翻倍，上限提高到 $6' },
+  { id:'metronome', ic:'🥁', name:'节拍器', price:6, rar:1, desc:'出牌节奏的连招倍率翻倍（每连 +4，最多 +16）' },
+  { id:'finale', ic:'🎆', name:'压轴', price:5, rar:0, desc:'本盲注最后一次出牌时 +20 倍率' },
+  { id:'prism', ic:'🔷', name:'棱镜', price:7, rar:1, desc:'每张计分的百搭花色牌 ×1.5 倍率' },
+  { id:'twins', ic:'🎎', name:'同心结', price:5, rar:0, desc:'打出至少 3 张牌且全为红色或全为黑色时 +40 筹码、+6 倍率' },
 ];
 const RARNAME = ['普通', '罕见', '稀有'];
 
@@ -1440,20 +1569,20 @@ const TAGS = [
 ];
 
 const BOSSES = [
-  { id:'hearts', name:'🌹 血月',  desc:'所有 ♥ 不提供筹码、不触发效果' },
-  { id:'spades', name:'⚓ 暗礁',  desc:'所有 ♠ 不提供筹码、不触发效果' },
-  { id:'club',   name:'🍀 三叶草', desc:'所有 ♣ 不提供筹码、不触发效果' },
-  { id:'window', name:'▣ 窗户',  desc:'所有 ♦ 不提供筹码、不触发效果' },
-  { id:'wall',   name:'🧱 巨墙',  desc:'目标分数额外提高 60%' },
-  { id:'needle', name:'✦ 之针',  desc:'只能打出 1 手牌；目标降为小盲注分数' },
-  { id:'arm',    name:'💪 铁腕',  desc:'本盲注只有 1 次弃牌机会' },
-  { id:'hook',   name:'⚓ 钩爪',  desc:'每打出一手牌后随机弃掉 2 张手牌' },
-  { id:'water',  name:'💧 流水',  desc:'本盲注不能弃牌' },
-  { id:'psychic',name:'🧿 通灵者', desc:'必须每次打出恰好 5 张牌' },
-  { id:'manacle',name:'⛓️ 镣铐',  desc:'本盲注手牌上限 -1' },
-  { id:'flint',  name:'🔥 燧石',  desc:'牌型的基础筹码和倍率减半' },
-  { id:'mark', name:'🎭 面具', desc:'所有 J/Q/K 不提供筹码、不触发效果' },
-  { id:'eye', name:'👁️ 独眼', desc:'本盲注每种牌型只能打出一次' },
+  { id:'hearts', name:'🌹 血月',  desc:'所有 ♥ 不提供筹码、不触发效果', weak:'straight' },
+  { id:'spades', name:'⚓ 暗礁',  desc:'所有 ♠ 不提供筹码、不触发效果', weak:'flush' },
+  { id:'club',   name:'🍀 三叶草', desc:'所有 ♣ 不提供筹码、不触发效果', weak:'twopair' },
+  { id:'window', name:'▣ 窗户',  desc:'所有 ♦ 不提供筹码、不触发效果', weak:'trips' },
+  { id:'wall',   name:'🧱 巨墙',  desc:'目标分数额外提高 60%', weak:'fh' },
+  { id:'needle', name:'✦ 之针',  desc:'只能打出 1 手牌；目标降为小盲注分数', weak:'flush' },
+  { id:'arm',    name:'💪 铁腕',  desc:'本盲注只有 1 次弃牌机会', weak:'pair' },
+  { id:'hook',   name:'⚓ 钩爪',  desc:'每打出一手牌后随机弃掉 2 张手牌', weak:'trips' },
+  { id:'water',  name:'💧 流水',  desc:'本盲注不能弃牌', weak:'twopair' },
+  { id:'psychic',name:'🧿 通灵者', desc:'必须每次打出恰好 5 张牌', weak:'straight' },
+  { id:'manacle',name:'⛓️ 镣铐',  desc:'本盲注手牌上限 -1', weak:'pair' },
+  { id:'flint',  name:'🔥 燧石',  desc:'牌型的基础筹码和倍率减半', weak:'fh' },
+  { id:'mark', name:'🎭 面具', desc:'所有 J/Q/K 不提供筹码、不触发效果', weak:'straight' },
+  { id:'eye', name:'👁️ 独眼', desc:'本盲注每种牌型只能打出一次', weak:'flush' },
 ];
 const DECKS = [
   {id:'red',name:'红色牌组',color:'#bd514b',desc:'每个盲注 +1 次弃牌',disc:1},
@@ -1616,7 +1745,7 @@ function showBlindSelect() {
     let h = '<div class="bname">' + (i === 2 ? (MP.on ? '⚔️ ' : '') + S.anteBoss.name : m.name) + '</div>' +
       '<div class="btgt">' + fmt(m.target) + '</div>' +
       '<div class="brw">奖励 $' + m.reward + ' + 结算</div>' +
-      '<div class="bbs">' + (i === 2 ? S.anteBoss.desc +
+      '<div class="bbs">' + (i === 2 ? S.anteBoss.desc + '<br><span class="weakTag">🎯 ' + bossWeakLabel(S.anteBoss) + '</span>' +
         (MP.on ? '<br><span style="color:#ffd54a">⚔️ 对决：与对手拼总分，低者 -1❤️</span>' : '') : '') + '</div>';
     if (i < S.blindIdx) h += '<div class="st">✔ 已完成</div>';
     else if (i > S.blindIdx) h += '<div class="st">等待中…</div>';
@@ -1678,7 +1807,7 @@ function startBlind() {
   drawTo(effHandSize());
   S.screen = 'play';
   renderAll();
-  if (S.boss) msg('⚠️ ' + S.boss.name + '：' + S.boss.desc, 1);
+  if (S.boss) msg('⚠️ ' + S.boss.name + '：' + S.boss.desc + '｜' + bossWeakLabel(S.boss), 1);
   checkStuck();
   mpSendState();
 }
@@ -1860,26 +1989,43 @@ function cardEl(c, interactive = false) {
   bindTip(d, () => cardTipHTML(c));
   return d;
 }
+// One entry point for taps, swipes, keys and hints keeps the five-card limit consistent.
+function toggleHandCard(c, el, want = !c.sel) {
+  if (!S || S.busy || S.screen !== 'play' || !S.hand.includes(c) || !!c.sel === want) return false;
+  if (want && S.hand.filter(x => x.sel).length >= 5) { msg('最多只能选 5 张牌', 1); return false; }
+  c.sel = want;
+  sfxSel();
+  if (el) { el.classList.toggle('sel', want); el.setAttribute('aria-pressed',String(want)); }
+  updatePreview();
+  return true;
+}
+function handCardEl(id) { return $('handRow').querySelector('[data-card-id="'+id+'"]'); }
 function renderHand() {
   const row = $('handRow');
   row.style.setProperty('--hand-columns',S.hand.length>8?5:4);
   row.innerHTML = '';
-  S.hand.forEach(c => {
+  const mid=(S.hand.length-1)/2;
+  S.hand.forEach((c,i) => {
     const el = cardEl(c, true);
-    if(el.classList.contains('dealt')) el.style.setProperty('--deal-delay',(row.children.length*22)+'ms');
+    if(el.classList.contains('dealt')) el.style.setProperty('--deal-delay',(row.children.length*45)+'ms');
+    el.style.setProperty('--i',i); el.style.setProperty('--k',(i-mid).toFixed(2)); el.style.setProperty('--k2',((i-mid)*(i-mid)).toFixed(2));
     el.setAttribute('aria-label', (c.wild?'百搭花色，点数':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank));
     el.setAttribute('aria-pressed',String(!!c.sel)); el.disabled=S.busy;
-    el.onclick = () => {
-      if (S.busy) return;
-      if (!c.sel && S.hand.filter(x => x.sel).length >= 5) { msg('最多只能选 5 张牌', 1); return; }
-      c.sel = !c.sel;
-      sfxSel();
-      el.classList.toggle('sel'); el.setAttribute('aria-pressed',String(c.sel));
-      updatePreview();
-    };
+    el.onclick = () => toggleHandCard(c, el);
     row.appendChild(el);
   });
+  dealFx(row);
   updatePreview();
+}
+function applyHint() {
+  if (!S || S.screen !== 'play' || S.busy || MP.over) return false;
+  const best = bestSelection(S);
+  if (!best) { msg('当前没有可以打出的组合', 1); return false; }
+  const ids = new Set(best.ids);
+  S.hand.forEach(c => c.sel = ids.has(c.id));
+  sfxSel(); renderHand(); hintFx(best.ids);
+  msg('推荐：' + HANDS[best.key].name + '，至少 ' + fmt(best.total) + ' 分');
+  return true;
 }
 function updatePreview() {
   const sel = S.hand.filter(c => c.sel);
@@ -1899,6 +2045,14 @@ function updatePreview() {
     $('prevMult').textContent = lo.mult===hi.mult?fmtM(lo.mult):fmtM(lo.mult)+'–'+fmtM(hi.mult);
     $('scoreEstimate').textContent=(lo.total===hi.total?fmt(lo.total):fmt(lo.total)+'–'+fmt(hi.total))+' 分';
   }
+  const scoringIds=new Set(sel.length&&!S.busy?evalHand(sel).scoring.map(c=>c.id):[]);
+  for(const el of $('handRow').children) {
+    const id=Number(el.dataset.cardId),picked=sel.some(c=>c.id===id);
+    el.classList.toggle('scoring',picked&&scoringIds.has(id));
+    el.classList.toggle('kicker',picked&&!scoringIds.has(id));
+  }
+  const weakHit=!S.busy&&sel.length&&S.boss&&bossWeakKey(S.boss)===evalHand(sel).key;
+  $('previewBox').classList.toggle('weakHit',!!weakHit);
   const repeated=S.boss?.id==='eye'&&S.blindPlayed.includes(evalHand(sel).key);
   const needFive=S.boss?.id==='psychic'&&sel.length!==5;
   const forbidden=repeated||needFive;
@@ -1906,9 +2060,12 @@ function updatePreview() {
   else if(!S.busy&&needFive)$('scoreEstimate').textContent='需选满 5 张牌';
   $('btnPlay').disabled = S.busy || !sel.length || S.handsLeft <= 0 || forbidden;
   $('btnDiscard').disabled = S.busy || !sel.length || S.discLeft <= 0;
+  $('btnPlay').classList.toggle('ready',!$('btnPlay').disabled);
+  $('btnHint').disabled = S.busy || S.screen !== 'play' || !S.hand.length || S.handsLeft <= 0;
 }
 function renderStats() {
   $('game').classList.toggle('isScoring',!!S.busy);
+  if(S.screen!=='over')$('game').classList.remove('lost');
   renderReserveEntry();
   for(const mode of ['rank','suit']) {
     const button=$(mode==='rank'?'btnSortRank':'btnSortSuit');
@@ -1920,7 +2077,10 @@ function renderStats() {
   $('handSizeVal').textContent = effHandSize();
   $('anteVal').textContent = MP.on ? S.ante + ' ⚔️' : (S.ante > 8 ? S.ante + ' ♾️' : S.ante + ' / 8');
   $('deckVal').textContent = (S.screen==='select'?S.deckAll.length:S.drawPile.length) + '/' + S.deckAll.length;
-  $('scoreVal').textContent = fmt(S.score);
+  $('deckPileCount').textContent = S.screen==='select'?S.deckAll.length:S.drawPile.length;
+  $('deckPile').classList.toggle('empty', S.screen==='play' && !S.drawPile.length);
+  setNumber($('scoreVal'), S.score);
+  trackMoney();
   // 对决盲注：目标栏实时显示对手分数
   const duel = MP.on && S.blindIdx === 2 && (S.screen === 'play' || S.screen === 'duelwait');
   const oppSc = duel && MP.opp.ante === S.ante && MP.opp.blind === 2 ? MP.opp.score : 0;
@@ -1929,11 +2089,12 @@ function renderStats() {
   $('blindBox').classList.toggle('largeScore',Math.max(fmt(S.score).length,fmt(duel?oppSc:target).length)>6);
   $('targetVal').textContent = fmt(duel ? oppSc : target);
   $('scorebar').style.width = Math.min(100, S.score / Math.max(1, duel ? oppSc : S.target) * 100) + '%';
+  $('scorebar').classList.toggle('cleared', !duel && S.screen==='play' && S.score >= S.target);
   if (MP.on) $('livesVal').textContent = '❤️'.repeat(Math.max(0, MP.lives)) || '💀';
   const m = blindMeta();
   $('blindName').textContent = S.boss ? S.boss.name + (MP.on ? ' ⚔️对决' : ' (Boss)') : m.name;
   const bd = $('bossDesc');
-  if (S.boss) { bd.style.display = 'block'; bd.textContent = S.boss.desc; }
+  if (S.boss) { bd.style.display = 'block'; bd.textContent = S.boss.desc + '｜🎯 ' + bossWeakLabel(S.boss); }
   else bd.style.display = 'none';
   const tactics=tacticsStatus();$('tacticsStatus').textContent=tactics;$('tacticsStatus').hidden=!tactics;
 }
@@ -1998,12 +2159,47 @@ function renderAll() { renderStats(); renderJokers(); renderCons(); renderHand()
 
 // ── score-engine ──
 // Pure scoring: animation, previews and tests consume the same calculation.
+const WEAK_MULT=1.5;
 function rhythmForHand(state,key) {
   const mode=state.rhythmMode,previous=state.rhythm||{lastKey:null,chain:0};
   if(!['focus','flow'].includes(mode))return {lastKey:null,chain:0,bonus:0};
   const continues=previous.lastKey&&(mode==='focus'?previous.lastKey===key:previous.lastKey!==key);
   const chain=continues?Math.min(5,previous.chain+1):1;
-  return {lastKey:key,chain,bonus:(chain-1)*2};
+  const step=(state.jokers||[]).some(j=>j.id==='metronome')?4:2;
+  return {lastKey:key,chain,bonus:(chain-1)*step};
+}
+// Each Boss shows one hand type it is weak against; the same hand gets ×1.5 in that Boss blind.
+function bossWeakKey(boss) { return boss&&HANDS[boss.weak]?boss.weak:null; }
+function bossWeakLabel(boss) {
+  const key=bossWeakKey(boss);
+  return key?'破绽：'+HANDS[key].name+' ×'+WEAK_MULT:'';
+}
+// Beating a blind with at least twice the target pays $1 per full extra multiple.
+function overkillBonus(state) {
+  if(!state.target||state.score<state.target*2)return {ratio:state.target?state.score/state.target:0,money:0};
+  const crushers=(state.jokers||[]).filter(j=>j.id==='crusher').length;
+  const cap=crushers?6:3,ratio=state.score/state.target;
+  return {ratio,money:Math.min(cap,(Math.floor(ratio)-1)*(crushers?2:1))};
+}
+// Picks the selection with the best guaranteed score, respecting Boss restrictions.
+function bestSelection(state) {
+  const hand=state.hand||[],n=hand.length,scoringState={...state,handsLeft:state.handsLeft-1};
+  let best=null;
+  const consider=cards=>{
+    if(state.boss?.id==='psychic'&&cards.length!==5)return;
+    const result=scoreHand(scoringState,cards,()=>0);
+    if(state.boss?.id==='eye'&&(state.blindPlayed||[]).includes(result.hand.key))return;
+    if(!best||result.total>best.total||(result.total===best.total&&cards.length<best.cards.length))
+      best={total:result.total,cards:cards.slice(),key:result.hand.key};
+  };
+  const pick=[];
+  const walk=start=>{
+    if(pick.length)consider(pick);
+    if(pick.length===5)return;
+    for(let i=start;i<n;i++){pick.push(hand[i]);walk(i+1);pick.pop();}
+  };
+  walk(0);
+  return best?{ids:best.cards.map(c=>c.id),total:best.total,key:best.key}:null;
 }
 function jokerStateForHand(joker, hand, cards) {
   const value=joker.state||0;
@@ -2041,6 +2237,7 @@ function scoreHand(state, cards, random = Math.random) {
       if (j.id==='even' && card.rank<=10 && card.rank%2===0) addM=4;
       if (j.id==='odd' && (card.rank===14 || (card.rank<=9 && card.rank%2===1))) addC=31;
       if (j.id==='scholar' && card.rank===14) { addC=20; addM=4; }
+      if (j.id==='prism' && card.wild) factor=1.5;
       if (addC || addM || factor!==1) {
         chips+=addC; mult=(mult+addM)*factor;
         emit('joker',j.uid,addC?'+'+addC+' 筹码'+(addM?' / +'+addM+' 倍率':''):addM?'+'+addM+' 倍率':'×'+factor+' 倍率');
@@ -2105,21 +2302,31 @@ function scoreHand(state, cards, random = Math.random) {
       case 'baseball': x=Math.pow(1.5,state.jokers.filter(k=>k.rar===1 && k.uid!==j.uid).length); break;
       case 'baron': x=Math.pow(1.5,held.filter(k=>k.rank===13).reduce((n,k)=>n+(k.seal==='red'?2:1),0)); break;
       case 'moon': m=13*held.filter(k=>k.rank===12).reduce((n,k)=>n+(k.seal==='red'?2:1),0); break;
+      case 'weakspot': if(bossWeakKey(state.anteBoss)===hand.key) m=10; break;
+      case 'finale': if(state.handsLeft===0) m=20; break;
+      case 'twins': {
+        const colors=new Set(cards.filter(k=>!k.wild).map(k=>RED(k.suit)));
+        if(cards.length>=3&&colors.size<=1){c=40;m=6;}
+        break;
+      }
     }
     if(c || m || x!==1) {
       chips+=c; mult=(mult+m)*x;
-      emit('joker',j.uid,c?'+'+c+' 筹码':m?'+'+m+' 倍率':'×'+(Math.round(x*100)/100)+' 倍率');
+      emit('joker',j.uid,c?'+'+c+' 筹码'+(m?' / +'+m+' 倍率':''):m?'+'+m+' 倍率':'×'+(Math.round(x*100)/100)+' 倍率');
     }
     if(j.ed===1) { chips+=50; emit('joker',j.uid,'+50 闪箔'); }
     if(j.ed===2) { mult+=10; emit('joker',j.uid,'+10 全息'); }
     if(j.ed===3) { mult*=1.5; emit('joker',j.uid,'×1.5 多彩'); }
+  }
+  if(state.boss&&bossWeakKey(state.boss)===hand.key) {
+    mult*=WEAK_MULT; emit('weak',null,'破绽 · '+HANDS[hand.key].name+' ×'+WEAK_MULT);
   }
   return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events,rhythm};
 }
 
 // ── scoring ──
 function popAt(wrap, txt, col) {
-  scoreFeedback(wrap);
+  scoreFeedback(wrap, txt);
   const s = document.createElement('span');
   s.className = 'scorepop';
   s.style.color = col || '#57e6ff';
@@ -2131,6 +2338,7 @@ function jokerPop(j, txt) {
   const el = $('jk' + j.uid);
   if (!el) return;
   el.classList.remove('pulse'); void el.offsetWidth; el.classList.add('pulse');
+  jokerFx(el, txt);
   const s = document.createElement('span');
   s.className = 'jpop'; s.textContent = txt;
   el.appendChild(s);
@@ -2138,12 +2346,12 @@ function jokerPop(j, txt) {
   sfxJok();
 }
 function fmtM(m) { return m % 1 ? (Math.round(m * 100) / 100) : m; }
-function setCalc(c, m) {
+function setCalc(c, m, strong=false) {
   const changedC=$('prevChips').textContent!==fmt(c),changedM=$('prevMult').textContent!==String(fmtM(m));
   $('prevChips').textContent = fmt(c);
   $('prevMult').textContent = fmtM(m);
-  if(changedC) feedback($('prevChips'),[{transform:'scale(1.14)'},{transform:'scale(1)'}],160,true);
-  if(changedM) feedback($('prevMult'),[{transform:'scale(1.14)'},{transform:'scale(1)'}],160,true);
+  if(changedC) calcPunch($('prevChips'),false);
+  if(changedM) calcPunch($('prevMult'),strong);
 }
 async function doPlay() {
   if (!S || S.screen !== 'play' || S.busy || S.handsLeft <= 0 || MP.over) return;
@@ -2189,14 +2397,14 @@ async function doPlay() {
 
   for (const event of result.events) {
     if (S!==activeRun || MP.over) return;
-    setCalc(event.chips,event.mult);
+    setCalc(event.chips,event.mult,event.text.includes('×'));
     if (event.kind==='card') popAt(wraps.get(event.id),event.text);
     else if (event.kind==='joker') {
       const j=S.jokers.find(x=>x.uid===event.id);
       if (j) jokerPop(j,event.text);
-    } else msg(event.text);
+    } else { msg(event.text); scoreEventFx(event); }
     sfxTick(event.chips);
-    await sleep(event.kind==='card'?180:220);
+    await sleep(event.kind==='card'?180:event.kind==='weak'?420:220);
   }
   if (S!==activeRun || MP.over) return;
   chips=result.chips; mult=result.mult;
@@ -2213,11 +2421,14 @@ async function doPlay() {
   tp.classList.toggle('big', total >= 3000);
   tp.style.display = 'block';
   sfxUp();
+  const scoreBefore=S.score;
   S.score += total;
   renderStats(); totalFeedback();
+  totalFx(total, scoreBefore, S.target);
   await sleep(650);
   if (S!==activeRun || MP.over) return;
   tp.style.display = 'none';
+  $('previewBox').classList.remove('onFire');
   prow.innerHTML = '';
 
   // —— 后处理 ——
@@ -2291,6 +2502,8 @@ function beatBlind() {
   for (const [name,value] of [['赏金猎人',bounty],['黄金小丑',goldenN],['投资标签',invest]]) {
     if (value) S.payout.push([name,value]);
   }
+  const overkill=overkillBonus(S);
+  if(overkill.money){S.payout.push(['碾压 '+(Math.floor(overkill.ratio*10)/10)+'× 目标',overkill.money]);total+=overkill.money;}
   total+=settleContract();
   S.payout.push(['合计',total]);
   renderPayout();
@@ -2311,14 +2524,17 @@ function beatBlind() {
     $('winStats').innerHTML = '最高单次得分：<span class="gold">' + fmt(S.bestHand) + '</span>　总出牌数：<span class="blue">' + S.totHands + '</span>';
     show('ovWin');
   } else show('ovCash');
+  celebrateBlind(overkill);
   persistRun();
   renderStats();
   mpSendState();
 }
 function renderPayout() {
   const ledger = $('cashRows'); ledger.replaceChildren();
-  for (const [label,value] of S.payout) {
+  for (const [i,[label,value]] of S.payout.entries()) {
     const line = document.createElement('p'), amount = document.createElement('b');
+    line.style.animationDelay=(i*90)+'ms';
+    if(label.startsWith('碾压'))line.className='overkillRow';
     line.textContent=label; amount.textContent='$'+value; line.append(amount); ledger.append(line);
   }
 }
@@ -2340,6 +2556,7 @@ function gameLost(restoring=false) {
     return mpPveFail();
   }
   sfxBad();
+  if(!restoring) lossFx();
   S.screen = 'over';
   $('overStats').innerHTML = '倒在了 底注 ' + S.ante + ' 的 ' + (S.boss ? S.boss.name : blindMeta().name) +
     '<br>差 <span class="red">' + fmt(S.target - S.score) + '</span> 分　最高单次：<span class="gold">' + fmt(S.bestHand) + '</span>';
@@ -2377,7 +2594,7 @@ const PACKS = [
 ];
 function rollJokerItem(forceUnc, exclude=[]) {
   const owned = new Set([...S.jokers.map(j => j.id),...exclude]);
-  let pool = JDEFS.filter(j => !owned.has(j.id));
+  let pool = JDEFS.filter(j => !owned.has(j.id) && jokerOffered(j));
   if (forceUnc) pool = pool.filter(j => j.rar >= 1);
   if (!pool.length) pool = JDEFS.slice();
   const r = Math.random();
@@ -2391,6 +2608,8 @@ function rollJokerItem(forceUnc, exclude=[]) {
   else if (e < 0.17) { def.ed = 1; def.price += 2; }
   return def;
 }
+// Rhythm is a single-player tactic, so its joker is not offered in matches.
+function jokerOffered(def) { return !(MP.on && def.id === 'metronome'); }
 function addJoker(def) {
   S.jokers.push({ ...def, uid: ++cid, state: def.state || 0,
     sell: Math.max(1, Math.ceil((def.price || 4) / 2)) });
@@ -2489,6 +2708,7 @@ function renderShop() {
   renderWorkshop();
   selectShopTab(shopTab);
   renderJokers(); renderCons(); renderStats();
+  shopEnterFx();
 }
 function buyJoker(i) {
   if(!shopActionReady()||!S.shop.jokers[i])return false;
@@ -2774,7 +2994,7 @@ function useCons(i) {
     case 'judge': {
       if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满，无法使用审判', 1); return; }
       const owned = new Set(S.jokers.map(j => j.id));
-      const pool = JDEFS.filter(j => !owned.has(j.id));
+      const pool = JDEFS.filter(j => !owned.has(j.id) && jokerOffered(j));
       const j = randOf(pool);
       if(!j) return;
       addJoker({ ...j });
@@ -3167,7 +3387,7 @@ function openInfo() {
   if (!S) return;
   const metrics=[['金币','$'+fmt(S.money)],['最高单次',fmt(S.bestHand)],['总出牌',S.totHands],['手牌上限',S.handSize],
     ['牌组张数',S.deckAll.length],['已用星球',S.planetsUsed],['已加入牌',S.cardsAdded],['出牌 / 盲注',S.baseHands],
-    ['弃牌 / 盲注',S.baseDisc],['利息上限','$'+S.interestCap]];
+    ['弃牌 / 盲注',S.baseDisc],['利息上限','$'+S.interestCap],['本底注 Boss',S.anteBoss.name+' · '+bossWeakLabel(S.anteBoss)]];
   if(!MP.on)metrics.push(['工坊免费次数',S.workshopCredits],['出牌节奏',(RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0]).name]);
   let h='<div class="runIdentity"><b>'+(DECKS.find(d=>d.id===S.deckId)?.name||'经典牌组')+'</b><span>'+
     (STAKES.find(t=>t.id===S.stakeId)?.name||'白注')+'</span></div><div class="runMetrics">'+metrics.map(([label,value])=>
@@ -3220,7 +3440,7 @@ const TUT = [
   { sel: null, title: '🃏 欢迎来到像素小丑牌！', body:
     '这是一款<b class="gold">用扑克牌得分</b>的 Roguelike 游戏。<br>核心循环：<b class="blue">打出牌型得分 → 击败盲注 → 拿钱进商店买小丑牌变强 → 挑战更高的底注</b>。<br>撑过 8 个底注即通关！我们一步步来看。' },
   { sel: '#handRow', title: '1️⃣ 你的手牌', body:
-    '本局手牌上限为 <b class="gold">{handSize} 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；长按可看牌面效果。<br>下方「按点数 / 按花色」按钮可以整理手牌，找同花时很好用。' },
+    '本局手牌上限为 <b class="gold">{handSize} 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；<b class="gold">按住滑过多张牌</b>可一次选中，长按可看牌面效果。<br>参与计分的选中牌会发光。「✦ 推荐」按钮会选出本手保底得分最高的组合。下方「按点数 / 按花色」可整理手牌。' },
   { sel: '#previewBox', title: '2️⃣ 牌型与预览', body:
     '选中牌后，这里会实时显示组成的<b class="gold">牌型</b>和计入小丑及牌面效果的预计分数。随机倍率会显示范围。<br>牌型从弱到强：高牌 → 对子 → 两对 → 三条 → 顺子 → 同花 → 葫芦 → 四条 → 同花顺。<br>随时点菜单中的「牌型表」查看完整数值。' },
   { sel: '#previewBox', title: '3️⃣ 得分公式（重点！）', body:
@@ -3228,9 +3448,9 @@ const TUT = [
   { sel: '#btnRow', title: '4️⃣ 出牌与弃牌', body:
     '<b class="blue">出牌</b>：打出选中的牌并计分，本局每个普通盲注有 <b class="gold">{hands} 次</b>。<br><b class="red">弃牌</b>：把选中的牌扔掉换新牌，<b class="gold">{discards} 次</b>机会，不计分。<br>用弃牌凑牌型；小丑构筑也能让高牌成为主力。' },
   { sel: '#blindBox', title: '5️⃣ 盲注（关卡）', body:
-    '每个底注有 3 关：<b>🔸小盲注 → 🔶大盲注 → 💀Boss盲注</b>，目标分数越来越高。<br>Boss 有特殊规则（比如禁用某花色、只能出 1 手牌），选盲注时会提前展示。<br><b class="gold">小盲/大盲可以跳过</b>，换一个标签奖励（半价商店、免费小丑等）；Boss 必须挑战。<br>在出牌次数耗尽前把「当前得分」刷过「目标分数」就赢！' },
+    '每个底注有 3 关：<b>🔸小盲注 → 🔶大盲注 → 💀Boss盲注</b>，目标分数越来越高。<br>Boss 有特殊规则（比如禁用某花色、只能出 1 手牌），选盲注时会提前展示。每个 Boss 还有一个<b class="red">🎯 破绽牌型</b>：在 Boss 盲注打出该牌型，最终倍率 ×1.5。<br><b class="gold">小盲/大盲可以跳过</b>，换一个标签奖励（半价商店、免费小丑等）；Boss 必须挑战。<br>在出牌次数耗尽前把「当前得分」刷过「目标分数」就赢！' },
   { sel: '#statsBox', title: '6️⃣ 金钱与利息', body:
-    '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（通常上限 $5）。绿色牌组改为每次剩余出牌 $2、弃牌 $1，没有利息。' },
+    '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（通常上限 $5）。绿色牌组改为每次剩余出牌 $2、弃牌 $1，没有利息。<br><b class="gold">碾压奖励</b>：过关时得分达到目标 2 倍 +$1，3 倍 +$2，4 倍及以上 +$3。' },
   { sel: '#jokerRow', title: '7️⃣ 小丑牌（构筑核心！）', body:
     '商店里买的<b class="gold">小丑牌</b>会显示在这里（本局 {jokerSlots} 个槽位），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
@@ -3530,6 +3750,367 @@ function mpMatchEnd(won, reason) {
   mpQueue.finally(()=>{if(MP.net) MP.net.close();});
 }
 
+// ── feedback ──
+// Decorative feedback never changes the game state or consumes its random sequence.
+const feedbackAnimations=new WeakMap();
+function motionAllowed(scoring=false) {
+  return !document.hidden&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&(!scoring||settings.speed!==0);
+}
+function feedback(el,frames,duration=180,scoring=false) {
+  if(!el||!motionAllowed(scoring)||!el.animate) return;
+  feedbackAnimations.get(el)?.cancel();
+  const animation=el.animate(frames,{duration:scoring?duration/settings.speed:duration,easing:'cubic-bezier(.2,.75,.25,1)'});
+  feedbackAnimations.set(el,animation);
+  return animation;
+}
+function handPositions() {
+  return new Map([...$('handRow').children].map(el=>[Number(el.dataset.cardId),el.getBoundingClientRect()]));
+}
+function animatePlayed(origins) {
+  if(!motionAllowed(true)) return;
+  for(const el of $('playedRow').querySelectorAll('.card')) {
+    const from=origins.get(Number(el.dataset.cardId)),to=el.getBoundingClientRect();
+    if(!from) continue;
+    feedback(el,[{transform:`translate(${from.x-to.x}px,${from.y-to.y}px) scale(${from.width/to.width}) rotate(-5deg)`,opacity:.8},
+      {transform:'translate(0,0) scale(1) rotate(0)',opacity:1}],280,true);
+  }
+}
+function fxLayer() {
+  let layer=$('feedbackLayer');
+  if(!layer){layer=document.createElement('div');layer.id='feedbackLayer';layer.setAttribute('aria-hidden','true');document.body.append(layer);}
+  layer.style.zIndex=String(activeDialog()?Number(activeDialog().style.zIndex)+1:40);
+  return layer;
+}
+function transient(el,frames,duration=300,scoring=false) {
+  if(!motionAllowed(scoring)) return;
+  const layer=fxLayer();
+  if(layer.childElementCount>=90) layer.firstElementChild.remove();
+  layer.append(el);
+  const animation=feedback(el,frames,duration,scoring);
+  if(!animation){el.remove();return;}
+  animation.onfinish=animation.oncancel=()=>el.remove();
+}
+function animateDiscard(cards) {
+  if(!motionAllowed(true)) return;
+  for(const [i,c] of cards.entries()) {
+    const original=[...$('handRow').children].find(el=>Number(el.dataset.cardId)===c.id);
+    if(!original) continue;
+    const box=original.getBoundingClientRect(),ghost=original.cloneNode(true);
+    ghost.removeAttribute('id'); ghost.classList.remove('sel','dealt'); ghost.classList.add('discardGhost'); ghost.tabIndex=-1;
+    Object.assign(ghost.style,{left:box.x+'px',top:box.y+'px',width:box.width+'px',height:box.height+'px'});
+    transient(ghost,[{transform:'translate(0,0)',opacity:1},{transform:`translate(${-28-i*9}px,-65px) rotate(-15deg) scale(.85)`,opacity:0}],210,true);
+  }
+}
+function scoreFeedback(wrap) {
+  if(!wrap||!motionAllowed(true)) return;
+  feedback(wrap.querySelector('.card'),[{transform:'translateY(0)'},{transform:'translateY(-9px) rotate(-3deg)',offset:.35},{transform:'translateY(0)'}],220,true);
+  const source=wrap.getBoundingClientRect(),target=$('prevChips').getBoundingClientRect();
+  for(let i=0;i<3;i++) {
+    const chip=document.createElement('i');chip.className='flyingChip';
+    Object.assign(chip.style,{left:(source.x+source.width/2)+'px',top:(source.y+source.height/2)+'px'});
+    const dx=target.x+target.width/2-source.x-source.width/2,dy=target.y+target.height/2-source.y-source.height/2;
+    transient(chip,[{transform:'translate(-50%,-50%) scale(.6)',opacity:0},
+      {transform:`translate(${dx*.35+i*7}px,${dy*.25-25}px) scale(1)`,opacity:1,offset:.35},
+      {transform:`translate(${dx}px,${dy}px) scale(.4)`,opacity:0}],300+i*25,true);
+  }
+}
+function acquireFeedback(from,item,target) {
+  if(!from||!target||!motionAllowed()) return;
+  const to=target.getBoundingClientRect(),card=document.createElement('div');
+  card.className='acquiredCard';card.textContent=item.ic;
+  Object.assign(card.style,{left:(from.x+from.width/2-22)+'px',top:(from.y+from.height/2-28)+'px'});
+  transient(card,[{transform:'translate(0,0) rotate(-7deg) scale(1.2)',opacity:1},
+    {transform:`translate(${to.x+to.width/2-from.x-from.width/2}px,${to.y+to.height/2-from.y-from.height/2}px) rotate(0) scale(.65)`,opacity:0}],320);
+  feedback(target,[{boxShadow:'0 0 0 2px #f3ce72'},{boxShadow:'0 0 0 7px #f3ce7200'}],450);
+}
+function moneyFeedback() {
+  feedback($('shopMoney'),[{transform:'scale(1.14)',color:'#fff0b3'},{transform:'scale(1)',color:'#b8ddaf'}],220);
+}
+function totalFeedback() {
+  if(!motionAllowed(true)) return;
+  feedback($('totalPop'),[{transform:'translateX(-50%) scale(.65)',opacity:0},{transform:'translateX(-50%) scale(1.06)',opacity:1,offset:.6},
+    {transform:'translateX(-50%) scale(1)',opacity:1}],320,true);
+  feedback($('scoreVal'),[{transform:'scale(1.18)',color:'#fff1b8'},{transform:'scale(1)',color:'#f2c769'}],340,true);
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)$('feedbackLayer')?.replaceChildren();});
+
+// ── motion ──
+// Decorative motion: particles, stamps, rolling numbers and pointer play. It never changes game state,
+// and uses its own random sequence so the game's draws stay untouched. Module state uses `var`
+// because earlier modules may render before this section runs.
+var fxSeed = 0x5eed1234, numberRolls = new Map(), moneyShown = { run: null, value: 0 };
+var swipe = null, swipeClickBlock = 0, lastShopStock = '';
+function fxRand() {
+  fxSeed = (fxSeed + 0x6D2B79F5) | 0;
+  let t = fxSeed; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+const FX_TONES = {
+  chips: ['#8fd3ff', '#4ea3d8', '#e6f6ff'], mult: ['#ff8a7a', '#d8473b', '#ffd2c4'],
+  money: ['#ffe28a', '#f0b93f', '#fff6cf'], gold: ['#ffe8a3', '#f2c769', '#fff'], weak: ['#ff6b5b', '#ffd36b', '#fff1d0'],
+};
+function centerOf(el) {
+  const r = el.getBoundingClientRect();
+  return { x: r.x + r.width / 2, y: r.y + r.height / 2, r };
+}
+// ── Rolling numbers ──
+function parseShown(text) { return Number(String(text).replace(/[^\d.-]/g, '')) || 0; }
+function rollNumber(el, to, { from, duration = 480, format = fmt, scoring = true } = {}) {
+  if (!el) return;
+  const running = numberRolls.get(el);
+  if (running) cancelAnimationFrame(running.raf);
+  const start = from ?? running?.value ?? parseShown(el.textContent);
+  if (!motionAllowed(scoring) || start === to || !window.requestAnimationFrame) {
+    numberRolls.delete(el); el.textContent = format(to); return;
+  }
+  const roll = { value: start, to, format, raf: 0 }, began = performance.now();
+  const length = scoring ? duration / (settings.speed || 1) : duration;
+  const step = now => {
+    const k = Math.min(1, (now - began) / length), eased = 1 - Math.pow(1 - k, 3);
+    roll.value = start + (roll.to - start) * eased;
+    el.textContent = roll.format(roll.value);
+    if (k < 1) roll.raf = requestAnimationFrame(step);
+    else { numberRolls.delete(el); el.textContent = roll.format(roll.to); }
+  };
+  numberRolls.set(el, roll); roll.raf = requestAnimationFrame(step);
+}
+// Renders the final value, or retargets a roll that is still running.
+function setNumber(el, value, format = fmt) {
+  const roll = numberRolls.get(el);
+  if (roll) { roll.to = value; roll.format = format; } else el.textContent = format(value);
+}
+// ── Particles and stamps ──
+function sparkBurst(x, y, { count = 10, tone = 'gold', spread = 70, size = 6, duration = 560, scoring = true, rise = 0 } = {}) {
+  if (!motionAllowed(scoring)) return;
+  const colors = FX_TONES[tone] || FX_TONES.gold;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('i'), angle = fxRand() * Math.PI * 2, dist = spread * (.45 + fxRand() * .7);
+    const s = size * (.6 + fxRand() * .8);
+    p.className = 'spark';
+    Object.assign(p.style, { left: x + 'px', top: y + 'px', width: s + 'px', height: s + 'px', background: colors[i % colors.length] });
+    const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist - rise;
+    transient(p, [{ transform: 'translate(-50%,-50%) scale(1) rotate(0)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${dx * .8}px),calc(-50% + ${dy * .8}px)) scale(.9) rotate(${fxRand() * 180}deg)`, opacity: 1, offset: .6 },
+      { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy + 18}px)) scale(.2) rotate(${fxRand() * 360}deg)`, opacity: 0 }],
+      duration * (.75 + fxRand() * .5), scoring);
+  }
+}
+function stamp(text, tone = 'gold', { scoring = false, duration = 1000, y = 42 } = {}) {
+  if (!motionAllowed(scoring)) return;
+  const el = document.createElement('div');
+  el.className = 'stamp ' + tone; el.textContent = text; el.style.top = y + '%';
+  transient(el, [{ transform: 'translate(-50%,-50%) scale(2.4) rotate(-16deg)', opacity: 0 },
+    { transform: 'translate(-50%,-50%) scale(.94) rotate(-7deg)', opacity: 1, offset: .2 },
+    { transform: 'translate(-50%,-50%) scale(1) rotate(-7deg)', opacity: 1, offset: .78 },
+    { transform: 'translate(-50%,-62%) scale(1.03) rotate(-7deg)', opacity: 0 }], duration, scoring);
+}
+function shakeTable(power = 6, scoring = true) {
+  const frames = [0, 1, 2, 3, 4, 5].map(i => {
+    const f = power * (1 - i / 6);
+    return { transform: `translate(${(fxRand() - .5) * 2 * f}px,${(fxRand() - .5) * 2 * f}px) rotate(${(fxRand() - .5) * f * .12}deg)` };
+  });
+  feedback($('game'), [...frames, { transform: 'none' }], 380, scoring);
+}
+function floatText(x, y, text, tone = 'gold', scoring = false) {
+  if (!motionAllowed(scoring)) return;
+  const el = document.createElement('b');
+  el.className = 'floatText ' + tone; el.textContent = text;
+  Object.assign(el.style, { left: x + 'px', top: y + 'px' });
+  transient(el, [{ transform: 'translate(-50%,-30%) scale(.7)', opacity: 0 },
+    { transform: 'translate(-50%,-90%) scale(1.08)', opacity: 1, offset: .25 },
+    { transform: 'translate(-50%,-190%) scale(1)', opacity: 0 }], 900, scoring);
+}
+function coinShower(fromEl, toEl, count = 8) {
+  if (!fromEl || !toEl || !motionAllowed()) return;
+  const a = centerOf(fromEl), b = centerOf(toEl);
+  for (let i = 0; i < count; i++) {
+    const coin = document.createElement('i'); coin.className = 'flyingCoin';
+    Object.assign(coin.style, { left: a.x + 'px', top: a.y + 'px' });
+    const dx = b.x - a.x, dy = b.y - a.y, lift = 40 + fxRand() * 60, side = (fxRand() - .5) * 120;
+    transient(coin, [{ transform: 'translate(-50%,-50%) scale(.4)', opacity: 0 },
+      { transform: `translate(calc(-50% + ${dx * .3 + side}px),calc(-50% + ${dy * .2 - lift}px)) scale(1.1) rotateY(180deg)`, opacity: 1, offset: .4 },
+      { transform: `translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) scale(.5) rotateY(540deg)`, opacity: .2 }], 620 + i * 55);
+  }
+}
+// ── Scoring hooks ──
+function eventTone(text) { return /\$/.test(text) ? 'money' : /倍率|×/.test(text) ? 'mult' : 'chips'; }
+function calcPunch(el, strong) {
+  if (!el) return;
+  feedback(el, strong ? [{ transform: 'scale(1)', filter: 'brightness(1)' }, { transform: 'scale(1.32) rotate(-4deg)', filter: 'brightness(1.6)', offset: .3 },
+    { transform: 'scale(.94) rotate(2deg)', offset: .65 }, { transform: 'scale(1)', filter: 'brightness(1)' }]
+    : [{ transform: 'scale(1)' }, { transform: 'scale(1.16)', offset: .35 }, { transform: 'scale(1)' }], strong ? 320 : 170, true);
+  if (strong && motionAllowed(true)) { const c = centerOf(el); sparkBurst(c.x, c.y, { count: 8, tone: 'mult', spread: 46, size: 5 }); }
+}
+function jokerFx(el, text) {
+  if (!el || !motionAllowed(true)) return;
+  const c = centerOf(el);
+  sparkBurst(c.x, c.y, { count: text.includes('×') ? 12 : 6, tone: eventTone(text), spread: text.includes('×') ? 62 : 40, size: 5 });
+}
+function scoreEventFx(event) {
+  if (!motionAllowed(true)) return;
+  if (event.kind === 'held') {
+    const el = handCardEl(event.id);
+    if (el) {
+      feedback(el, [{ transform: 'translateY(0)' }, { transform: 'translateY(-12px) scale(1.08) rotate(3deg)', offset: .4 }, { transform: 'translateY(0)' }], 260, true);
+      const c = centerOf(el); sparkBurst(c.x, c.y, { count: 8, tone: 'mult', spread: 42, size: 5 }); floatText(c.x, c.r.y, event.text, 'mult', true);
+    }
+  } else if (event.kind === 'rhythm') {
+    const c = centerOf($('previewBox'));
+    floatText(c.x, c.r.y, event.text.split(' · ')[0] + '！', 'chips', true);
+    sparkBurst(c.x, c.r.y + 6, { count: 10, tone: 'chips', spread: 60, size: 5 });
+  } else if (event.kind === 'weak') {
+    stamp('破绽！', 'weak', { scoring: true, duration: 760, y: 36 });
+    shakeTable(7);
+    const c = centerOf($('prevMult')); sparkBurst(c.x, c.y, { count: 16, tone: 'weak', spread: 80, size: 6 });
+  }
+}
+function totalFx(total, before, target) {
+  const tp = $('totalPop');
+  if (!motionAllowed(true)) return;
+  const prefix = total >= 3000 ? '🔥 ' : '⭐ ';
+  rollNumber(tp, total, { from: 0, duration: 420, format: v => prefix + fmt(v) + ' 分！' });
+  rollNumber($('scoreVal'), before + total, { from: before, duration: 560 });
+  const c = centerOf(tp), share = target ? total / target : 0;
+  sparkBurst(c.x, c.y, { count: share >= 1 ? 26 : share >= .5 ? 16 : 9, tone: 'gold', spread: share >= 1 ? 140 : 90, size: 7, duration: 700 });
+  if (before + total >= target && !(MP.on && S.blindIdx === 2)) {
+    $('previewBox').classList.add('onFire');
+    shakeTable(share >= 1 ? 9 : 5);
+  }
+}
+function celebrateBlind(overkill) {
+  if (!motionAllowed()) return;
+  // Wait for the result dialog to take its layer, so the stamp paints above it.
+  setTimeout(() => celebrateNow(overkill), 30);
+}
+function celebrateNow(overkill) {
+  if (!S || S.screen !== 'cash') return;
+  const big = overkill && overkill.money > 0;
+  stamp(big ? '碾压 ×' + (Math.floor(overkill.ratio * 10) / 10) + '！' : '击破！', big ? 'weak' : 'gold', { duration: 1150, y: 30 });
+  const rows = $('cashRows').lastElementChild?.querySelector('b');
+  const total = S.payout[S.payout.length - 1]?.[1] || 0;
+  if (rows) setTimeout(() => rollNumber(rows, total, { from: 0, duration: 520, format: v => '$' + Math.round(v), scoring: false }), 90 * S.payout.length);
+  coinShower($('scoreVal'), $('moneyVal'), big ? 12 : 7);
+  const c = centerOf($('scoreVal'));
+  sparkBurst(c.x, c.y, { count: 18, tone: 'gold', spread: 110, size: 7, duration: 800, scoring: false });
+}
+function lossFx() {
+  if (!motionAllowed()) return;
+  for (const [i, el] of [...$('handRow').children].entries()) {
+    feedback(el, [{ transform: 'translateY(0) rotate(0)', opacity: 1 },
+      { transform: `translateY(-14px) rotate(${(fxRand() - .5) * 10}deg)`, opacity: 1, offset: .2 },
+      { transform: `translateY(${180 + fxRand() * 120}px) rotate(${(fxRand() - .5) * 70}deg)`, opacity: 0 }], 700 + i * 60);
+    setTimeout(() => { if (el.isConnected) el.style.opacity = '0'; }, 680 + i * 60);
+  }
+  $('game').classList.add('lost');
+}
+// ── Hand: dealing, hint hop, money and stock entrances ──
+function dealFx(row) {
+  const pile = $('deckPile');
+  const dealt = row.querySelectorAll('.card.dealt');
+  if (!dealt.length) return;
+  for (const el of dealt) el.addEventListener('animationend', e => { if (e.animationName === 'cardDeal') el.classList.remove('dealt'); });
+  if (!pile || !pile.getClientRects().length) return;
+  const from = centerOf(pile);
+  for (const el of dealt) {
+    const to = centerOf(el);
+    el.style.setProperty('--dx', (from.x - to.x).toFixed(1) + 'px');
+    el.style.setProperty('--dy', (from.y - to.y).toFixed(1) + 'px');
+  }
+  feedback(pile, [{ transform: 'translateY(0)' }, { transform: 'translateY(-4px) rotate(-3deg)', offset: .3 }, { transform: 'translateY(0)' }], 260);
+}
+function hintFx(ids) {
+  if (!motionAllowed()) return;
+  ids.forEach((id, i) => {
+    const el = handCardEl(id);
+    if (!el) return;
+    feedback(el, [{ transform: 'translateY(0)' }, { transform: 'translateY(-16px) scale(1.06)', offset: .45 }, { transform: 'translateY(0)' }], 300 + i * 40);
+    const c = centerOf(el); setTimeout(() => sparkBurst(c.x, c.r.y, { count: 5, tone: 'gold', spread: 30, size: 4, scoring: false }), i * 40);
+  });
+}
+function trackMoney() {
+  const before = moneyShown.run === S ? moneyShown.value : null;
+  moneyShown = { run: S, value: S.money };
+  if (before === null || before === S.money || activeDialog()) return;
+  const c = centerOf($('moneyVal')), diff = S.money - before;
+  floatText(c.x, c.y, (diff > 0 ? '+$' : '-$') + Math.abs(diff), diff > 0 ? 'money' : 'mult');
+  feedback($('moneyVal'), [{ transform: 'scale(1)' }, { transform: 'scale(1.3)', offset: .3 }, { transform: 'scale(1)' }], 260);
+}
+function shopEnterFx() {
+  const stock = S.shop ? [...S.shop.jokers, ...S.shop.cons].map(i => i.id || i.key).join() + '|' + S.shop.packs.map(p => p.id).join() : '';
+  if (stock === lastShopStock) return;
+  lastShopStock = stock;
+  if (!motionAllowed()) return;
+  for (const panel of ['shopItems', 'shopPacks', 'shopVouch'])
+    [...$(panel).children].forEach((el, i) => feedback(el, [
+      { transform: 'perspective(700px) rotateY(80deg) translateY(16px) scale(.9)', opacity: 0 },
+      { transform: 'perspective(700px) rotateY(-8deg) translateY(-3px) scale(1.02)', opacity: 1, offset: .65 },
+      { transform: 'none', opacity: 1 }], 380 + (i % 2) * 90));
+}
+// ── Pointer play: swipe across cards to select, tilt and glare on fine pointers ──
+(function installHandPointer() {
+  const row = $('handRow');
+  const cardOf = el => S?.hand.find(c => c.id === Number(el.dataset.cardId));
+  const apply = el => { const c = cardOf(el); if (c) toggleHandCard(c, el, swipe.want); };
+  row.addEventListener('pointerdown', e => {
+    const el = e.target.closest('.card');
+    if (!el || !S || S.busy || S.screen !== 'play' || e.button > 0) return;
+    swipe = { pointer: e.pointerId, start: el, want: null, seen: new Set([el]) };
+  });
+  addEventListener('pointermove', e => {
+    if (!swipe || e.pointerId !== swipe.pointer) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY)?.closest('#handRow .card');
+    if (!el || swipe.seen.has(el)) return;
+    if (swipe.want === null) { const first = cardOf(swipe.start); if (!first) return; swipe.want = !first.sel; hideTip(); apply(swipe.start); }
+    swipe.seen.add(el); apply(el);
+  });
+  const end = () => { if (swipe?.want !== null && swipe) swipeClickBlock = Date.now() + 400; swipe = null; };
+  addEventListener('pointerup', end); addEventListener('pointercancel', () => { swipe = null; });
+  row.addEventListener('click', e => { if (Date.now() < swipeClickBlock) { e.preventDefault(); e.stopImmediatePropagation(); } }, true);
+  // A sideways drag that starts on a card belongs to the swipe from its first move; the browser must
+  // not turn it into a scroll or fling, otherwise Chrome swallows the next tap to stop that fling.
+  // Mostly vertical drags still scroll the table.
+  let touchStart = null;
+  row.addEventListener('touchstart', e => {
+    const t = e.touches[0];
+    touchStart = e.touches.length === 1 && e.target.closest('.card') ? { x: t.clientX, y: t.clientY, mode: null } : null;
+  }, { passive: true });
+  row.addEventListener('touchmove', e => {
+    if (!touchStart || !e.cancelable) return;
+    const t = e.touches[0], dx = Math.abs(t.clientX - touchStart.x), dy = Math.abs(t.clientY - touchStart.y);
+    if (!touchStart.mode && dx + dy > 3) touchStart.mode = dx >= dy ? 'swipe' : 'scroll';
+    if (touchStart.mode === 'swipe') e.preventDefault();
+  }, { passive: false });
+  if (!matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+  let frame = 0;
+  row.addEventListener('pointermove', e => {
+    const el = e.target.closest('.card');
+    if (!el || e.pointerType !== 'mouse') return;
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      const r = el.getBoundingClientRect(), px = (e.clientX - r.x) / r.width, py = (e.clientY - r.y) / r.height;
+      el.style.setProperty('--ry', ((px - .5) * 16).toFixed(1) + 'deg'); el.style.setProperty('--rx', ((.5 - py) * 14).toFixed(1) + 'deg');
+      el.style.setProperty('--gx', (px * 100).toFixed(0) + '%'); el.style.setProperty('--gy', (py * 100).toFixed(0) + '%');
+    });
+  });
+  row.addEventListener('pointerout', e => {
+    const el = e.target.closest('.card');
+    if (el && !el.contains(e.relatedTarget)) for (const v of ['--rx', '--ry']) el.style.removeProperty(v);
+  });
+})();
+// ── Title ambience: drifting suit motes ──
+(function installTitleMotes() {
+  const host = $('ovStart');
+  if (!host || host.querySelector('.titleMotes')) return;
+  const layer = document.createElement('div'); layer.className = 'titleMotes'; layer.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 16; i++) {
+    const m = document.createElement('i');
+    m.textContent = SUITS[i % 4]; m.className = RED(i % 4) ? 'red' : '';
+    m.style.cssText = `--x:${(fxRand() * 100).toFixed(1)}%;--d:${(9 + fxRand() * 9).toFixed(1)}s;--delay:${(-fxRand() * 18).toFixed(1)}s;--s:${(14 + fxRand() * 18).toFixed(0)}px;--sway:${((fxRand() - .5) * 60).toFixed(0)}px`;
+    layer.append(m);
+  }
+  host.prepend(layer);
+})();
+
 // ── session ──
 // Compatible with 1.1.0 saves. A previous valid snapshot protects against a damaged latest write.
 const RUN_KEY='pixel-balatro.run.v1', BACKUP_KEY=RUN_KEY+'.backup';
@@ -3711,91 +4292,12 @@ addEventListener('keydown',e=>{
   if(activeDialog() || $('tutBox').style.display==='block' || e.target.closest('input,textarea,select')) return;
   if(e.key==='Enter'&&!e.target.closest('button,[role=button]')) { e.preventDefault(); doPlay(); }
   if(e.key.toLowerCase()==='x') { e.preventDefault(); doDiscard(); persistRun(); }
+  const slot='1234567890'.indexOf(e.key);
+  if(slot>=0&&S.hand[slot]) { e.preventDefault(); toggleHandCard(S.hand[slot],handCardEl(S.hand[slot].id)); }
+  if(e.key.toLowerCase()==='h') { e.preventDefault(); applyHint(); }
+  if(e.key.toLowerCase()==='s') { e.preventDefault(); setSort(S.sortMode==='rank'?'suit':'rank'); }
+  if(e.key==='Escape'&&S.hand.some(c=>c.sel)) { e.preventDefault(); S.hand.forEach(c=>c.sel=false); renderHand(); }
 });
-
-// ── feedback ──
-// Decorative feedback never changes the game state or consumes its random sequence.
-const feedbackAnimations=new WeakMap();
-function motionAllowed(scoring=false) {
-  return !document.hidden&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&(!scoring||settings.speed!==0);
-}
-function feedback(el,frames,duration=180,scoring=false) {
-  if(!el||!motionAllowed(scoring)||!el.animate) return;
-  feedbackAnimations.get(el)?.cancel();
-  const animation=el.animate(frames,{duration:scoring?duration/settings.speed:duration,easing:'cubic-bezier(.2,.75,.25,1)'});
-  feedbackAnimations.set(el,animation);
-  return animation;
-}
-function handPositions() {
-  return new Map([...$('handRow').children].map(el=>[Number(el.dataset.cardId),el.getBoundingClientRect()]));
-}
-function animatePlayed(origins) {
-  if(!motionAllowed(true)) return;
-  for(const el of $('playedRow').querySelectorAll('.card')) {
-    const from=origins.get(Number(el.dataset.cardId)),to=el.getBoundingClientRect();
-    if(!from) continue;
-    feedback(el,[{transform:`translate(${from.x-to.x}px,${from.y-to.y}px) scale(${from.width/to.width}) rotate(-5deg)`,opacity:.8},
-      {transform:'translate(0,0) scale(1) rotate(0)',opacity:1}],280,true);
-  }
-}
-function fxLayer() {
-  let layer=$('feedbackLayer');
-  if(!layer){layer=document.createElement('div');layer.id='feedbackLayer';layer.setAttribute('aria-hidden','true');document.body.append(layer);}
-  layer.style.zIndex=String(activeDialog()?Number(activeDialog().style.zIndex)+1:40);
-  return layer;
-}
-function transient(el,frames,duration=300,scoring=false) {
-  if(!motionAllowed(scoring)) return;
-  const layer=fxLayer();
-  if(layer.childElementCount>=24) layer.firstElementChild.remove();
-  layer.append(el);
-  const animation=feedback(el,frames,duration,scoring);
-  if(!animation){el.remove();return;}
-  animation.onfinish=animation.oncancel=()=>el.remove();
-}
-function animateDiscard(cards) {
-  if(!motionAllowed(true)) return;
-  for(const [i,c] of cards.entries()) {
-    const original=[...$('handRow').children].find(el=>Number(el.dataset.cardId)===c.id);
-    if(!original) continue;
-    const box=original.getBoundingClientRect(),ghost=original.cloneNode(true);
-    ghost.removeAttribute('id'); ghost.classList.remove('sel','dealt'); ghost.classList.add('discardGhost'); ghost.tabIndex=-1;
-    Object.assign(ghost.style,{left:box.x+'px',top:box.y+'px',width:box.width+'px',height:box.height+'px'});
-    transient(ghost,[{transform:'translate(0,0)',opacity:1},{transform:`translate(${-28-i*9}px,-65px) rotate(-15deg) scale(.85)`,opacity:0}],210,true);
-  }
-}
-function scoreFeedback(wrap) {
-  if(!wrap||!motionAllowed(true)) return;
-  feedback(wrap.querySelector('.card'),[{transform:'translateY(0)'},{transform:'translateY(-9px) rotate(-3deg)',offset:.35},{transform:'translateY(0)'}],220,true);
-  const source=wrap.getBoundingClientRect(),target=$('prevChips').getBoundingClientRect();
-  for(let i=0;i<3;i++) {
-    const chip=document.createElement('i');chip.className='flyingChip';
-    Object.assign(chip.style,{left:(source.x+source.width/2)+'px',top:(source.y+source.height/2)+'px'});
-    const dx=target.x+target.width/2-source.x-source.width/2,dy=target.y+target.height/2-source.y-source.height/2;
-    transient(chip,[{transform:'translate(-50%,-50%) scale(.6)',opacity:0},
-      {transform:`translate(${dx*.35+i*7}px,${dy*.25-25}px) scale(1)`,opacity:1,offset:.35},
-      {transform:`translate(${dx}px,${dy}px) scale(.4)`,opacity:0}],300+i*25,true);
-  }
-}
-function acquireFeedback(from,item,target) {
-  if(!from||!target||!motionAllowed()) return;
-  const to=target.getBoundingClientRect(),card=document.createElement('div');
-  card.className='acquiredCard';card.textContent=item.ic;
-  Object.assign(card.style,{left:(from.x+from.width/2-22)+'px',top:(from.y+from.height/2-28)+'px'});
-  transient(card,[{transform:'translate(0,0) rotate(-7deg) scale(1.2)',opacity:1},
-    {transform:`translate(${to.x+to.width/2-from.x-from.width/2}px,${to.y+to.height/2-from.y-from.height/2}px) rotate(0) scale(.65)`,opacity:0}],320);
-  feedback(target,[{boxShadow:'0 0 0 2px #f3ce72'},{boxShadow:'0 0 0 7px #f3ce7200'}],450);
-}
-function moneyFeedback() {
-  feedback($('shopMoney'),[{transform:'scale(1.14)',color:'#fff0b3'},{transform:'scale(1)',color:'#b8ddaf'}],220);
-}
-function totalFeedback() {
-  if(!motionAllowed(true)) return;
-  feedback($('totalPop'),[{transform:'translateX(-50%) scale(.65)',opacity:0},{transform:'translateX(-50%) scale(1.06)',opacity:1,offset:.6},
-    {transform:'translateX(-50%) scale(1)',opacity:1}],320,true);
-  feedback($('scoreVal'),[{transform:'scale(1.18)',color:'#fff1b8'},{transform:'scale(1)',color:'#f2c769'}],340,true);
-}
-document.addEventListener('visibilitychange',()=>{if(document.hidden)$('feedbackLayer')?.replaceChildren();});
 
 // ── controls ──
 const SETTINGS_KEY='pixel-balatro.settings.v1';
@@ -3861,7 +4363,7 @@ function syncDialogs() {
       if(!previousDialog) returnFocus=document.activeElement;
       (focusables(top)[0]||top).focus({preventScroll:true});
       if(Number(top.dataset.order)>animatedDialogOrder) {
-        feedback(top.querySelector('.box'),[{transform:'scale(.97)'},{transform:'scale(1)'}],150);
+        feedback(top.querySelector('.box'),[{transform:'translateY(10px) scale(.96)',opacity:.5},{transform:'none',opacity:1}],170);
         animatedDialogOrder=Number(top.dataset.order);
       }
     } else if(returnFocus?.isConnected) returnFocus.focus({preventScroll:true});
@@ -4049,7 +4551,8 @@ function renderCollection(){
   const pool=collectionTab==='jokers'?JDEFS:collectionTab==='tarots'?TAROTS:collectionTab==='bosses'?BOSSES:PLANETS;
   const query=search.value.trim().toLowerCase();
   for(const item of pool){
-    const desc=collectionTab==='planets'?HANDS[item.key].name+'：每级 +'+HANDS[item.key].incC+' 筹码 / +'+HANDS[item.key].incM+' 倍率':item.desc;
+    const desc=collectionTab==='planets'?HANDS[item.key].name+'：每级 +'+HANDS[item.key].incC+' 筹码 / +'+HANDS[item.key].incM+' 倍率':
+      collectionTab==='bosses'?item.desc+'。'+bossWeakLabel(item):item.desc;
     if(query&&!(item.name+' '+desc).toLowerCase().includes(query))continue;
     const row=document.createElement('article');row.className='catalogEntry';
     const name=document.createElement('h3');name.textContent=(item.ic?item.ic+' ':'')+item.name;

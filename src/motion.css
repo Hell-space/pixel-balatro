@@ -1,0 +1,119 @@
+/* 1.7.0 motion: springy cards, a dealing shoe, score fireworks and calmer ambient life. */
+:root {--spring:cubic-bezier(.34,1.56,.64,1);--card-back:repeating-linear-gradient(45deg,transparent 0 3px,#f0c78055 3px 4px),repeating-linear-gradient(-45deg,#913e3e 0 3px,#b8674d 3px 4px)}
+
+/* Table ambience and the deck shoe */
+.tableGlow {position:absolute;inset:8%;z-index:-2;pointer-events:none;border-radius:50%;
+  background:radial-gradient(closest-side,#8fe0b21c,transparent 72%);animation:glowDrift 16s ease-in-out infinite alternate}
+@keyframes glowDrift {from{transform:translate(-6%,-4%) scale(.94)}to{transform:translate(6%,5%) scale(1.04)}}
+#deckPile {position:absolute;left:4px;bottom:3px;width:42px;height:56px;padding:0;border:0;background:none;z-index:1;transition:opacity .2s}
+#deckPile .pileStack,#deckPile .pileStack i {position:absolute;inset:0}
+#deckPile .pileStack i {border-radius:5px;border:2px solid #e2d1a5;background:var(--card-back);box-shadow:0 2px 0 #0a2824;transition:transform .2s var(--spring)}
+#deckPile .pileStack i:nth-child(1) {transform:translate(-4px,3px) rotate(-6deg)}
+#deckPile .pileStack i:nth-child(2) {transform:translate(-2px,1px) rotate(-2deg)}
+#deckPile b {position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);min-width:24px;padding:0 5px;border:1px solid #a99b68;border-radius:9px;background:#102c27;color:var(--brass);font:700 11px/16px var(--mono)}
+#deckPile.empty .pileStack {opacity:.25}
+.isScoring #deckPile {opacity:.45;pointer-events:none}
+@media(hover:hover) and (pointer:fine) {#deckPile:hover .pileStack i:nth-child(3) {transform:translateY(-4px) rotate(2deg)}}
+
+/* Hand: fanned on wide tables, gently breathing, spring selection */
+#handRow {--fan:0deg;--arc-step:0px;touch-action:pan-y}
+@media(min-width:761px) and (min-height:541px),(min-width:1001px) {#handRow {--fan:1.7deg;--arc-step:1.2px}}
+#handRow .card {--arc:calc(var(--k2,0) * var(--arc-step));rotate:calc(var(--k,0) * var(--fan));translate:0 var(--arc);
+  transition:transform .28s var(--spring),rotate .25s var(--ease),border-color .12s,box-shadow .2s,filter .2s}
+#handRow .card.sel {rotate:0deg}
+/* A short ripple runs across the hand every few seconds; cards rest (and stay easy to tap) in between. */
+#handRow .card:not(.dealt):not(.sel) {animation:cardIdle 6s ease-in-out infinite;animation-delay:calc(1.2s + var(--i,0) * .11s)}
+@keyframes cardIdle {0%,13%,100%{translate:0 var(--arc)}6%{translate:0 calc(var(--arc) - 5px)}}
+#handRow .card.sel.scoring {box-shadow:0 0 0 2px #ffe19a,0 0 16px 3px #ffcf5a80,1px 4px 0 #16322a}
+#handRow .card.sel.kicker {filter:saturate(.5) brightness(.88);border-color:#8f8a76}
+.isScoring #handRow .card {animation-play-state:paused}
+
+/* Dealing from the shoe: travel, turn edge-on, then show the face */
+#handRow .card.dealt {animation:cardDeal .5s cubic-bezier(.2,.85,.3,1) backwards;animation-delay:var(--deal-delay,0ms)}
+@keyframes cardDeal {
+  0%{transform:translate(var(--dx,18px),var(--dy,-30px)) rotate(-22deg) scale(.5);opacity:0}
+  14%{opacity:1}
+  52%{transform:translate(calc(var(--dx,18px) * .2),calc(var(--dy,-30px) * .2 - 16px)) rotate(-5deg) scale(.06,1)}
+  100%{transform:none;opacity:1}}
+#handRow .card.dealt::before {content:'';position:absolute;inset:-2px;z-index:4;border-radius:inherit;border:2px solid #e2d1a5;
+  background:var(--card-back);opacity:0;pointer-events:none;animation:dealBack .5s linear backwards;animation-delay:var(--deal-delay,0ms)}
+@keyframes dealBack {0%,51%{opacity:1}52%,100%{opacity:0}}
+
+/* Fine pointers: tilt toward the cursor with a moving glare */
+@media(hover:hover) and (pointer:fine) {
+  #handRow .card:not(:disabled):hover {z-index:3;transform:perspective(520px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-7px) scale(1.05)}
+  #handRow .card.sel:not(:disabled):hover {transform:perspective(520px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(-13px) scale(1.05)}
+  #handRow .card::after {content:'';position:absolute;inset:0;z-index:3;border-radius:inherit;pointer-events:none;opacity:0;
+    background:radial-gradient(circle at var(--gx,50%) var(--gy,0%),#ffffff70,transparent 58%);transition:opacity .2s}
+  #handRow .card:not(:disabled):hover::after {opacity:1}
+  .joker:not(:disabled):hover {transform:translateY(-5px) rotate(-3deg) scale(1.05)}
+  .bigbtn:not(:disabled):hover,.pxbtn:not(:disabled):hover {filter:brightness(1.08)}
+}
+
+/* Jokers sway a little and spring when they trigger */
+#jokerRow .joker {animation:jokerIdle 7s ease-in-out infinite;animation-delay:2s}
+#jokerRow .joker:nth-child(2n) {animation-delay:4.3s}#jokerRow .joker:nth-child(3n) {animation-delay:5.6s}
+@keyframes jokerIdle {0%,9%,100%{rotate:0deg}2%{rotate:-5deg}4.5%{rotate:4deg}7%{rotate:-2deg}}
+.joker.pulse {animation:jpulse .46s var(--spring)}
+@keyframes jpulse {0%{transform:none}30%{transform:translateY(-9px) scale(1.2) rotate(-8deg);box-shadow:0 0 0 3px #ffe08a,0 0 18px 4px #ffd56a99}
+  65%{transform:translateY(-2px) scale(1.04) rotate(4deg)}100%{transform:none}}
+
+/* Preview: hint, weak point, fire on a winning hand */
+.hintBtn {flex:none;min-height:30px;padding:2px 9px;border:1px solid #c7ad6b;border-radius:15px;background:#1d4236;color:var(--brass);font:700 12px var(--ui);transition:transform .15s var(--spring),background-color .15s}
+.hintBtn:not(:disabled):active {transform:scale(.92)}
+.hintBtn:disabled {opacity:.4;cursor:default}
+@media(hover:hover) and (pointer:fine) {.hintBtn:not(:disabled):hover {background:#2a5545;transform:translateY(-1px)}}
+#previewBox {transition:box-shadow .25s}
+#previewBox.weakHit {box-shadow:inset 0 0 0 1px #ff8d7a,0 0 14px #ff6b5b44}
+#previewBox.weakHit #prevName::after {content:' 🎯破绽';font-size:12px;color:#ffb3a6}
+#previewBox.onFire {animation:fireGlow .42s ease-in-out infinite alternate}
+@keyframes fireGlow {from{box-shadow:0 0 10px 2px #ff9a3c77,inset 0 0 10px #ff5a2a44}to{box-shadow:0 0 24px 7px #ffcc4d99,inset 0 0 20px #ff7a3a66}}
+.weakTag {color:#ffd0a8;font-weight:700}
+#btnPlay.ready {animation:readyGlow 1.8s ease-in-out infinite}
+@keyframes readyGlow {0%,100%{box-shadow:inset 0 1px #ffffff33,0 3px #143c50}50%{box-shadow:inset 0 1px #ffffff33,0 3px #143c50,0 0 14px 2px #7cc8ea88}}
+
+/* Score bar */
+#scorebar {position:relative;overflow:hidden}
+#scorebar::after {content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,#ffffffa0,transparent);transform:translateX(-100%);animation:barShine 2.6s ease-in-out infinite}
+@keyframes barShine {60%,100%{transform:translateX(100%)}}
+#scorebar.cleared {background:linear-gradient(90deg,#f2c769,#fff1b8,#f2c769);box-shadow:0 0 8px #ffd56a}
+
+/* Feedback layer pieces */
+.spark {border-radius:1px;image-rendering:pixelated}
+.stamp {left:50%;padding:6px 22px;white-space:nowrap;border:4px solid currentColor;border-radius:10px;
+  font:900 clamp(30px,8vw,60px)/1.05 var(--ui);letter-spacing:.06em;color:#ffe08a;background:#173a2fe8;
+  text-shadow:0 3px 0 #6b4a1c;box-shadow:0 0 0 3px #0c231d,0 12px 30px #000a}
+.stamp.weak {color:#ff8a72;text-shadow:0 3px 0 #5e1d16}
+.floatText {font:800 15px var(--mono);white-space:nowrap;text-shadow:0 2px 0 #0b241d,0 0 8px #000}
+.floatText.money {color:#ffe28a}.floatText.mult {color:#ff9d8c}.floatText.chips {color:#9fdcff}.floatText.gold {color:#ffe8a3}
+.flyingCoin {width:14px;height:14px;border-radius:50%;border:2px solid #7a5a1f;background:radial-gradient(circle at 35% 35%,#fff6c8,#f2c769 45%,#b8862d)}
+
+/* Results, blinds and packs enter in a quick cascade */
+#cashRows p {animation:rowIn .3s var(--ease) backwards}
+@keyframes rowIn {from{transform:translateX(-14px);opacity:0}}
+#cashRows .overkillRow,#cashRows .overkillRow b {color:#ffb4a0}
+#blindCols .bcol {animation:colIn .22s var(--ease) backwards}
+#blindCols .bcol:nth-child(2) {animation-delay:.04s}#blindCols .bcol:nth-child(3) {animation-delay:.08s}
+@keyframes colIn {from{transform:translateY(14px);opacity:0}}
+#blindCols .bcol.cur .bbtn:not(.skip) {animation:readyGlow 1.8s ease-in-out infinite}
+#packCards>* {animation:packIn .3s var(--spring) backwards}
+#packCards>:nth-child(2) {animation-delay:.06s}#packCards>:nth-child(3) {animation-delay:.12s}
+@keyframes packIn {from{transform:translateY(24px) rotate(-6deg) scale(.85);opacity:0}}
+
+/* Title: drifting suits behind the menu */
+.titleMotes {position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.titleMotes i {position:absolute;left:var(--x);bottom:-40px;font-size:var(--s);font-style:normal;color:#e9dcb43a;
+  animation:moteRise var(--d) linear infinite;animation-delay:var(--delay)}
+.titleMotes i.red {color:#e0796b3a}
+@keyframes moteRise {0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:1}85%{opacity:.8}100%{transform:translate(var(--sway),-115vh) rotate(220deg);opacity:0}}
+#ovStart .titleScreen {position:relative;z-index:1}
+
+#game.lost #main {filter:grayscale(.75) brightness(.8);transition:filter .8s}
+
+@media(max-width:760px),(max-width:1000px) and (max-height:540px) {
+  #deckPile {width:36px;height:48px}
+  .hintBtn {min-height:28px;padding:1px 8px;font-size:11px}
+}
+@media(min-width:580px) and (max-width:1000px) and (max-height:540px) {
+  #deckPile {width:28px;height:38px;bottom:1px}#deckPile b {font-size:10px;line-height:14px}
+}

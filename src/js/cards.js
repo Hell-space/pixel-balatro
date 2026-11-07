@@ -71,6 +71,13 @@ const JDEFS = [
   { id:'boots', ic:'🥾', name:'长靴', price:6, rar:1, desc:'每持有 $5，+2 倍率' },
   { id:'fortune', ic:'🔮', name:'占卜师', price:5, rar:0, desc:'本局每成功使用 1 张塔罗牌，+1 倍率' },
   { id:'compass', ic:'🧭', name:'罗盘', price:6, rar:1, desc:'本局每打出过 1 种不同牌型，+25 筹码（含本手）' },
+  // —— 1.7.0 原创小丑 ——
+  { id:'weakspot', ic:'🎯', name:'破绽猎手', price:6, rar:1, desc:'打出本底注 Boss 的破绽牌型时 +10 倍率（小盲、大盲同样生效）' },
+  { id:'crusher', ic:'🔨', name:'碾压锤', price:5, rar:0, desc:'碾压奖励翻倍，上限提高到 $6' },
+  { id:'metronome', ic:'🥁', name:'节拍器', price:6, rar:1, desc:'出牌节奏的连招倍率翻倍（每连 +4，最多 +16）' },
+  { id:'finale', ic:'🎆', name:'压轴', price:5, rar:0, desc:'本盲注最后一次出牌时 +20 倍率' },
+  { id:'prism', ic:'🔷', name:'棱镜', price:7, rar:1, desc:'每张计分的百搭花色牌 ×1.5 倍率' },
+  { id:'twins', ic:'🎎', name:'同心结', price:5, rar:0, desc:'打出至少 3 张牌且全为红色或全为黑色时 +40 筹码、+6 倍率' },
 ];
 const RARNAME = ['普通', '罕见', '稀有'];
 
@@ -128,20 +135,20 @@ const TAGS = [
 ];
 
 const BOSSES = [
-  { id:'hearts', name:'🌹 血月',  desc:'所有 ♥ 不提供筹码、不触发效果' },
-  { id:'spades', name:'⚓ 暗礁',  desc:'所有 ♠ 不提供筹码、不触发效果' },
-  { id:'club',   name:'🍀 三叶草', desc:'所有 ♣ 不提供筹码、不触发效果' },
-  { id:'window', name:'▣ 窗户',  desc:'所有 ♦ 不提供筹码、不触发效果' },
-  { id:'wall',   name:'🧱 巨墙',  desc:'目标分数额外提高 60%' },
-  { id:'needle', name:'✦ 之针',  desc:'只能打出 1 手牌；目标降为小盲注分数' },
-  { id:'arm',    name:'💪 铁腕',  desc:'本盲注只有 1 次弃牌机会' },
-  { id:'hook',   name:'⚓ 钩爪',  desc:'每打出一手牌后随机弃掉 2 张手牌' },
-  { id:'water',  name:'💧 流水',  desc:'本盲注不能弃牌' },
-  { id:'psychic',name:'🧿 通灵者', desc:'必须每次打出恰好 5 张牌' },
-  { id:'manacle',name:'⛓️ 镣铐',  desc:'本盲注手牌上限 -1' },
-  { id:'flint',  name:'🔥 燧石',  desc:'牌型的基础筹码和倍率减半' },
-  { id:'mark', name:'🎭 面具', desc:'所有 J/Q/K 不提供筹码、不触发效果' },
-  { id:'eye', name:'👁️ 独眼', desc:'本盲注每种牌型只能打出一次' },
+  { id:'hearts', name:'🌹 血月',  desc:'所有 ♥ 不提供筹码、不触发效果', weak:'straight' },
+  { id:'spades', name:'⚓ 暗礁',  desc:'所有 ♠ 不提供筹码、不触发效果', weak:'flush' },
+  { id:'club',   name:'🍀 三叶草', desc:'所有 ♣ 不提供筹码、不触发效果', weak:'twopair' },
+  { id:'window', name:'▣ 窗户',  desc:'所有 ♦ 不提供筹码、不触发效果', weak:'trips' },
+  { id:'wall',   name:'🧱 巨墙',  desc:'目标分数额外提高 60%', weak:'fh' },
+  { id:'needle', name:'✦ 之针',  desc:'只能打出 1 手牌；目标降为小盲注分数', weak:'flush' },
+  { id:'arm',    name:'💪 铁腕',  desc:'本盲注只有 1 次弃牌机会', weak:'pair' },
+  { id:'hook',   name:'⚓ 钩爪',  desc:'每打出一手牌后随机弃掉 2 张手牌', weak:'trips' },
+  { id:'water',  name:'💧 流水',  desc:'本盲注不能弃牌', weak:'twopair' },
+  { id:'psychic',name:'🧿 通灵者', desc:'必须每次打出恰好 5 张牌', weak:'straight' },
+  { id:'manacle',name:'⛓️ 镣铐',  desc:'本盲注手牌上限 -1', weak:'pair' },
+  { id:'flint',  name:'🔥 燧石',  desc:'牌型的基础筹码和倍率减半', weak:'fh' },
+  { id:'mark', name:'🎭 面具', desc:'所有 J/Q/K 不提供筹码、不触发效果', weak:'straight' },
+  { id:'eye', name:'👁️ 独眼', desc:'本盲注每种牌型只能打出一次', weak:'flush' },
 ];
 const DECKS = [
   {id:'red',name:'红色牌组',color:'#bd514b',desc:'每个盲注 +1 次弃牌',disc:1},

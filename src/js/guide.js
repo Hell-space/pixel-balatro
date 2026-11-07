@@ -14,7 +14,7 @@ function openInfo() {
   if (!S) return;
   const metrics=[['金币','$'+fmt(S.money)],['最高单次',fmt(S.bestHand)],['总出牌',S.totHands],['手牌上限',S.handSize],
     ['牌组张数',S.deckAll.length],['已用星球',S.planetsUsed],['已加入牌',S.cardsAdded],['出牌 / 盲注',S.baseHands],
-    ['弃牌 / 盲注',S.baseDisc],['利息上限','$'+S.interestCap]];
+    ['弃牌 / 盲注',S.baseDisc],['利息上限','$'+S.interestCap],['本底注 Boss',S.anteBoss.name+' · '+bossWeakLabel(S.anteBoss)]];
   if(!MP.on)metrics.push(['工坊免费次数',S.workshopCredits],['出牌节奏',(RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0]).name]);
   let h='<div class="runIdentity"><b>'+(DECKS.find(d=>d.id===S.deckId)?.name||'经典牌组')+'</b><span>'+
     (STAKES.find(t=>t.id===S.stakeId)?.name||'白注')+'</span></div><div class="runMetrics">'+metrics.map(([label,value])=>
@@ -67,7 +67,7 @@ const TUT = [
   { sel: null, title: '🃏 欢迎来到像素小丑牌！', body:
     '这是一款<b class="gold">用扑克牌得分</b>的 Roguelike 游戏。<br>核心循环：<b class="blue">打出牌型得分 → 击败盲注 → 拿钱进商店买小丑牌变强 → 挑战更高的底注</b>。<br>撑过 8 个底注即通关！我们一步步来看。' },
   { sel: '#handRow', title: '1️⃣ 你的手牌', body:
-    '本局手牌上限为 <b class="gold">{handSize} 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；长按可看牌面效果。<br>下方「按点数 / 按花色」按钮可以整理手牌，找同花时很好用。' },
+    '本局手牌上限为 <b class="gold">{handSize} 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；<b class="gold">按住滑过多张牌</b>可一次选中，长按可看牌面效果。<br>参与计分的选中牌会发光。「✦ 推荐」按钮会选出本手保底得分最高的组合。下方「按点数 / 按花色」可整理手牌。' },
   { sel: '#previewBox', title: '2️⃣ 牌型与预览', body:
     '选中牌后，这里会实时显示组成的<b class="gold">牌型</b>和计入小丑及牌面效果的预计分数。随机倍率会显示范围。<br>牌型从弱到强：高牌 → 对子 → 两对 → 三条 → 顺子 → 同花 → 葫芦 → 四条 → 同花顺。<br>随时点菜单中的「牌型表」查看完整数值。' },
   { sel: '#previewBox', title: '3️⃣ 得分公式（重点！）', body:
@@ -75,9 +75,9 @@ const TUT = [
   { sel: '#btnRow', title: '4️⃣ 出牌与弃牌', body:
     '<b class="blue">出牌</b>：打出选中的牌并计分，本局每个普通盲注有 <b class="gold">{hands} 次</b>。<br><b class="red">弃牌</b>：把选中的牌扔掉换新牌，<b class="gold">{discards} 次</b>机会，不计分。<br>用弃牌凑牌型；小丑构筑也能让高牌成为主力。' },
   { sel: '#blindBox', title: '5️⃣ 盲注（关卡）', body:
-    '每个底注有 3 关：<b>🔸小盲注 → 🔶大盲注 → 💀Boss盲注</b>，目标分数越来越高。<br>Boss 有特殊规则（比如禁用某花色、只能出 1 手牌），选盲注时会提前展示。<br><b class="gold">小盲/大盲可以跳过</b>，换一个标签奖励（半价商店、免费小丑等）；Boss 必须挑战。<br>在出牌次数耗尽前把「当前得分」刷过「目标分数」就赢！' },
+    '每个底注有 3 关：<b>🔸小盲注 → 🔶大盲注 → 💀Boss盲注</b>，目标分数越来越高。<br>Boss 有特殊规则（比如禁用某花色、只能出 1 手牌），选盲注时会提前展示。每个 Boss 还有一个<b class="red">🎯 破绽牌型</b>：在 Boss 盲注打出该牌型，最终倍率 ×1.5。<br><b class="gold">小盲/大盲可以跳过</b>，换一个标签奖励（半价商店、免费小丑等）；Boss 必须挑战。<br>在出牌次数耗尽前把「当前得分」刷过「目标分数」就赢！' },
   { sel: '#statsBox', title: '6️⃣ 金钱与利息', body:
-    '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（通常上限 $5）。绿色牌组改为每次剩余出牌 $2、弃牌 $1，没有利息。' },
+    '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（通常上限 $5）。绿色牌组改为每次剩余出牌 $2、弃牌 $1，没有利息。<br><b class="gold">碾压奖励</b>：过关时得分达到目标 2 倍 +$1，3 倍 +$2，4 倍及以上 +$3。' },
   { sel: '#jokerRow', title: '7️⃣ 小丑牌（构筑核心！）', body:
     '商店里买的<b class="gold">小丑牌</b>会显示在这里（本局 {jokerSlots} 个槽位），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:

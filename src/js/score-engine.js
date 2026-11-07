@@ -1,10 +1,45 @@
 // Pure scoring: animation, previews and tests consume the same calculation.
+const WEAK_MULT=1.5;
 function rhythmForHand(state,key) {
   const mode=state.rhythmMode,previous=state.rhythm||{lastKey:null,chain:0};
   if(!['focus','flow'].includes(mode))return {lastKey:null,chain:0,bonus:0};
   const continues=previous.lastKey&&(mode==='focus'?previous.lastKey===key:previous.lastKey!==key);
   const chain=continues?Math.min(5,previous.chain+1):1;
-  return {lastKey:key,chain,bonus:(chain-1)*2};
+  const step=(state.jokers||[]).some(j=>j.id==='metronome')?4:2;
+  return {lastKey:key,chain,bonus:(chain-1)*step};
+}
+// Each Boss shows one hand type it is weak against; the same hand gets ×1.5 in that Boss blind.
+function bossWeakKey(boss) { return boss&&HANDS[boss.weak]?boss.weak:null; }
+function bossWeakLabel(boss) {
+  const key=bossWeakKey(boss);
+  return key?'破绽：'+HANDS[key].name+' ×'+WEAK_MULT:'';
+}
+// Beating a blind with at least twice the target pays $1 per full extra multiple.
+function overkillBonus(state) {
+  if(!state.target||state.score<state.target*2)return {ratio:state.target?state.score/state.target:0,money:0};
+  const crushers=(state.jokers||[]).filter(j=>j.id==='crusher').length;
+  const cap=crushers?6:3,ratio=state.score/state.target;
+  return {ratio,money:Math.min(cap,(Math.floor(ratio)-1)*(crushers?2:1))};
+}
+// Picks the selection with the best guaranteed score, respecting Boss restrictions.
+function bestSelection(state) {
+  const hand=state.hand||[],n=hand.length,scoringState={...state,handsLeft:state.handsLeft-1};
+  let best=null;
+  const consider=cards=>{
+    if(state.boss?.id==='psychic'&&cards.length!==5)return;
+    const result=scoreHand(scoringState,cards,()=>0);
+    if(state.boss?.id==='eye'&&(state.blindPlayed||[]).includes(result.hand.key))return;
+    if(!best||result.total>best.total||(result.total===best.total&&cards.length<best.cards.length))
+      best={total:result.total,cards:cards.slice(),key:result.hand.key};
+  };
+  const pick=[];
+  const walk=start=>{
+    if(pick.length)consider(pick);
+    if(pick.length===5)return;
+    for(let i=start;i<n;i++){pick.push(hand[i]);walk(i+1);pick.pop();}
+  };
+  walk(0);
+  return best?{ids:best.cards.map(c=>c.id),total:best.total,key:best.key}:null;
 }
 function jokerStateForHand(joker, hand, cards) {
   const value=joker.state||0;
@@ -42,6 +77,7 @@ function scoreHand(state, cards, random = Math.random) {
       if (j.id==='even' && card.rank<=10 && card.rank%2===0) addM=4;
       if (j.id==='odd' && (card.rank===14 || (card.rank<=9 && card.rank%2===1))) addC=31;
       if (j.id==='scholar' && card.rank===14) { addC=20; addM=4; }
+      if (j.id==='prism' && card.wild) factor=1.5;
       if (addC || addM || factor!==1) {
         chips+=addC; mult=(mult+addM)*factor;
         emit('joker',j.uid,addC?'+'+addC+' 筹码'+(addM?' / +'+addM+' 倍率':''):addM?'+'+addM+' 倍率':'×'+factor+' 倍率');
@@ -106,14 +142,24 @@ function scoreHand(state, cards, random = Math.random) {
       case 'baseball': x=Math.pow(1.5,state.jokers.filter(k=>k.rar===1 && k.uid!==j.uid).length); break;
       case 'baron': x=Math.pow(1.5,held.filter(k=>k.rank===13).reduce((n,k)=>n+(k.seal==='red'?2:1),0)); break;
       case 'moon': m=13*held.filter(k=>k.rank===12).reduce((n,k)=>n+(k.seal==='red'?2:1),0); break;
+      case 'weakspot': if(bossWeakKey(state.anteBoss)===hand.key) m=10; break;
+      case 'finale': if(state.handsLeft===0) m=20; break;
+      case 'twins': {
+        const colors=new Set(cards.filter(k=>!k.wild).map(k=>RED(k.suit)));
+        if(cards.length>=3&&colors.size<=1){c=40;m=6;}
+        break;
+      }
     }
     if(c || m || x!==1) {
       chips+=c; mult=(mult+m)*x;
-      emit('joker',j.uid,c?'+'+c+' 筹码':m?'+'+m+' 倍率':'×'+(Math.round(x*100)/100)+' 倍率');
+      emit('joker',j.uid,c?'+'+c+' 筹码'+(m?' / +'+m+' 倍率':''):m?'+'+m+' 倍率':'×'+(Math.round(x*100)/100)+' 倍率');
     }
     if(j.ed===1) { chips+=50; emit('joker',j.uid,'+50 闪箔'); }
     if(j.ed===2) { mult+=10; emit('joker',j.uid,'+10 全息'); }
     if(j.ed===3) { mult*=1.5; emit('joker',j.uid,'×1.5 多彩'); }
+  }
+  if(state.boss&&bossWeakKey(state.boss)===hand.key) {
+    mult*=WEAK_MULT; emit('weak',null,'破绽 · '+HANDS[hand.key].name+' ×'+WEAK_MULT);
   }
   return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events,rhythm};
 }

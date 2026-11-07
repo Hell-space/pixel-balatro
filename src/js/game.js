@@ -144,7 +144,7 @@ function showBlindSelect() {
     let h = '<div class="bname">' + (i === 2 ? (MP.on ? '⚔️ ' : '') + S.anteBoss.name : m.name) + '</div>' +
       '<div class="btgt">' + fmt(m.target) + '</div>' +
       '<div class="brw">奖励 $' + m.reward + ' + 结算</div>' +
-      '<div class="bbs">' + (i === 2 ? S.anteBoss.desc +
+      '<div class="bbs">' + (i === 2 ? S.anteBoss.desc + '<br><span class="weakTag">🎯 ' + bossWeakLabel(S.anteBoss) + '</span>' +
         (MP.on ? '<br><span style="color:#ffd54a">⚔️ 对决：与对手拼总分，低者 -1❤️</span>' : '') : '') + '</div>';
     if (i < S.blindIdx) h += '<div class="st">✔ 已完成</div>';
     else if (i > S.blindIdx) h += '<div class="st">等待中…</div>';
@@ -206,7 +206,7 @@ function startBlind() {
   drawTo(effHandSize());
   S.screen = 'play';
   renderAll();
-  if (S.boss) msg('⚠️ ' + S.boss.name + '：' + S.boss.desc, 1);
+  if (S.boss) msg('⚠️ ' + S.boss.name + '：' + S.boss.desc + '｜' + bossWeakLabel(S.boss), 1);
   checkStuck();
   mpSendState();
 }

@@ -51,7 +51,8 @@ function renderCollection(){
   const pool=collectionTab==='jokers'?JDEFS:collectionTab==='tarots'?TAROTS:collectionTab==='bosses'?BOSSES:PLANETS;
   const query=search.value.trim().toLowerCase();
   for(const item of pool){
-    const desc=collectionTab==='planets'?HANDS[item.key].name+'：每级 +'+HANDS[item.key].incC+' 筹码 / +'+HANDS[item.key].incM+' 倍率':item.desc;
+    const desc=collectionTab==='planets'?HANDS[item.key].name+'：每级 +'+HANDS[item.key].incC+' 筹码 / +'+HANDS[item.key].incM+' 倍率':
+      collectionTab==='bosses'?item.desc+'。'+bossWeakLabel(item):item.desc;
     if(query&&!(item.name+' '+desc).toLowerCase().includes(query))continue;
     const row=document.createElement('article');row.className='catalogEntry';
     const name=document.createElement('h3');name.textContent=(item.ic?item.ic+' ':'')+item.name;

@@ -1,13 +1,13 @@
 {
   "name": "pixel-balatro",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
   "description": "像素小丑牌 - 网页版 Roguelike 卡牌游戏（含多人对战）",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/build.js --check && node --test tests/rules.test.cjs tests/scoring.test.cjs tests/content.test.cjs tests/gameplay.test.cjs tests/buildcraft.test.cjs tests/reserve.test.cjs tests/interface.test.cjs tests/server.test.cjs",
+    "test": "node scripts/build.js --check && node --test tests/rules.test.cjs tests/scoring.test.cjs tests/content.test.cjs tests/gameplay.test.cjs tests/buildcraft.test.cjs tests/reserve.test.cjs tests/interface.test.cjs tests/upgrade.test.cjs tests/server.test.cjs",
     "balance": "node scripts/simulate-balance.cjs"
   },
   "engines": {

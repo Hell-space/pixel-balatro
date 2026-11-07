@@ -178,4 +178,9 @@ addEventListener('keydown',e=>{
   if(activeDialog() || $('tutBox').style.display==='block' || e.target.closest('input,textarea,select')) return;
   if(e.key==='Enter'&&!e.target.closest('button,[role=button]')) { e.preventDefault(); doPlay(); }
   if(e.key.toLowerCase()==='x') { e.preventDefault(); doDiscard(); persistRun(); }
+  const slot='1234567890'.indexOf(e.key);
+  if(slot>=0&&S.hand[slot]) { e.preventDefault(); toggleHandCard(S.hand[slot],handCardEl(S.hand[slot].id)); }
+  if(e.key.toLowerCase()==='h') { e.preventDefault(); applyHint(); }
+  if(e.key.toLowerCase()==='s') { e.preventDefault(); setSort(S.sortMode==='rank'?'suit':'rank'); }
+  if(e.key==='Escape'&&S.hand.some(c=>c.sel)) { e.preventDefault(); S.hand.forEach(c=>c.sel=false); renderHand(); }
 });
