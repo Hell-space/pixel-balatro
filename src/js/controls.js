@@ -3,6 +3,7 @@ const settings={speed:1,music:true,sound:true};
 // A second tap from the dismissed picker must not activate a different shop action underneath it.
 document.addEventListener('click',e=>{
   if((Date.now()<shopClickUntil&&e.target.closest('#ovShop'))||
+     (Date.now()<rewardClickUntil&&e.target.closest('#ovReward'))||
      (Date.now()<tableClickUntil&&e.target.closest('#game'))) {
     e.preventDefault();e.stopImmediatePropagation();
   }
@@ -20,12 +21,16 @@ function applySettings() {
   if(soundGain) soundGain.gain.value=settings.sound?1:0;
   $('muteBtn').textContent=settings.music?'音乐：开':'音乐：关';
   $('soundBtn').textContent=settings.sound?'音效：开':'音效：关';
-  $('speedSelect').value=String(settings.speed);
+  $('muteBtn').setAttribute('aria-checked',String(settings.music));
+  $('soundBtn').setAttribute('aria-checked',String(settings.sound));
+  for(const button of $('speedOptions').querySelectorAll('[data-speed]'))button.setAttribute('aria-pressed',String(Number(button.dataset.speed)===settings.speed));
 }
 function changeSetting(key,value) {
+  if(key==='speed'?![0,1,2,4].includes(value):!['music','sound'].includes(key)||typeof value!=='boolean')return false;
   settings[key]=value;
   try { localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings)); } catch {}
   applySettings();
+  return true;
 }
 function visibleDialogs() {
   return [...document.querySelectorAll('.ov')].filter(e=>e.style.display==='flex')
@@ -77,6 +82,7 @@ addEventListener('keydown',e=>{
   if(e.key==='Escape'&&top.id==='ovSetup'){hide('ovSetup');show('ovStart');}
   if(e.key==='Escape'&&top.id==='ovWorkshop')closeWorkshop();
   if(e.key==='Escape'&&top.id==='ovReserve')closeReserve();
+  if(e.key==='Escape'&&top.id==='ovRewardHands')closeRewardHands();
 });
 let owned=null, sellConfirm=false;
 function openMenu() {
@@ -88,7 +94,7 @@ function openOwned(kind,key) {
   if(S.busy) return;
   const item=kind==='joker'?S.jokers.find(j=>j.uid===key):S.cons[key];
   if(!item) return;
-  owned={kind,item}; sellConfirm=false; renderOwned(); show('ovOwned');
+  owned={kind,item};$('ovOwned').dataset.kind=kind;sellConfirm=false;renderOwned();show('ovOwned');
 }
 function renderOwned() {
   const {kind,item}=owned;
@@ -178,5 +184,13 @@ document.querySelector('.shopTabs').addEventListener('keydown',e=>{
   const count=SHOP_TABS.length;
   const next=e.key==='Home'?0:e.key==='End'?count-1:(i+(e.key==='ArrowRight'?1:count-1))%count;
   selectShopTab(SHOP_TABS[next][0]); $(SHOP_TABS[next][1]).focus();
+});
+$('rewardHandChoices').addEventListener('keydown',e=>{
+  if(!['ArrowUp','ArrowDown','Home','End'].includes(e.key))return;
+  const options=[...$('rewardHandChoices').querySelectorAll('button')],i=options.indexOf(document.activeElement);
+  if(!options.length)return;
+  e.preventDefault();
+  const next=e.key==='Home'?0:e.key==='End'?options.length-1:(i+(e.key==='ArrowDown'?1:options.length-1))%options.length;
+  options[next].focus({preventScroll:true});options[next].scrollIntoView({block:'nearest'});
 });
 applySettings(); syncDialogs();

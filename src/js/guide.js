@@ -1,49 +1,65 @@
 function openChart() {
-  let h = '<table><tr><th>牌型</th><th>等级</th><th>筹码 × 倍率</th><th>本局打出</th><th>示例</th></tr>';
+  let h = '';
   const ex = { flushfive:'同花色 5 张同点数',flushhouse:'同花色的葫芦',five:'AAAAA',sf:'♥5♥6♥7♥8♥9', four:'8888+x', fh:'QQQ+55', flush:'5 张同花色', straight:'5 张连续点数', trips:'JJJ+xy', twopair:'KK+33+x', pair:'99+xyz', high:'其余情况' };
   HORDER.forEach(k => {
     const b = handBase(k);
-    h += '<tr><td class="hn">' + HANDS[k].name + '</td><td>' + b.lv + '</td><td>' + b.chips + ' × ' + b.mult + '</td><td>' + S.playCounts[k] + '</td><td>' + ex[k] + '</td></tr>';
+    h += '<article class="handLedgerRow"><div><b>'+HANDS[k].name+'</b><span>'+b.lv+' 级</span></div>'+
+      '<strong><span class="ledgerChips">'+fmt(b.chips)+'</span> × <span class="ledgerMult">'+fmtM(b.mult)+'</span></strong>'+
+      '<p>'+ex[k]+'</p><small>本局 '+S.playCounts[k]+' 次</small></article>';
   });
-  $('chartBody').innerHTML = h + '</table>';
+  $('chartBody').innerHTML = h;
   show('ovChart');
 }
 function openInfo() {
   if (!S) return;
-  let h = '<p>'+ (DECKS.find(d=>d.id===S.deckId)?.name||'经典牌组')+' · '+(STAKES.find(t=>t.id===S.stakeId)?.name||'白注')+'</p>'+
-    '<p style="text-align:left">💰 金钱 <b class="gold">$' + S.money + '</b>　🏆 最高单次 <b class="gold">' + fmt(S.bestHand) + '</b>　🃏 总出牌 <b class="blue">' + S.totHands + '</b></p>' +
-    '<p style="text-align:left">🎴 手牌上限 <b>' + S.handSize + '</b>　🂠 牌组张数 <b>' + S.deckAll.length + '</b>　🌌 已用星球 <b>' + S.planetsUsed + '</b>　➕ 已加入牌 <b>' + S.cardsAdded + '</b></p>' +
-    '<p style="text-align:left">🃏 出牌/盲注 <b>' + S.baseHands + '</b>　🗑️ 弃牌/盲注 <b>' + S.baseDisc + '</b>　利息上限 <b class="green">$' + S.interestCap + '</b></p>' +
-    (!MP.on?'<p style="text-align:left">工坊免费次数 <b>'+S.workshopCredits+'</b>　出牌节奏 <b>'+(RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0]).name+'</b></p>':'')+
-    '<p style="text-align:left;color:#57e6ff;margin-top:8px">🎟️ 已拥有的优惠券：</p>';
-  if (S.vouchers.length) {
-    h += '<p style="text-align:left">' + S.vouchers.map(id => {
-      const v = VOUCHERS.find(x => x.id === id);
-      return v.ic + ' <span class="gold">' + v.name + '</span> — ' + v.desc;
-    }).join('<br>') + '</p>';
-  } else h += '<p style="text-align:left;color:var(--muted)">暂未持有优惠券。</p>';
+  const metrics=[['金币','$'+fmt(S.money)],['最高单次',fmt(S.bestHand)],['总出牌',S.totHands],['手牌上限',S.handSize],
+    ['牌组张数',S.deckAll.length],['已用星球',S.planetsUsed],['已加入牌',S.cardsAdded],['出牌 / 盲注',S.baseHands],
+    ['弃牌 / 盲注',S.baseDisc],['利息上限','$'+S.interestCap]];
+  if(!MP.on)metrics.push(['工坊免费次数',S.workshopCredits],['出牌节奏',(RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0]).name]);
+  let h='<div class="runIdentity"><b>'+(DECKS.find(d=>d.id===S.deckId)?.name||'经典牌组')+'</b><span>'+
+    (STAKES.find(t=>t.id===S.stakeId)?.name||'白注')+'</span></div><div class="runMetrics">'+metrics.map(([label,value])=>
+    '<div><span>'+label+'</span><b>'+value+'</b></div>').join('')+'</div><h3 class="infoHeading">优惠券</h3>';
+  h+=S.vouchers.length?S.vouchers.map(id=>{const v=VOUCHERS.find(x=>x.id===id);return '<article class="voucherRow"><b>'+v.ic+' '+v.name+'</b><p>'+v.desc+'</p></article>';}).join(''):'<p class="emptyInfo">暂无优惠券</p>';
   $('infoBody').innerHTML = h;
   show('ovInfo');
 }
+let deckFilter='all';
 function openDeck() {
+  deckFilter='all';const filters=$('deckSuitFilters');filters.replaceChildren();
+  for(const value of ['all','0','1','2','3']) {
+    const button=document.createElement('button');button.dataset.suit=value;
+    button.innerHTML=value==='all'?'全部':suitSVG({suit:Number(value)});
+    button.setAttribute('aria-label',value==='all'?'全部花色':['黑桃','红桃','梅花','方块'][Number(value)]);
+    button.setAttribute('aria-pressed',String(value==='all'));
+    if(value==='1'||value==='3')button.className='suitRed';
+    button.onclick=()=>{
+      deckFilter=value;
+      for(const other of filters.children)other.setAttribute('aria-pressed',String(other.dataset.suit===value));
+      renderDeckGrid();
+    };filters.append(button);
+  }
+  renderDeckGrid();show('ovDeck');
+}
+function renderDeckGrid() {
   const g = $('deckGrid');
   const stored=reserveCard();
   $('deckSummary').innerHTML='<span>待抽 <b>'+S.drawPile.length+'</b></span><span>手牌 <b>'+S.hand.length+'</b></span>'+
     (stored?'<span>底牌 <b>'+cardLabel(stored)+'</b></span>':'')+'<span>牌组 <b>'+S.deckAll.length+'</b></span>';
-  g.innerHTML = '<div class="hd">花色</div>' + [14,13,12,11,10,9,8,7,6,5,4,3,2].map(r => '<div class="hd">' + rankName(r) + '</div>').join('');
+  g.innerHTML='';
   const inPile = new Set(S.drawPile.map(c => c.id));
   for (let s = 0; s < 4; s++) {
-    g.innerHTML += '<div class="hd" style="color:' + (RED(s) ? '#ff6b6b' : '#cdd6e0') + '">' + SUITS[s] + '</div>';
+    if(deckFilter!=='all'&&Number(deckFilter)!==s)continue;
+    let cells='';
     for (const r of [14,13,12,11,10,9,8,7,6,5,4,3,2]) {
       const cards = S.deckAll.filter(c => c.suit === s && c.rank === r);
       const live = cards.filter(c => inPile.has(c.id)).length;
       const reserved=cards.some(c=>c.id===stored?.id);
-      g.innerHTML += '<div class="' + (!cards.length?'absent':live?'':'gone')+(reserved?' reserved':'') + '" title="'+
-        SUITS[s]+rankName(r)+'：待抽 '+live+' / 共 '+cards.length+(reserved?'，一张为底牌':'')+'">' +
-        (!cards.length?'—':cards.length>1?live+'/'+cards.length:live?'●':reserved?'底':'○') + '</div>';
+      cells+='<div class="deckCell '+(!cards.length?'absent':live?'':'gone')+(reserved?' reserved':'')+'" aria-label="'+
+        ['黑桃','红桃','梅花','方块'][s]+rankName(r)+'，待抽 '+live+'，共 '+cards.length+(reserved?'，含底牌':'')+'">'+
+        '<b>'+rankName(r)+'</b><span>'+(!cards.length?'—':live+'/'+cards.length)+(reserved?' 底':'')+'</span></div>';
     }
+    g.innerHTML+='<section class="deckSuitBlock"><h3 class="'+(RED(s)?'suitRed':'')+'">'+suitSVG({suit:s})+['黑桃','红桃','梅花','方块'][s]+'</h3><div class="deckRanks">'+cells+'</div></section>';
   }
-  show('ovDeck');
 }
 
 // ================= 新手教程 =================

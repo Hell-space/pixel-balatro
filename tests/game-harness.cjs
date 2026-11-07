@@ -22,7 +22,7 @@ function harness(seed=1,root=path.join(__dirname,'..')) {
       'renderStats','renderJokers','renderCons','renderHand','renderAll','renderInventory','hideTip','bindTip',
       'mpSendState','persistRun','tutStart','syncDialogs','updatePreview','feedback','handPositions','renderReserveEntry',
       'animatePlayed','animateDiscard','totalFeedback','scoreFeedback','moneyFeedback','acquireFeedback']) globalThis[key]=()=>{};
-    renderShop=()=>{}; popAt=()=>{}; jokerPop=()=>{}; globalThis.cardEl=()=>document.createElement('div');globalThis.cardTipHTML=()=>'';
+    renderShop=()=>{}; popAt=()=>{}; jokerPop=()=>{}; globalThis.cardEl=()=>document.createElement('div');globalThis.cardTipHTML=()=>'';globalThis.suitSVG=()=>'';
     globalThis.sellPrice=j=>j.sell??Math.max(1,Math.ceil(j.price/2));
     globalThis.getState=()=>S;
     globalThis.getDefinitions=()=>({JDEFS,HANDS,HORDER,BOSSES,PLANETS,TAROTS});

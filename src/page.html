@@ -93,65 +93,70 @@
   </div>
 </div></div>
 
-<div class="ov" id="ovSetup"><div class="box setupBox">
-  <h2>选择牌组</h2><div id="deckChoices"></div>
+<div class="ov" id="ovSetup"><div class="box setupBox dialogBox">
+  <h2>选择牌组</h2><div class="dialogBody"><div id="deckChoices"></div>
   <div id="stakeChoices" aria-label="难度"></div><p id="stakeRule"></p><span id="setupRecord"></span>
-  <div class="setupActions"><button class="pxbtn gray" onclick="hide('ovSetup');show('ovStart')">返回</button>
+  </div><div class="setupActions dialogActions"><button class="pxbtn gray" onclick="hide('ovSetup');show('ovStart')">返回</button>
   <button class="pxbtn" id="beginRunBtn" onclick="beginConfiguredRun()">开始这一局</button></div>
 </div></div>
-<div class="ov" id="ovCollection"><div class="box collectionBox">
+<div class="ov" id="ovCollection"><div class="box collectionBox dialogBox">
   <h2>卡牌图鉴</h2><div id="collectionTabs"></div>
   <input id="collectionSearch" class="mpin" type="search" aria-label="搜索卡牌" placeholder="搜索名称或效果" oninput="renderCollection()">
-  <div id="collectionBody"></div><button class="pxbtn" onclick="hide('ovCollection')">关闭</button>
+  <div id="collectionBody" class="dialogBody"></div><div class="dialogActions"><button class="pxbtn" onclick="hide('ovCollection')">关闭</button></div>
 </div></div>
 
-<div class="ov" id="ovMenu"><div class="box"><h2>牌桌菜单</h2>
+<div class="ov" id="ovMenu"><div class="box dialogBox menuBox"><h2>牌桌菜单</h2>
+  <div class="dialogBody">
     <div class="menuList">
-      <button class="sbtn" onclick="hide('ovMenu'); openChart()">📖 牌型表 / 等级</button>
-      <button class="sbtn" onclick="hide('ovMenu'); openDeck()">🂠 查看剩余牌库</button>
-      <button class="sbtn" onclick="hide('ovMenu'); openInfo()">📊 本局信息 / 优惠券</button>
-      <button class="sbtn" onclick="hide('ovMenu'); openCollection()">卡牌图鉴 / 通关记录</button>
-      <button class="sbtn" onclick="hide('ovMenu'); tutStart()">❓ 新手教程</button>
-      <button class="sbtn" id="muteBtn" onclick="toggleMute()">🔊 音乐：开</button>
-      <button class="sbtn" id="soundBtn" onclick="changeSetting('sound',!settings.sound)">音效：开</button>
-      <label class="settingRow" for="speedSelect">计分速度<select id="speedSelect" onchange="changeSetting('speed',Number(this.value))">
-        <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="0">立即</option>
-      </select></label>
-      <button class="sbtn" id="lastScoreBtn" onclick="hide('ovMenu');openScore()">上次计分明细</button>
-      <button class="sbtn" id="returnTitleBtn" onclick="returnToTitle()">回到标题</button>
+      <button class="sbtn" onclick="hide('ovMenu'); openChart()">牌型与等级</button>
+      <button class="sbtn" onclick="hide('ovMenu'); openDeck()">剩余牌库</button>
+      <button class="sbtn" onclick="hide('ovMenu'); openInfo()">本局信息</button>
+      <button class="sbtn" onclick="hide('ovMenu'); openCollection()">图鉴与记录</button>
+      <button class="sbtn" id="lastScoreBtn" onclick="hide('ovMenu');openScore()">计分明细</button>
+      <button class="sbtn" onclick="hide('ovMenu'); tutStart()">新手教程</button>
     </div>
-  <button class="pxbtn" onclick="hide('ovMenu')">回到牌桌</button>
+    <div class="audioSettings"><button class="sbtn" id="muteBtn" role="switch" aria-checked="true" onclick="toggleMute()">音乐：开</button>
+      <button class="sbtn" id="soundBtn" role="switch" aria-checked="true" onclick="changeSetting('sound',!settings.sound)">音效：开</button></div>
+    <div class="speedSetting"><span>计分速度</span><div id="speedOptions" class="segmented" role="group" aria-label="计分速度">
+      <button data-speed="1" aria-pressed="true" onclick="changeSetting('speed',1)">1×</button>
+      <button data-speed="2" aria-pressed="false" onclick="changeSetting('speed',2)">2×</button>
+      <button data-speed="4" aria-pressed="false" onclick="changeSetting('speed',4)">4×</button>
+      <button data-speed="0" aria-pressed="false" onclick="changeSetting('speed',0)">立即</button>
+    </div></div>
+    <button class="sbtn titleReturn" id="returnTitleBtn" onclick="returnToTitle()">回到标题</button>
+  </div>
+  <div class="dialogActions"><button class="pxbtn" onclick="hide('ovMenu')">回到牌桌</button></div>
 </div></div>
-<div class="ov" id="ovOwned"><div class="box ownedBox">
-  <div class="ownedHero"><div id="ownedArt" aria-hidden="true"></div><h2 id="ownedTitle"></h2></div><div id="ownedDesc"></div>
+<div class="ov" id="ovOwned"><div class="box ownedBox dialogBox">
+  <div class="ownedHero"><div id="ownedArt" aria-hidden="true"></div><h2 id="ownedTitle"></h2></div><div id="ownedDesc" class="dialogBody"></div>
   <div class="ownedActions">
     <button class="pxbtn gray" id="moveLeft" onclick="moveOwned(-1)">向左</button>
     <button class="pxbtn gray" id="moveRight" onclick="moveOwned(1)">向右</button>
     <button class="pxbtn" id="useOwned" onclick="useOwned()">使用</button>
     <button class="pxbtn gray" id="sellOwned" onclick="sellOwned()">卖出</button>
   </div>
-  <button class="pxbtn" onclick="hide('ovOwned')">返回</button>
+  <div class="dialogActions"><button class="pxbtn gray" onclick="hide('ovOwned')">返回</button></div>
 </div></div>
-<div class="ov" id="ovScore"><div class="box">
-  <h2 id="scoreTitle">计分明细</h2><div id="scoreRows"></div>
-  <button class="pxbtn" onclick="hide('ovScore')">关闭</button>
+<div class="ov" id="ovScore"><div class="box dialogBox scoreBox">
+  <h2 id="scoreTitle">计分明细</h2><div id="scoreRows" class="dialogBody"></div>
+  <div class="dialogActions"><button class="pxbtn" onclick="hide('ovScore')">关闭</button></div>
 </div></div>
-<div class="ov" id="ovLeave" style="z-index:80"><div class="box">
-  <h2>离开对战？</h2><p>离开后本场对战结束，单人存档仍保留。</p>
-  <button class="pxbtn gray" onclick="hide('ovLeave')">继续对战</button>
-  <button class="pxbtn" id="confirmLeave" onclick="exitToTitle()">离开</button>
+<div class="ov" id="ovLeave" style="z-index:80"><div class="box dialogBox resultBox">
+  <h2>离开对战？</h2><p class="dialogBody">离开后本场对战结束，单人存档仍保留。</p>
+  <div class="dialogActions"><button class="pxbtn gray" onclick="hide('ovLeave')">继续对战</button>
+  <button class="pxbtn" id="confirmLeave" onclick="exitToTitle()">离开</button></div>
 </div></div>
-<div class="ov" id="ovRestart"><div class="box"><h2>重新开局？</h2>
-  <p>新的一局会替换已保存的单人进度。</p>
-  <button class="pxbtn gray" onclick="hide('ovRestart');show('ovStart')">保留进度</button>
-  <button class="pxbtn" id="confirmNew">重新开局</button>
+<div class="ov" id="ovRestart"><div class="box dialogBox resultBox"><h2>重新开局？</h2>
+  <p class="dialogBody">新的一局会替换已保存的单人进度。</p>
+  <div class="dialogActions"><button class="pxbtn gray" onclick="hide('ovRestart');show('ovStart')">保留进度</button>
+  <button class="pxbtn" id="confirmNew">重新开局</button></div>
 </div></div>
 
 <!-- 盲注选择 -->
-<div class="ov" id="ovBlinds"><div class="box" style="max-width:760px">
+<div class="ov" id="ovBlinds"><div class="box dialogBox blindSelectBox">
   <h2 class="blindHeading">选择盲注 <span>底注 <b id="bsAnte">1</b></span></h2>
-  <div id="blindCols"></div>
-  <button class="tacticsEntry" id="tacticsEntry" onclick="openTactics()">备战 · 选择节奏与悬赏</button>
+  <div id="blindCols" class="dialogBody"></div>
+  <div class="dialogActions"><button class="tacticsEntry" id="tacticsEntry" onclick="openTactics()">备战 · 选择节奏与悬赏</button></div>
 </div></div>
 
 <div class="ov" id="ovTactics"><div class="box tacticsBox">
@@ -164,15 +169,15 @@
 </div></div>
 
 <!-- 结算 -->
-<div class="ov" id="ovCash"><div class="box">
-  <h2>✅ 盲注击败！</h2>
-  <div id="cashRows" style="text-align:left; display:inline-block"></div>
-  <br><button class="pxbtn" onclick="openShop()">前往商店 🛒</button>
+<div class="ov" id="ovCash"><div class="box dialogBox resultBox">
+  <h2>盲注击败</h2>
+  <div id="cashRows" class="dialogBody"></div>
+  <div class="dialogActions"><button class="pxbtn" onclick="openShop()">前往商店</button></div>
 </div></div>
 
 <!-- 商店 -->
 <div class="ov" id="ovShop"><div class="box shopBox">
-  <header class="shopHeader"><h2>🛒 商店</h2><strong class="green" id="shopMoney"></strong></header>
+  <header class="shopHeader"><h2>商店</h2><strong class="green" id="shopMoney"></strong></header>
   <nav class="shopTabs" role="tablist" aria-label="商店类别">
     <button id="shopTabCards" role="tab" aria-controls="shopItems" aria-selected="true" onclick="selectShopTab('cards')">小丑</button>
     <button id="shopTabCons" role="tab" aria-controls="shopItems" aria-selected="false" onclick="selectShopTab('cons')">消耗牌</button>
@@ -208,9 +213,7 @@
 <div class="ov" id="ovWorkshop"><div class="box workshopBox">
   <h2 id="workshopTitle"></h2>
   <p id="workshopRule"></p>
-  <div class="workshopFilters"><select id="workshopSuit" aria-label="筛选花色" onchange="renderWorkshopCards()">
-    <option value="all">全部花色</option><option value="0">黑桃 ♠</option><option value="1">红桃 ♥</option><option value="2">梅花 ♣</option><option value="3">方块 ♦</option>
-  </select><span id="workshopCount"></span></div>
+  <div class="workshopFilters"><div id="workshopSuit" class="segmented suitFilters" role="group" aria-label="筛选花色"></div><span id="workshopCount"></span></div>
   <div id="workshopCards" role="group" aria-label="选择要改造的牌"></div>
   <div id="workshopPreview" aria-live="polite"></div>
   <div class="workshopActions"><button class="pxbtn gray" onclick="closeWorkshop()">取消</button><button class="pxbtn" id="workshopConfirm" onclick="confirmWorkshop()" disabled>确认改造</button></div>
@@ -221,11 +224,17 @@
   <div class="rewardChoices">
     <button class="rewardChoice" data-reward="cash" onclick="chooseBossReward('cash')"><span class="rewardIcon" aria-hidden="true">$</span><b>领取 $8</b><small id="rewardCashDetail"></small></button>
     <section class="rewardUpgrade">
-      <select id="rewardHand" aria-label="选择升级的牌型" onchange="selectRewardHand(this.value)"></select>
+      <button id="rewardHand" class="pickerTrigger" aria-label="选择升级的牌型" aria-haspopup="dialog" aria-controls="ovRewardHands" onclick="openRewardHands()"></button>
       <button class="rewardChoice" data-reward="level" onclick="chooseBossReward('level')"><span class="rewardIcon" aria-hidden="true">↑</span><b id="rewardLevel"></b><small id="rewardLevelDetail"></small></button>
     </section>
     <button class="rewardChoice" data-reward="workshop" onclick="chooseBossReward('workshop')"><span class="rewardIcon" aria-hidden="true">✦</span><b>免费改造两次</b><small id="rewardWorkshopDetail"></small></button>
   </div>
+</div></div>
+
+<div class="ov" id="ovRewardHands"><div class="box dialogBox handPickerBox">
+  <h2>选择升级的牌型</h2>
+  <div id="rewardHandChoices" class="dialogBody" role="listbox" aria-label="牌型升级前后数值"></div>
+  <div class="dialogActions"><button class="pxbtn gray" onclick="closeRewardHands()">返回战利品</button></div>
 </div></div>
 
 <div class="ov" id="ovPack" style="z-index:60"><div class="box" style="max-width:720px">
@@ -236,71 +245,66 @@
 </div></div>
 
 <!-- 本局信息 -->
-<div class="ov" id="ovInfo"><div class="box" style="max-width:560px">
-  <h2>📊 本局信息</h2>
-  <div id="infoBody"></div>
-  <button class="pxbtn" onclick="hide('ovInfo')">关闭</button>
+<div class="ov" id="ovInfo"><div class="box dialogBox infoBox">
+  <h2>本局信息</h2>
+  <div id="infoBody" class="dialogBody"></div>
+  <div class="dialogActions"><button class="pxbtn" onclick="hide('ovInfo')">关闭</button></div>
 </div></div>
 
 <!-- 失败 -->
-<div class="ov" id="ovOver"><div class="box">
-  <h2 class="red" style="color:#ff5b5b">💀 失败…</h2>
-  <p id="overStats"></p>
-  <button class="pxbtn" id="btnRestore" style="display:none" onclick="restoreCheckpoint()">⏪ 回到保存点</button>
-  <button class="pxbtn gray" onclick="location.reload()">再来一局</button>
+<div class="ov" id="ovOver"><div class="box dialogBox resultBox">
+  <h2 class="red">本局结束</h2>
+  <p id="overStats" class="dialogBody"></p>
+  <div class="dialogActions"><button class="pxbtn" id="btnRestore" style="display:none" onclick="restoreCheckpoint()">回到保存点</button>
+  <button class="pxbtn gray" onclick="location.reload()">再来一局</button></div>
 </div></div>
 
 <!-- 胜利 -->
-<div class="ov" id="ovWin"><div class="box">
-  <h1>🏆 胜利！</h1>
-  <p>你击败了全部 8 个底注！</p>
-  <p id="winStats"></p>
-  <button class="pxbtn" onclick="continueEndless()">♾️ 继续无尽模式</button>
-  <button class="pxbtn gray" onclick="location.reload()">重新开始</button>
+<div class="ov" id="ovWin"><div class="box dialogBox resultBox">
+  <h1>通关</h1>
+  <div class="dialogBody"><p>已击败全部 8 个底注</p><p id="winStats"></p></div>
+  <div class="dialogActions"><button class="pxbtn" onclick="continueEndless()">继续无尽模式</button>
+  <button class="pxbtn gray" onclick="location.reload()">重新开始</button></div>
 </div></div>
 
 <!-- 牌型表 -->
-<div class="ov" id="ovChart"><div class="box" style="max-width:560px">
-  <h2>📖 牌型表</h2>
-  <div id="chartBody"></div>
-  <p style="color:#9caeb1;font-size:12px">得分 = (牌型筹码 + 牌面筹码) × 倍率。星球牌可提升牌型等级。</p>
-  <button class="pxbtn" onclick="hide('ovChart')">关闭</button>
+<div class="ov" id="ovChart"><div class="box dialogBox chartBox">
+  <h2>牌型与等级</h2>
+  <div id="chartBody" class="dialogBody"></div>
+  <div class="dialogActions"><button class="pxbtn" onclick="hide('ovChart')">关闭</button></div>
 </div></div>
 
 <!-- 牌库 -->
-<div class="ov" id="ovDeck"><div class="box" style="max-width:560px">
-  <h2>🂠 剩余牌库</h2>
+<div class="ov" id="ovDeck"><div class="box dialogBox deckBox">
+  <h2>剩余牌库</h2>
   <div id="deckSummary" class="deckSummary"></div>
-  <div id="deckGrid"></div>
-  <p style="color:#9caeb1;font-size:12px">变暗 = 已抽出/已打出。弃掉的牌本盲注内不会回来。</p>
-  <button class="pxbtn" onclick="hide('ovDeck')">关闭</button>
+  <div id="deckSuitFilters" class="segmented suitFilters" role="group" aria-label="筛选牌库花色"></div>
+  <div id="deckGrid" class="dialogBody"></div>
+  <div class="dialogActions"><button class="pxbtn" onclick="hide('ovDeck')">关闭</button></div>
 </div></div>
 
 <!-- 多人大厅 -->
-<div class="ov" id="ovMpLobby"><div class="box" style="max-width:540px">
-  <h2>⚔️ 多人对战</h2>
-  <p style="font-size:13px;text-align:left">双方各自闯关：小盲/大盲照常打（失败不扣❤️，只是<span class="red">无奖励、不进商店</span>）；<br>
-  <span class="gold">Boss 盲注变为对决</span>——面对同一 Boss 各打完所有出牌次数拼总分，<br>
-  低分方 <span class="red">-1❤️</span>，高分方 <span class="green">+$3</span>。每人 2❤️，<span class="gold">生命耗尽者败！</span></p>
-  <div style="margin:12px 0">
+<div class="ov" id="ovMpLobby"><div class="box dialogBox lobbyBox">
+  <h2>多人对战</h2><div class="dialogBody">
+  <p class="matchRules">小盲、大盲各自闯关；失败无奖励、不进商店。Boss 对决用完出牌次数后比总分，低分方失去 1 点生命，高分方获得 $3。双方各有 2 点生命。</p>
+  <div class="lobbyFields">
     <label class="lbl" for="mpName">昵称</label>
     <input class="mpin" id="mpName" maxlength="8" placeholder="玩家">
     <label class="lbl" for="mpServer">对战服务器地址</label>
     <input class="mpin" id="mpServer" type="url" placeholder="填写对战服务器的网址">
   </div>
   <button class="pxbtn" id="mpCreateBtn" onclick="mpCreate()">创建房间</button>
-  <span style="margin:0 10px;color:#667">或</span>
-  <input class="mpin" id="mpCode" aria-label="房间码" autocapitalize="characters" autocomplete="off" maxlength="4" placeholder="房间码" style="width:110px;text-transform:uppercase">
-  <button class="pxbtn" id="mpJoinBtn" onclick="mpJoin()">加入</button>
-  <p id="mpStatus" style="color:#57e6ff;min-height:22px;margin-top:10px"></p>
-  <button class="pxbtn gray" onclick="mpCancel()">返回标题</button>
+  <div class="joinRow"><input class="mpin" id="mpCode" aria-label="房间码" autocapitalize="characters" autocomplete="off" maxlength="4" placeholder="房间码" style="text-transform:uppercase">
+  <button class="pxbtn gray" id="mpJoinBtn" onclick="mpJoin()">加入房间</button></div>
+  <p id="mpStatus" role="status"></p></div>
+  <div class="dialogActions"><button class="pxbtn gray" onclick="mpCancel()">返回标题</button></div>
 </div></div>
 
 <!-- 多人结果 / 等待 -->
-<div class="ov" id="ovMpRes" style="z-index:70"><div class="box" style="max-width:560px">
+<div class="ov" id="ovMpRes" style="z-index:70"><div class="box dialogBox resultBox">
   <h2 id="mpResTitle"></h2>
-  <div id="mpResBody" style="font-size:15px;line-height:2"></div>
-  <button class="pxbtn" id="mpResBtn"></button>
+  <div id="mpResBody" class="dialogBody" style="font-size:15px;line-height:2"></div>
+  <div class="dialogActions"><button class="pxbtn" id="mpResBtn"></button></div>
 </div></div>
 
 <!-- 教程 -->

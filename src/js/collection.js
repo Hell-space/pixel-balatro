@@ -74,5 +74,6 @@ function nativeBack(){
   if(top?.id==='ovPack'){closePack();return false;}
   if(top?.id==='ovWorkshop'){closeWorkshop();return false;}
   if(top?.id==='ovReserve'){closeReserve();return false;}
+  if(top?.id==='ovRewardHands'){closeRewardHands();return false;}
   openMenu();return false;
 }

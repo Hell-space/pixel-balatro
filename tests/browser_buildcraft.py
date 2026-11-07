@@ -190,13 +190,15 @@ def workshop_filter_keyboard(browser,url,out,seed,profile):
     context,page,errors=fresh(browser,seed,PROFILES[profile]);issues=[]
     try:
         enter_shop(page,url,True);open_workshop(page,'copy')
-        select=page.locator('#workshopSuit');select.tap()
-        page.keyboard.press('End');page.keyboard.press('Enter')
-        selected_value=select.input_value()
+        select=page.locator('#workshopSuit')
+        if select.evaluate('e=>e.tagName')=='SELECT':
+            select.tap();page.keyboard.press('End');page.keyboard.press('Enter');selected_value=select.input_value()
+        else:
+            select.locator('[data-suit="3"]').tap();selected_value='3'
         actual=page.evaluate("() => [...document.querySelectorAll('#workshopCards .card')].map(e=>{const c=S.deckAll.find(x=>String(x.id)===e.dataset.cardId);return {suit:c.suit,wild:c.wild}})")
         screenshot(page,out,f'workshop-filter-{profile}')
         if selected_value!='3' or any(c['suit']!=3 and not c['wild'] for c in actual) or len(actual)!=13:
-            issues.append({'requirement':'native suit filter shows exactly diamond cards plus wilds','value':selected_value,'cards':actual})
+            issues.append({'requirement':'suit filter shows exactly diamond cards plus wilds','value':selected_value,'cards':actual})
         page.locator('#workshopCards .card').first.tap()
         before=page.evaluate('() => ({money:S.money,count:S.deckAll.length,used:S.shop.workshopUsed})')
         page.keyboard.press('Escape')
@@ -204,7 +206,7 @@ def workshop_filter_keyboard(browser,url,out,seed,profile):
         after=page.evaluate('() => ({money:S.money,count:S.deckAll.length,used:S.shop.workshopUsed})')
         if before!=after:issues.append({'requirement':'Escape does not commit transaction','before':before,'after':after})
         require(not errors,f'page errors: {errors}')
-        return {'status':'failed' if issues else 'passed','fixture':'normal shop, native select tapped then keyboard End/Enter; target tapped and Escape tested',
+        return {'status':'failed' if issues else 'passed','fixture':'normal shop, suit filter selected with real input; target tapped and Escape tested',
                 'filter_value':selected_value,'cards':actual,'before':before,'after':after,'issues':issues,'page_errors':errors}
     finally:context.close()
 
@@ -380,19 +382,21 @@ def boss_rewards(browser,url,out,seed):
             assert_viewport(page,PROFILES[profile]['width'])
             if choice=='level':
                 select=page.locator('#rewardHand');select.tap()
-                page.keyboard.press('Home');page.keyboard.press('ArrowDown');page.keyboard.press('Enter')
-                key=select.input_value()
+                if select.evaluate('e=>e.tagName')=='SELECT':
+                    page.keyboard.press('Home');page.keyboard.press('ArrowDown');page.keyboard.press('Enter');key=select.input_value()
+                else:
+                    page.locator('#rewardHandChoices [data-hand="pair"]').tap();page.wait_for_timeout(400);key=page.evaluate('()=>S.bossReward.handKey')
                 if key!='pair':issues.append({'requirement':'reward hand can be selected','profile':profile,'actual':key})
                 page.reload(wait_until='domcontentloaded');page.locator('#resumeBtn').tap()
                 page.locator('#ovReward').wait_for(state='visible')
-                if page.locator('#rewardHand').input_value()!='pair':
+                if page.evaluate('()=>S.bossReward.handKey')!='pair':
                     issues.append({'requirement':'selected reward hand persists before choosing','profile':profile})
                 # This calls the native wrapper's JS back handler; it is not a hardware Android key test.
                 back_result=page.evaluate('() => nativeBack()')
                 page.locator('#ovMenu').wait_for(state='visible')
                 page.locator('#returnTitleBtn').tap();page.locator('#ovStart').wait_for(state='visible')
                 page.locator('#resumeBtn').tap();page.locator('#ovReward').wait_for(state='visible')
-                if back_result is not False or page.locator('#rewardHand').input_value()!='pair':
+                if back_result is not False or page.evaluate('()=>S.bossReward.handKey')!='pair':
                     issues.append({'requirement':'pending reward survives menu return to title and resume','profile':profile})
             for selector in ("[data-reward='cash']",'#rewardHand',"[data-reward='level']","[data-reward='workshop']"):
                 assert_reachable(page.locator(selector),f'{profile} reward control {selector}')

@@ -48,7 +48,10 @@ function hide(id) {
   if(S?.screen==='shop'&&['ovOwned','ovPack','ovWorkshop','ovReward'].includes(id))shopClickUntil=Date.now()+350;
   $(id).style.display='none'; queueMicrotask(syncDialogs);
 }
-function show(id) { $(id).style.display='flex'; $(id).dataset.order=++modalOrder; queueMicrotask(syncDialogs); }
+function show(id) {
+  if(!['ovStart','ovBlinds','ovShop'].includes(id))resetMessage();
+  $(id).style.display='flex';$(id).dataset.order=++modalOrder;queueMicrotask(syncDialogs);
+}
 const fmt = n => Math.floor(n).toLocaleString('en');
 const sleep = ms => {
   const speed=settings.speed;
@@ -56,6 +59,10 @@ const sleep = ms => {
   return new Promise(r=>setTimeout(r,ms/speed));
 };
 let msgT = null;
+function resetMessage() {
+  clearTimeout(msgT);msgT=null;
+  $('infobar').textContent='选 1–5 张手牌，可出牌或弃牌';$('infobar').className='';
+}
 function msg(t, warn) {
   const b = $('infobar');
   b.textContent = t; b.className = warn ? 'warn' : 'transient';

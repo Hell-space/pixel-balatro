@@ -4,8 +4,8 @@ const WORKSHOP = [
   {id:'copy',name:'复制一张牌',price:6,icon:'▣',desc:'保留原牌，并复制全部强化、版本和蜡封'},
   {id:'polish',name:'强化一张牌',price:5,icon:'✦',desc:'计分时额外 +30 筹码，可叠加'},
 ];
-let workshopDraft=null;
-let shopClickUntil=0;
+let workshopDraft=null,workshopFilter='all';
+let shopClickUntil=0,rewardClickUntil=0;
 function workshopCost(service) { return S.workshopCredits>0?0:shopPrice(service.price); }
 function workshopIssue(service,cardId) {
   if(!service||S.screen!=='shop'||!S.shop||S.busy||S.pack) return '当前无法改造';
@@ -37,12 +37,27 @@ function openWorkshop(serviceId) {
   workshopDraft={service:serviceId,cardId:null};
   $('workshopTitle').textContent=service.name;
   $('workshopRule').textContent=service.desc;
-  $('workshopSuit').value='all';
+  workshopFilter='all';renderWorkshopFilters();
   renderWorkshopCards(); show('ovWorkshop'); return true;
+}
+function renderWorkshopFilters() {
+  const filters=$('workshopSuit');filters.replaceChildren();
+  for(const [value,label] of [['all','全部'],['0','♠'],['1','♥'],['2','♣'],['3','♦']]) {
+    const button=document.createElement('button');button.innerHTML=value==='all'?label:suitSVG({suit:Number(value)});button.dataset.suit=value;
+    button.setAttribute('aria-label',value==='all'?'全部花色':['黑桃','红桃','梅花','方块'][Number(value)]);
+    button.setAttribute('aria-pressed',String(workshopFilter===value));
+    if(value==='1'||value==='3')button.className='suitRed';
+    button.onclick=()=>selectWorkshopSuit(value);filters.append(button);
+  }
+}
+function selectWorkshopSuit(value) {
+  if(!workshopDraft||!['all','0','1','2','3'].includes(value))return false;
+  workshopFilter=value;workshopDraft.cardId=null;
+  renderWorkshopFilters();renderWorkshopCards();return true;
 }
 function renderWorkshopCards() {
   if(!workshopDraft) return;
-  const grid=$('workshopCards'),filter=$('workshopSuit').value;
+  const grid=$('workshopCards'),filter=workshopFilter;
   grid.replaceChildren();
   const cards=S.deckAll.filter(c=>filter==='all'||c.suit===Number(filter)||c.wild)
     .slice().sort((a,b)=>b.rank-a.rank||a.suit-b.suit||a.id-b.id);
@@ -103,21 +118,44 @@ function prepareBossReward() {
 function openBossReward() {
   if(!S.bossReward||S.screen!=='cash'||S.winPending||MP.on) return false;
   hide('ovCash');
-  const select=$('rewardHand'); select.replaceChildren();
-  for(const planet of availablePlanets()) {
-    const option=document.createElement('option'); option.value=planet.key;
-    option.textContent=HANDS[planet.key].name+' · '+S.levels[planet.key]+' 级';select.append(option);
-  }
-  select.value=S.bossReward.handKey; renderBossReward(); show('ovReward');return true;
+  renderBossReward(); show('ovReward');return true;
 }
 function selectRewardHand(key) {
-  if(!S.bossReward||!availablePlanets().some(p=>p.key===key)) return;
-  S.bossReward.handKey=key;renderBossReward();persistRun();
+  if(MP.on||S.screen!=='cash'||S.winPending||!S.bossReward||!availablePlanets().some(p=>p.key===key))return false;
+  S.bossReward.handKey=key;renderBossReward();persistRun();return true;
+}
+function rewardHandOptions() {
+  return availablePlanets().map(p=>{
+    const h=HANDS[p.key],base=handBase(p.key);
+    return {key:p.key,name:h.name,level:base.lv,nextLevel:base.lv+2,chips:base.chips,
+      nextChips:base.chips+2*h.incC,mult:base.mult,nextMult:base.mult+2*h.incM};
+  });
+}
+function openRewardHands() {
+  if(!S?.bossReward||S.screen!=='cash'||S.winPending||MP.on)return false;
+  const list=$('rewardHandChoices');list.replaceChildren();
+  for(const option of rewardHandOptions()) {
+    const button=document.createElement('button'),selected=option.key===S.bossReward.handKey;
+    button.className='handOption';button.dataset.hand=option.key;button.setAttribute('role','option');
+    button.setAttribute('aria-selected',String(selected));
+    button.innerHTML='<span class="handOptionTitle"><b>'+option.name+'</b><span>'+option.level+' → '+option.nextLevel+' 级</span></span>'+
+      '<span class="handOptionValues"><span>筹码 <b>'+fmt(option.chips)+' → '+fmt(option.nextChips)+'</b></span><span>倍率 <b>'+fmtM(option.mult)+' → '+fmtM(option.nextMult)+'</b></span></span>'+
+      '<span class="handOptionCheck" aria-hidden="true">'+(selected?'✓':'')+'</span>';
+    button.onclick=()=>{if(selectRewardHand(option.key))closeRewardHands();};list.append(button);
+  }
+  show('ovRewardHands');
+  queueMicrotask(()=>{const selected=list.querySelector('[aria-selected=true]');selected?.focus({preventScroll:true});selected?.scrollIntoView({block:'nearest'});});
+  return true;
+}
+function closeRewardHands() {
+  rewardClickUntil=Date.now()+350;hide('ovRewardHands');
+  queueMicrotask(()=>$('rewardHand').focus({preventScroll:true}));
 }
 function renderBossReward() {
   const key=S.bossReward.handKey,h=HANDS[key],base=handBase(key);
-  $('rewardLevel').textContent=h.name+' '+base.lv+' → '+(base.lv+2)+' 级';
-  $('rewardLevelDetail').textContent='筹码 '+base.chips+' → '+(base.chips+2*h.incC)+' · 倍率 '+base.mult+' → '+(base.mult+2*h.incM);
+  $('rewardHand').textContent=h.name+' · '+base.lv+' 级';
+  $('rewardLevel').textContent='升至 '+(base.lv+2)+' 级';
+  $('rewardLevelDetail').innerHTML='<span>筹码 <b>'+fmt(base.chips)+' → '+fmt(base.chips+2*h.incC)+'</b></span><span>倍率 <b>'+fmtM(base.mult)+' → '+fmtM(base.mult+2*h.incM)+'</b></span>';
   $('rewardCashDetail').textContent='$'+S.money+' → $'+(S.money+8);
   $('rewardWorkshopDetail').textContent='免费次数 '+S.workshopCredits+' → '+(S.workshopCredits+2)+' · 每店用一次';
 }

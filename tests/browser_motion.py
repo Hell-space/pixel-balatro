@@ -16,7 +16,7 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 from browser_extended import enter_shop, start_server
 from browser_smoke import (ROOT, cards_on_screen, context_for, read_number, require,
-                           score_unmodified_hand, select_shop_tab, start_blind, watch_page)
+                           score_unmodified_hand, select_shop_tab, start_blind, watch_page, choose_speed)
 
 if hasattr(sys.stdout,"reconfigure"):
     sys.stdout.reconfigure(errors="backslashreplace")
@@ -202,7 +202,7 @@ def no_motion(browser,url,out,seed,mode):
         start_blind(page,True)
         if mode=='instant':
             page.locator('#menuBtn').tap()
-            page.locator('#speedSelect').select_option('0')
+            choose_speed(page,0,True)
             page.locator('#ovMenu button[onclick="hide(\'ovMenu\')"]').tap()
         require(not page.evaluate('() => motionAllowed(true)'),f'{mode} did not disable scoring effects')
         page.locator('#handRow .card').first.tap()

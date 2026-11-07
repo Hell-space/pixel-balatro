@@ -31,7 +31,7 @@ from browser_smoke import (
     ROOT, PROFILES, activate, assert_reachable, assert_viewport, cards_on_screen,
     context_for, loss_checkpoint_case, play_best_first_blind, read_number,
     reload_and_resume, request_new_solo, require, score_unmodified_hand, screenshot, shown, start_blind,
-    select_shop_tab, swipe_up_within, touch_at, verify_shop_purchase, watch_page,
+    select_shop_tab, swipe_up_within, touch_at, verify_shop_purchase, watch_page, choose_speed, selected_speed,
 )
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -1163,7 +1163,7 @@ def settings_independent(browser, url, out, seed):
         start_blind(page, False)
         page.locator("#menuBtn").click()
         page.locator("#ovMenu").wait_for(state="visible")
-        page.locator("#speedSelect").select_option("4")
+        choose_speed(page,4)
         page.locator("#muteBtn").click()
         require(page.evaluate("() => !settings.music && settings.sound && settings.speed===4"),
                 "music toggle unexpectedly changed sound or speed")
@@ -1182,7 +1182,7 @@ def settings_independent(browser, url, out, seed):
                 "settings were not retained after refresh")
         page.locator("#resumeBtn").click()
         page.locator("#menuBtn").click()
-        require(page.locator("#speedSelect").input_value() == "4", "speed UI did not restore its selected value")
+        require(selected_speed(page) == "4", "speed UI did not restore its selected value")
         foreign = [error for error in errors if "getTopURL" in error]
         app_errors = [error for error in errors if "getTopURL" not in error]
         require(not app_errors, f"page errors: {app_errors}")
@@ -1210,7 +1210,7 @@ def speed_modes(browser, url, out, seed):
             card = cards_on_screen(page)[0]
             expected = score_unmodified_hand([card])[0]
             page.locator("#menuBtn").click()
-            page.locator("#speedSelect").select_option(str(speed))
+            choose_speed(page,speed)
             page.locator("#ovMenu button").filter(has_text="回到牌桌").click()
             page.locator("#handRow .card").first.click()
             start = time.perf_counter()
@@ -1495,7 +1495,7 @@ def latest_visual(browser, url, out, seed, width, height):
         page.locator("#ovMenu").wait_for(state="visible")
         page.wait_for_timeout(500)
         screenshot(page, out, f"visual-{width}x{height}-menu")
-        assert_reachable(page.locator("#speedSelect"), "Speed setting")
+        assert_reachable(page.locator('#speedOptions [data-speed="4"]') if page.locator('#speedOptions').count() else page.locator('#speedSelect'), "Speed setting")
         assert_reachable(page.locator("#soundBtn"), "Sound setting")
         box = page.locator("#ovMenu .box")
         scroll_max = box.evaluate("el => el.scrollHeight-el.clientHeight")

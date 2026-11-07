@@ -1,0 +1,153 @@
+/* Shared in-game surfaces: felt, paper, brass, and chips/multiplier ink. */
+:root {--ui-edge:#79927c;--ui-gap:12px;--ui-radius:8px}
+button,input {font-family:var(--ui)}
+.box {border-radius:var(--ui-radius)}
+.box.dialogBox {display:flex;flex-direction:column;gap:var(--ui-gap);width:560px;max-height:100%;overflow:hidden;padding:20px}
+.dialogBox>h1,.dialogBox>h2 {flex:none;margin:0;text-align:left;font-size:23px;line-height:1.3}
+.dialogBody {flex:1 1 auto;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:2px 3px}
+.dialogBox>:not(.dialogBody) {flex-shrink:0}
+.dialogActions {display:flex;gap:8px;border-top:1px solid #8fa78250;padding-top:10px;min-width:0}
+.dialogActions .pxbtn,.dialogActions .tacticsEntry {flex:1;min-width:0;min-height:44px;margin:0;padding:10px 12px;font-size:14px;line-height:1.4;white-space:normal;overflow-wrap:anywhere}
+.segmented {display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:5px;min-width:0}
+.segmented button {min-width:0;min-height:44px;padding:6px;border:1px solid #6d8974;border-radius:5px;color:var(--paper);background:#153b31;font-size:14px;line-height:1.2}
+.segmented [aria-pressed=true] {border-color:var(--brass);background:#3d563e;color:#ffe5a1;box-shadow:inset 0 -2px #e1bf70}
+.segmented .suitIcon {width:19px;height:19px}.suitRed {color:#f2a694!important}
+.segmented .suitRed[aria-pressed=true] {color:#ffe5a1!important}
+button:focus-visible,input:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
+button:disabled {cursor:default}
+.pickerTrigger {position:relative;width:100%;min-height:44px;text-align:left;padding:9px 35px 9px 12px;border:1px solid #b9ac7a;border-radius:5px;color:var(--paper);background:#153b31;font-size:15px;line-height:1.4}
+.pickerTrigger::after {content:'⌄';position:absolute;right:12px;top:50%;transform:translateY(-60%);font-size:23px;color:var(--brass)}
+.box.handPickerBox {width:700px;height:min(700px,100%)}
+#rewardHandChoices {display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-content:start}
+.handOption {position:relative;display:flex;flex-direction:column;gap:9px;min-width:0;min-height:94px;padding:12px;text-align:left;color:var(--paper);background:#183d31;border:1px solid #6c8972;border-radius:6px}
+.handOption[aria-selected=true] {border:2px solid var(--brass);padding:11px;background:#354f38;box-shadow:inset 3px 0 #d8b45d}
+.handOptionTitle {display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:20px}
+.handOptionTitle b {font-size:16px}.handOptionTitle>span {font:13px var(--mono);color:var(--brass);white-space:nowrap}
+.handOptionValues {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;font-size:11px;color:var(--muted)}
+.handOptionValues b {display:block;font:700 14px/1.5 var(--mono);color:#b0d7ec;overflow-wrap:anywhere}
+.handOptionValues>span:last-child b {color:#f5b6a9}
+.handOptionCheck {position:absolute;top:11px;right:10px;color:var(--brass);font-size:19px}
+.rewardBox {display:flex;flex-direction:column;gap:12px;overflow:hidden;width:680px}
+.rewardBox h2 {flex:none;margin:0;font-size:22px;text-align:left}
+.rewardChoices {min-height:0;overflow:auto;overscroll-behavior:contain;padding:2px;gap:10px}
+.rewardUpgrade {display:flex;flex-direction:column;gap:8px;padding:8px;min-width:0;border-color:#b4ad77}
+.rewardUpgrade .rewardChoice {flex:1}
+.rewardChoice {min-width:0;min-height:82px;border-radius:6px;border-width:1px;box-shadow:0 2px #0d241c;padding:12px;gap:5px 8px}
+.rewardChoice b {font-size:17px;line-height:1.4}.rewardChoice small {overflow-wrap:anywhere}
+.rewardChoice .rewardIcon {font-size:29px}
+#rewardLevelDetail {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;color:#53604e}
+#rewardLevelDetail b {display:block;font:700 12px/1.5 var(--mono);color:#254b63;overflow-wrap:anywhere}
+#rewardLevelDetail>span:last-child b {color:#983d36}
+.workshopFilters {gap:8px}.workshopFilters .suitFilters {width:min(300px,78%)}
+.workshopBox {grid-template-rows:auto auto 44px minmax(70px,1fr) minmax(32px,80px) auto}
+.box.menuBox {width:460px}
+#ovMenu .menuList {min-width:0;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#ovMenu .menuList>.sbtn {grid-column:auto;min-width:0;min-height:50px;margin:0;padding:10px 6px;font-size:14px}
+.audioSettings {display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.audioSettings .sbtn {width:100%;margin:0;padding:10px 6px;font-size:14px}
+.audioSettings [aria-checked=true] {border-color:#a8ba82;background:#3b5742;color:#f3e4ac}
+.speedSetting {padding:10px 0 14px;border-block:1px solid #75936c44;text-align:left}
+.speedSetting>span {display:block;margin-bottom:8px;font-size:12px;color:var(--muted)}
+.titleReturn {display:block;width:100%;margin:14px 0 0;padding:10px;font-size:14px;background:#253e36}
+.box.infoBox,.box.chartBox,.box.deckBox,.box.scoreBox {width:620px}
+.runIdentity {display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 12px;color:var(--paper)}
+.runIdentity>span {font-size:12px;color:var(--brass);padding:4px 10px;border:1px solid #7c946e;border-radius:4px}
+.runMetrics {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:#8da57840;border:1px solid #8da57840;border-radius:5px;overflow:hidden}
+.runMetrics>div {display:flex;flex-direction:column;gap:5px;padding:10px;background:#19392f;min-width:0;text-align:left}
+.runMetrics span {font-size:12px;color:var(--muted)}.runMetrics b {font:700 18px/1.3 var(--mono);color:var(--paper);overflow-wrap:anywhere}
+.infoHeading {margin:16px 0 8px;font-size:15px;color:var(--brass);text-align:left}
+.voucherRow {padding:10px 0;border-bottom:1px solid var(--seam);text-align:left}.voucherRow b {font-size:14px}.voucherRow p,.emptyInfo {margin:5px 0;font-size:12px;color:var(--muted)}
+#chartBody {display:grid;grid-template-columns:minmax(0,1fr);gap:7px;align-content:start}
+.handLedgerRow {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;border:1px solid #647f695c;border-radius:5px;background:#19392f;padding:10px;text-align:left;min-width:0}
+.handLedgerRow>div {display:flex;gap:9px;align-items:center;flex-wrap:wrap}.handLedgerRow b {font-size:14px}.handLedgerRow>div span {font-size:11px;color:var(--muted)}
+.handLedgerRow>strong {font:700 15px var(--mono);align-self:center;overflow-wrap:anywhere}
+.ledgerChips {color:#aed3e9}.ledgerMult {color:#f3b3a6}
+.handLedgerRow p {margin:0;font:12px var(--ui);color:var(--muted);line-height:1.5}.handLedgerRow small {color:var(--muted);font-size:11px;text-align:right;align-self:end}
+.deckSummary {flex:none;margin:0;justify-content:flex-start;gap:5px 14px;padding:0 3px;font-size:12px}
+#deckGrid {display:flex;flex-direction:column;gap:14px;width:100%;max-width:100%;min-height:0}
+.deckSuitBlock {flex:none}.deckSuitBlock h3 {display:flex;align-items:center;gap:6px;font-size:13px;color:var(--paper);text-align:left;margin:0 0 7px}
+.deckRanks {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+#deckGrid .deckCell {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:48px;min-width:0;border:1px solid #879d7c66;border-radius:4px;background:#284b39;color:#e8dfb6;overflow:visible}
+.deckCell b {font:700 15px var(--mono)}.deckCell span {font:11px var(--mono);white-space:nowrap}
+#deckGrid .deckCell.gone {background:#152f29;color:#a2b39b;opacity:1}
+#deckGrid .deckCell.absent {background:transparent;color:#718779;border-color:#56736340}
+#deckGrid .deckCell.reserved {border-color:var(--brass);box-shadow:inset 0 -2px #d8b970;color:var(--brass)}
+.box.collectionBox {width:720px}#collectionTabs {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+#collectionTabs .sbtn {min-width:0;min-height:44px;padding:7px 4px;font-size:13px}
+#collectionSearch {margin:0;flex:none;min-height:44px;padding:8px 10px}
+#collectionBody {margin:0;align-content:start;gap:8px}.catalogEntry {padding:11px;border:1px solid #6f8c6860;border-left:3px solid #bba771;background:#17382f}
+.catalogEntry h3 {line-height:1.5}.catalogEntry p {line-height:1.6}
+.box.setupBox {width:680px}#deckChoices {margin:0 0 14px;gap:8px}.deckChoice {border-radius:5px;min-height:80px}
+#stakeChoices {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}#stakeChoices .sbtn {min-width:0;min-height:44px;padding:8px}
+#stakeRule {margin:10px 0 0;min-height:0;font-size:12px;color:var(--muted)}#setupRecord {min-height:0;margin-top:6px}
+.box.blindSelectBox {width:760px}.blindHeading {margin:0}.blindHeading span {white-space:nowrap}
+.blindSelectBox #blindCols {padding:2px;min-width:0;gap:8px}.blindSelectBox .tacticsEntry {margin:0;font-size:13px}
+.bcol .bbtn {min-height:44px}
+.box.resultBox {width:440px}.resultBox>h1 {color:var(--brass);font-size:34px}.resultBox .dialogBody {font-size:14px;line-height:1.8;text-align:left}
+#cashRows {display:block;min-width:0;width:100%}#cashRows p {font-size:14px;padding:6px 0;margin:0}#cashRows p:last-child {padding-top:12px;margin-top:8px}
+.ownedBox.dialogBox {width:460px}.ownedHero {margin:0;gap:16px;flex:none}.ownedHero h2 {font-size:22px;overflow-wrap:anywhere}
+#ownedDesc {width:100%;max-width:none;text-align:left;font-size:14px;line-height:1.8}
+.ownedActions {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0}
+.ownedActions .pxbtn {margin:0;padding:9px;min-height:44px;font-size:13px}
+#ovOwned[data-kind=joker] #sellOwned {grid-column:1/-1}
+#scoreRows p {display:flex;justify-content:space-between;gap:12px;margin:0;padding:10px 0;border-bottom:1px solid var(--seam);font-size:12px}
+#ovPack .box {width:720px;max-height:100%;gap:8px;padding:18px}
+#packTitle {flex:none;margin:0;font-size:22px;text-align:left}#packHint {flex:none;margin:0;color:var(--muted)!important;text-align:left}
+#packCards {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding:3px;align-items:start}
+#packCards[data-type=buffoon],#packCards[data-type=spectral] {grid-template-columns:repeat(2,minmax(0,1fr))}
+#packCards .pk {width:100%;max-width:none;min-width:0;padding:10px 8px;border:1px solid #bcad87;background:linear-gradient(135deg,#f5ead0,#e0d2b1);color:#263e34;border-radius:6px;box-shadow:0 2px #0c2b22}
+#packCards .pk .nm {color:#263e34;font-size:14px;line-height:1.5;margin:6px 0}
+#packCards .pk .pkds {color:#48584b;font-size:12px;line-height:1.6;min-width:0;overflow-wrap:anywhere}
+#packCards .pk .tn {color:#253b32}.packBlocked {color:#8c392f}
+#ovPack .box>.pxbtn {width:100%;margin:0;min-height:44px;padding:9px;font-size:14px}
+#ovShop .shopTabs button {min-height:36px}.shopHeader strong {font-variant-numeric:tabular-nums}
+.ownedRow:empty {border:1px dashed #74966a4d;border-radius:4px;background:#102f2630}
+.titleScreen h1 {letter-spacing:.05em}
+.box.lobbyBox {width:540px}.matchRules {font-size:12px;line-height:1.7;margin:0 0 12px;text-align:left;color:var(--muted)}
+.lobbyFields {margin:0 0 12px}.lobbyFields .mpin {padding:8px 10px}
+#mpCreateBtn {display:block;width:100%;margin:0;min-height:44px;font-size:14px}
+.joinRow {display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px;margin-top:10px;align-items:stretch}
+.joinRow .mpin {width:100%;min-width:0;padding:8px 10px;text-align:center;letter-spacing:.15em}
+.joinRow .pxbtn {margin:0;padding:8px;font-size:14px}#mpStatus {min-height:20px;margin:10px 0 0;color:#b7d6e7;font-size:12px;overflow-wrap:anywhere}
+@media(min-width:580px) {
+  #rewardHandChoices {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rewardChoices {grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+  .rewardChoice {align-content:center;grid-template-columns:1fr;text-align:center;padding:12px 8px;min-height:180px}
+  .rewardChoice .rewardIcon {grid-row:auto;grid-column:1}.rewardChoice b,.rewardChoice small {grid-column:1}
+  .rewardUpgrade .rewardChoice {min-height:120px}.rewardUpgrade .rewardIcon {display:none}
+  .rewardUpgrade #rewardLevelDetail {text-align:left}
+  .deckRanks {grid-template-columns:repeat(13,minmax(0,1fr))}
+  .runMetrics {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:579px) {
+  :root {--ui-gap:10px}
+  .box.dialogBox {padding:14px}.dialogBox>h1,.dialogBox>h2 {font-size:21px}
+  .handOption {padding:10px}.handOption[aria-selected=true] {padding:9px}
+  .rewardBox {padding:14px!important}.rewardBox h2 {font-size:21px}
+  .rewardChoice {padding:10px}.rewardChoice b {font-size:16px}
+  .workshopFilters .suitFilters {width:77%}#workshopCount {font-size:11px;white-space:nowrap}
+  .deckChoice {padding:9px;min-height:78px}.setupActions .pxbtn {white-space:normal}
+  #ovPack .box {padding:12px}.pk .ic {font-size:29px}#packCards .pk {padding:7px 4px}
+  #packCards .pk .pkds {font-size:11px}.ownedHero #ownedArt {width:48px;height:64px;font-size:29px}
+  .ownedHero h2 {font-size:20px}
+}
+@media(max-width:579px) and (max-height:640px) {
+  .titleScreen {gap:8px;padding:10px 0}.titleArt {width:180px;height:124px;margin-bottom:2px}
+  .titleArt .faceCard,.titleArt .backCard {width:86px;height:120px}.titleScreen h1 {font-size:34px}
+  .titleActions {margin-top:5px;gap:8px}
+}
+@media(min-width:580px) and (max-height:440px) {
+  .box.dialogBox {padding:12px;gap:8px}.dialogBox>h1,.dialogBox>h2 {font-size:19px}
+  .dialogActions {padding-top:7px}.dialogActions .pxbtn {padding:7px;font-size:13px}
+  .workshopBox {grid-template-rows:26px 44px minmax(0,1fr) 44px}
+  .rewardBox {padding:12px!important;gap:8px}.rewardBox h2 {font-size:19px}
+  .rewardChoice {min-height:160px}.rewardUpgrade .rewardChoice {min-height:110px}
+  .blindSelectBox #blindCols {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .blindSelectBox .bcol {display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;text-align:center;padding:8px;gap:5px;width:auto}
+  .blindSelectBox .bcol .bbs {font-size:11px;line-height:1.5}.blindSelectBox .bcol .bbtn {margin:0;padding:6px;font-size:12px}
+  .blindSelectBox .bcol .bname {font-size:13px}.blindSelectBox .bcol .btgt {font-size:20px}
+  .titleScreen {display:grid;grid-template-columns:minmax(180px,1fr) minmax(235px,1fr);gap:8px 25px;width:min(720px,100%);padding:8px}
+  .titleArt {grid-column:1;grid-row:1;margin:0 auto;zoom:.65}.titleScreen h1 {grid-column:1;grid-row:2;font-size:30px;align-self:start}
+  .titleActions {grid-column:2;grid-row:1/3;width:100%;margin:0;gap:8px}
+}
+@media(prefers-reduced-motion:reduce) {.segmented button,.handOption,.pickerTrigger {transition:none}}

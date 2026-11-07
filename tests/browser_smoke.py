@@ -65,6 +65,19 @@ def require(condition, message):
         raise AssertionError(message)
 
 
+def choose_speed(page, value, mobile=False):
+    option=page.locator(f'#speedOptions [data-speed="{value}"]')
+    if option.count():
+        option.tap() if mobile else option.click()
+    else:
+        page.locator('#speedSelect').select_option(str(value))
+
+
+def selected_speed(page):
+    option=page.locator('#speedOptions [aria-pressed="true"]')
+    return option.get_attribute('data-speed') if option.count() else page.locator('#speedSelect').input_value()
+
+
 def number(text):
     found = re.search(r"\d[\d,]*", text)
     require(found is not None, f"Expected a number in {text!r}")

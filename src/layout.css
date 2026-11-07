@@ -220,8 +220,6 @@ body::after {display:none}
 }
 
 #selCount {font:600 12px var(--mono);color:#b6cdbb}
-.settingRow {display:flex;align-items:center;justify-content:space-between;padding:8px 4px;gap:15px}
-.settingRow select {min-height:44px;min-width:100px;background:#244238;color:var(--paper);border:1px solid #739283;border-radius:5px;padding:6px 12px}
 #scoreEstimate {font:700 13px var(--mono);color:var(--brass);margin-left:auto;white-space:nowrap}
 #previewBox {flex-wrap:wrap}
 #prevCalc {margin-left:0}
