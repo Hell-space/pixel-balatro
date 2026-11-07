@@ -12,7 +12,7 @@ test('藏牌只补一张，取消和重复确认不改变资源或牌组身份',
   assert.equal(s.reserve.cardId,card.id);assert(!s.hand.includes(card));assert(s.hand.includes(next));
   assert.equal(s.hand.length,before.size);assert.equal(s.drawPile.length,before.draw-1);
   assert.equal(s.money,before.money);assert.equal(s.handsLeft,before.hands);assert.equal(s.discLeft,before.discards);
-  assert.equal(s.cardsAdded,0);assert.equal(s.totHands,0);assert.equal(s.rhythm.chain,0);
+  assert.equal(s.cardsAdded,0);assert.equal(s.totHands,0);
   assert.equal(new Set(ids(s)).size,52);assert.deepEqual(s.deckAll,deck);
   assert(!g.applyReserve('store',s.hand[0].id));assert(!g.confirmReserve());
 });
@@ -81,13 +81,13 @@ test('牌库空、忙碌、非对局和多人不误扣资源；牌库空仍可�
   assert(g.applyReserve('retrieve',s.hand[0].id));assert.equal(s.money,money);
 });
 
-test('不弃牌悬赏允许底牌，塔罗销毁手牌不碰底牌，计分结束仍可恢复',async()=>{
-  const h=harness(29),g=h.game;g.newGame(false);const s=g.getState();g.selectContract('clean');g.chooseBlind();
+test('塔罗销毁手牌不碰底牌，换回后的牌可以计分，下一盲重置底牌',async()=>{
+  const h=harness(29),g=h.game;g.newGame(false);const s=g.getState();g.chooseBlind();
   const card=s.hand[0];assert(g.applyReserve('store',card.id));
   s.cons=[{id:'tower',kind:'tarot',price:3}];g.selectCards([s.hand[0].id]);g.useCons(0);
-  assert(s.deckAll.includes(card));assert.equal(s.reserve.cardId,card.id);assert.equal(s.contract.discards,0);
+  assert(s.deckAll.includes(card));assert.equal(s.reserve.cardId,card.id);assert.equal(s.discLeft,s.baseDisc);
   assert(g.applyReserve('retrieve',s.hand[0].id));s.target=1;g.selectCards([card.id]);await g.doPlay();
-  assert.equal(s.screen,'cash');assert.equal(s.payout.find(([name])=>name.startsWith('悬赏'))[1],6);
+  assert.equal(s.screen,'cash');
   g.openShop();g.leaveShop();assert.equal(s.reserve.cardId,null);assert(!s.reserve.used);
 });
 

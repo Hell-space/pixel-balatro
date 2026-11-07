@@ -200,7 +200,7 @@ def audit_dialog(page,selector,action,profile,out,issues,label):
     page.locator(selector).wait_for(state='visible');page.wait_for_timeout(200)
     measure=page.evaluate("""([overlay,button]) => {
       const root=document.querySelector(overlay),box=root.querySelector('.box'),act=root.querySelector(button);
-      const body=root.querySelector('.dialogBody,.tacticsBody,#packCards');
+      const body=root.querySelector('.dialogBody,#packCards');
       const rect=e=>{if(!e)return null;const r=e.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,
         width:r.width,height:r.height,clientWidth:e.clientWidth,scrollWidth:e.scrollWidth,clientHeight:e.clientHeight,scrollHeight:e.scrollHeight}};
       const reach=e=>{if(!e)return false;const r=e.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
@@ -228,10 +228,7 @@ def surface_traversal(browser,url,out,seed,profile):
         screenshot(page,out,f'{profile}-title')
         tap('#newBtn');inspect('#ovSetup','#beginRunBtn','setup')
         require(page.locator('#deckChoices button').count()==5,'five deck choices missing')
-        tap('#beginRunBtn');inspect('#ovBlinds','#tacticsEntry','blind-select')
-        tap('#tacticsEntry');inspect('#ovTactics','button[onclick="hide(\'ovTactics\')"]','tactics')
-        press(page.locator('#rhythmChoices [data-rhythm="none"]'),mobile)
-        press(page.locator('#ovTactics button').filter(has_text='完成备战'),mobile)
+        tap('#beginRunBtn');inspect('#ovBlinds','#blindCols .cur .bbtn:not(.skip)','blind-select')
         press(page.locator('#blindCols .cur .bbtn:not(.skip)'),mobile)
         page.locator('#handRow .card').first.wait_for(state='visible');screenshot(page,out,f'{profile}-table')
         tap('#reserveBtn');inspect('#ovReserve','button[onclick="closeReserve()"]','reserve')
@@ -337,20 +334,16 @@ def dense_table(browser,url,out,seed,profile):
           S.jokerSlots=6;S.jokers=[];JDEFS.slice(0,6).forEach(addJoker);
           S.consSlots=3;S.cons=TAROTS.slice(0,3).map(t=>({...t,kind:'tarot',price:3}));
           S.blindIdx=2;S.boss=BOSSES.find(b=>b.id==='hook');S.anteBoss=S.boss;
-          S.rhythmMode='focus';S.rhythm={lastKey:'pair',chain:3};
-          S.contract={id:'variety',discards:0,settled:false};S.blindPlayed=['high','pair'];
+          S.blindPlayed=['high','pair'];
           S.target=99999999;S.score=12345678;renderAll();}""")
         geometry=page.evaluate("""() => {
           const rect=e=>{const r=e.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom}};
           const hit=e=>{const r=e.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
             const h=x>=0&&x<innerWidth&&y>=0&&y<innerHeight?document.elementFromPoint(x,y):null;return !!h&&(h===e||e.contains(h));};
-          return Object.fromEntries(['#bossDesc','#tacticsStatus','#reserveBtn','#handRow','#btnPlay','#btnDiscard','#targetVal','#scoreVal']
+          return Object.fromEntries(['#bossDesc','#reserveBtn','#handRow','#btnPlay','#btnDiscard','#targetVal','#scoreVal']
             .map(s=>[s,{...rect(document.querySelector(s)),hit:hit(document.querySelector(s))}]));
         }""")
         screenshot(page,out,f'{profile}-dense-table')
-        a,b=geometry['#bossDesc'],geometry['#tacticsStatus']
-        overlap=max(0,min(a['right'],b['right'])-max(a['left'],b['left']))*max(0,min(a['bottom'],b['bottom'])-max(a['top'],b['top']))
-        if overlap>1:issues.append({'requirement':'boss description and tactics status do not overlap','area':overlap})
         for selector in ('#reserveBtn','#btnPlay','#btnDiscard','#targetVal','#scoreVal'):
             r=geometry[selector]
             if r['left']<0 or r['top']<0 or r['right']>spec['width'] or r['bottom']>spec['height'] or not r['hit']:
@@ -358,7 +351,7 @@ def dense_table(browser,url,out,seed,profile):
         press(page.locator('#handRow .card').first,mobile)
         if not page.locator('#btnPlay').is_enabled():issues.append({'requirement':'dense hand supports actual selection'})
         require(not errors,f'page errors: {errors}')
-        return {'status':'failed' if issues else 'passed','fixture':'normal blind, then 10 cards, 6 jokers/3 consumables, boss/tactics and high scores assigned; actual selection',
+        return {'status':'failed' if issues else 'passed','fixture':'normal blind, then 10 cards, 6 jokers/3 consumables, boss and high scores assigned; actual selection',
                 'geometry':geometry,'issues':issues,'page_errors':errors}
     finally:context.close()
 

@@ -217,48 +217,9 @@ def start_selection(page,url):
     page.locator('#ovBlinds').wait_for(state='visible')
 
 
-def open_tactics(page,mode=None,contract=None):
-    page.locator('#tacticsEntry').tap();page.locator('#ovTactics').wait_for(state='visible')
-    if mode:page.locator(f"#rhythmChoices [data-rhythm='{mode}']").tap()
-    if contract:page.locator(f"#contractChoices [data-contract='{contract}']").tap()
-
-
 def start_selected_blind(page):
-    page.locator('#ovTactics button').filter(has_text='完成备战').tap()
     page.locator('#blindCols .cur .bbtn:not(.skip)').tap()
     page.locator('#handRow .card').first.wait_for(state='visible')
-
-
-def tactics_visual(browser,url,out,seed,profile):
-    context,page,errors=fresh(browser,seed,PROFILES[profile]);issues=[]
-    try:
-        start_selection(page,url);assert_viewport(page,PROFILES[profile]['width'])
-        open_tactics(page,'focus','first')
-        screenshot(page,out,f'tactics-{profile}-choices')
-        before=page.evaluate("() => ({money:S.money,mode:S.rhythmMode,contract:S.contractChoice})")
-        if before!={'money':4,'mode':'focus','contract':'first'}:
-            issues.append({'requirement':'selection does not take wager','observed':before})
-        assert_reachable(page.locator('#ovTactics button').filter(has_text='完成备战'),'finish tactics')
-        page.locator('#ovTactics button').filter(has_text='完成备战').tap()
-        reload_and_resume(page,True,'#ovBlinds')
-        resumed=page.evaluate("() => ({money:S.money,mode:S.rhythmMode,contract:S.contractChoice})")
-        if resumed!=before:issues.append({'requirement':'selection persists through refresh','before':before,'after':resumed})
-        open_tactics(page)
-        require(page.locator("#rhythmChoices [data-rhythm='focus']").get_attribute('aria-pressed')=='true','focus did not restore')
-        require(page.locator("#contractChoices [data-contract='first']").get_attribute('aria-pressed')=='true','contract did not restore')
-        page.keyboard.press('Escape')
-        if page.locator('#ovTactics').is_visible():issues.append({'requirement':'Escape returns to blinds'})
-        tag=page.evaluate('() => S.skipTags[S.blindIdx].id')
-        page.locator('#blindCols .cur .bbtn.skip').tap()
-        skipped=page.evaluate("() => ({money:S.money,choice:S.contractChoice,blind:S.blindIdx})")
-        expected_money=before['money']+(8 if tag=='money' else 0)
-        if skipped!={'money':expected_money,'choice':None,'blind':1}:
-            issues.append({'requirement':'skipping blind clears wager without charging','tag':tag,'expected_money':expected_money,'after':skipped})
-        screenshot(page,out,f'tactics-{profile}-after-skip')
-        require(not errors,f'page errors: {errors}')
-        return {'status':'failed' if issues else 'passed','fixture':'normal new game, selections and skip by touch; Escape keyboard',
-                'before':before,'resumed':resumed,'skip_tag':tag,'skipped':skipped,'issues':issues,'page_errors':errors}
-    finally:context.close()
 
 
 def set_hand(page,specs):
@@ -277,76 +238,6 @@ def play_ids(page,ids):
     page.locator('#btnPlay').tap()
     page.wait_for_function('before => S && !S.busy && S.score>before',arg=score,timeout=20000)
     return {'name':name,'estimate':estimate,'actual':read_number(page,'#scoreVal')-score}
-
-
-def rhythm_scoring(browser,url,out,seed,mode):
-    context,page,errors=fresh(browser,seed,PROFILES['portrait']);issues=[]
-    try:
-        start_selection(page,url);open_tactics(page,mode);start_selected_blind(page)
-        ids=set_hand(page,[[6,0],[13,2],[8,0],[8,1],[2,1],[4,2],[10,3],[7,3]])
-        page.evaluate("() => {S.target=1000000;renderAll();}")
-        first=play_ids(page,[ids[0]])
-        if first['estimate']!=11 or first['actual']!=11:issues.append({'requirement':'first hand has no rhythm bonus','actual':first})
-        second_ids=[ids[1]] if mode=='focus' else ids[2:4]
-        before=page.evaluate('() => ({...S.rhythm})')
-        for card_id in second_ids:page.locator(f'#handRow .card[data-card-id="{card_id}"]').tap()
-        preview=read_number(page,'#scoreEstimate')
-        page.locator(f'#handRow .card[data-card-id="{second_ids[0]}"]').tap()
-        page.locator(f'#handRow .card[data-card-id="{second_ids[0]}"]').tap()
-        after_preview=page.evaluate('() => ({...S.rhythm})')
-        expected=45 if mode=='focus' else 104
-        screenshot(page,out,f'rhythm-{mode}-second-preview')
-        if before!=after_preview:issues.append({'requirement':'repeated previews are pure','before':before,'after':after_preview})
-        if preview!=expected:issues.append({'requirement':'rhythm second-hand independent preview','expected':expected,'actual':preview})
-        score=read_number(page,'#scoreVal');page.locator('#btnPlay').tap()
-        page.wait_for_function('before => S && !S.busy && S.score>before',arg=score,timeout=20000)
-        actual=read_number(page,'#scoreVal')-score
-        rhythm=page.evaluate('() => ({...S.rhythm})')
-        events=page.evaluate('() => S.lastResult.events.map(e=>e.text)')
-        if actual!=expected or rhythm.get('chain')!=2:
-            issues.append({'requirement':'rhythm advances once and actual score matches','expected':expected,'actual':actual,'rhythm':rhythm})
-        if not any(('专注' if mode=='focus' else '变奏') in e for e in events):
-            issues.append({'requirement':'score breakdown includes rhythm bonus','events':events})
-        screenshot(page,out,f'rhythm-{mode}-scored')
-        require(not errors,f'page errors: {errors}')
-        return {'status':'failed' if issues else 'passed','fixture':'normal blind, then canonical eight-card hand and high target assigned; actual touch play',
-                'first':first,'preview':preview,'actual':actual,'before_preview':before,'after_preview':after_preview,
-                'rhythm':rhythm,'events':events,'issues':issues,'page_errors':errors}
-    finally:context.close()
-
-
-def contract_run(browser,url,out,seed,case):
-    cfg={'first_success':('first',8),'first_fail':('first',0),'clean_fail':('clean',0),
-         'clean_success':('clean',6),'variety_success':('variety',9)}[case]
-    context,page,errors=fresh(browser,seed,PROFILES['portrait']);issues=[]
-    try:
-        start_selection(page,url);open_tactics(page,contract=cfg[0])
-        pre=page.evaluate('() => ({money:S.money,choice:S.contractChoice})')
-        start_selected_blind(page)
-        wager=page.evaluate('() => ({money:S.money,contract:S.contract})')
-        if pre['money']!=4 or wager['money']!=2 or wager['contract']['id']!=cfg[0]:
-            issues.append({'requirement':'wager $2 charged exactly when blind starts','pre':pre,'start':wager})
-        ids=set_hand(page,[[9,0],[9,1],[9,2],[9,3],[2,0],[3,0],[3,1],[13,2]])
-        plays=[]
-        if case=='clean_fail':
-            page.locator(f'#handRow .card[data-card-id="{ids[4]}"]').tap();page.locator('#btnDiscard').tap()
-        elif case in ('first_fail','variety_success'):
-            plays.append(play_ids(page,[ids[4]]))
-        if case=='variety_success':plays.append(play_ids(page,ids[5:7]))
-        plays.append(play_ids(page,ids[:4]))
-        page.locator('#ovCash').wait_for(state='visible')
-        after=page.evaluate("() => ({money:S.money,payout:S.payout,contract:S.contract,blindPlayed:S.blindPlayed})")
-        rows=[row for row in after['payout'] if row[0].startswith('悬赏')]
-        if len(rows)!=1 or rows[0][1]!=cfg[1] or not after['contract']['settled']:
-            issues.append({'requirement':'contract settles exactly once with correct reward','expected':cfg[1],'observed':after})
-        screenshot(page,out,f'contract-{case}-cash')
-        reload_and_resume(page,True,'#ovCash')
-        restored=page.evaluate("() => ({money:S.money,payout:S.payout,contract:S.contract,blindPlayed:S.blindPlayed})")
-        if restored!=after:issues.append({'requirement':'contract payout not repeated after resume','after':after,'restored':restored})
-        require(not errors,f'page errors: {errors}')
-        return {'status':'failed' if issues else 'passed','fixture':'normal new game and contract choice, canonical hand assigned after start, all plays/discard by touch',
-                'pre':pre,'wager':wager,'plays':plays,'after':after,'restored':restored,'issues':issues,'page_errors':errors}
-    finally:context.close()
 
 
 def boss_rewards(browser,url,out,seed):
@@ -551,10 +442,10 @@ def standard_pack_refresh(browser,url,out,seed):
     finally:context.close()
 
 
-def boss_tactics_hud(browser,url,out,seed,profile):
+def boss_hud(browser,url,out,seed,profile):
     context,page,errors=fresh(browser,seed,PROFILES[profile]);issues=[]
     try:
-        start_selection(page,url);open_tactics(page,'focus','first');start_selected_blind(page)
+        start_selection(page,url);start_selected_blind(page)
         page.evaluate("""() => { S.blindIdx=2;S.boss=BOSSES.find(b=>b.id==='hook');
           S.anteBoss=S.boss;S.target=600;renderAll(); }""")
         assert_viewport(page,PROFILES[profile]['width'])
@@ -565,17 +456,14 @@ def boss_tactics_hud(browser,url,out,seed,profile):
           const hit=e=>{const r=e.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
             const target=x>=0&&x<innerWidth&&y>=0&&y<innerHeight?document.elementFromPoint(x,y):null;
             return !!target&&(target===e||e.contains(target));};
-          return {boss:rect(document.querySelector('#bossDesc')),tactics:rect(document.querySelector('#tacticsStatus')),
+          return {boss:rect(document.querySelector('#bossDesc')),
             hand:rect(document.querySelector('#handRow')),play:rect(document.querySelector('#btnPlay')),
             discard:rect(document.querySelector('#btnDiscard')),
             firstCardHit:hit(document.querySelector('#handRow .card')),
             playHit:hit(document.querySelector('#btnPlay')),discardHit:hit(document.querySelector('#btnDiscard'))};
         }""")
-        screenshot(page,out,f'boss-tactics-hud-{profile}')
-        a,b=geometry['boss'],geometry['tactics']
-        overlap=max(0,min(a['right'],b['right'])-max(a['left'],b['left']))*max(0,min(a['bottom'],b['bottom'])-max(a['top'],b['top']))
-        if overlap>1:issues.append({'requirement':'boss description and tactics status do not overlap','overlap_area':overlap,'boss':a,'tactics':b})
-        for name in ('boss','tactics','play','discard'):
+        screenshot(page,out,f'boss-hud-{profile}')
+        for name in ('boss','play','discard'):
             r=geometry[name]
             if (r['display']=='none' or r['left']<-1 or r['top']<-1 or
                 r['right']>PROFILES[profile]['width']+1 or r['bottom']>PROFILES[profile]['height']+1 or
@@ -590,10 +478,10 @@ def boss_tactics_hud(browser,url,out,seed,profile):
         after=page.evaluate('() => ({hands:S.handsLeft,discards:S.discLeft,score:S.score})')
         if after['hands']!=before['hands']-1 or after['discards']!=before['discards']-1:
             issues.append({'requirement':'actual discard and play both work','before':before,'after':after})
-        screenshot(page,out,f'boss-tactics-played-{profile}')
+        screenshot(page,out,f'boss-played-{profile}')
         require(not errors,f'page errors: {errors}')
-        return {'status':'failed' if issues else 'passed','fixture':'normal new game, focus and first-hand contract selected by touch; hook boss assigned after blind starts; discard/play by touch',
-                'geometry':geometry,'overlap_area':overlap,'before':before,'after':after,'issues':issues,'page_errors':errors}
+        return {'status':'failed' if issues else 'passed','fixture':'normal new game; hook boss assigned after blind starts; discard/play by touch',
+                'geometry':geometry,'before':before,'after':after,'issues':issues,'page_errors':errors}
     finally:context.close()
 
 
@@ -621,15 +509,12 @@ def main():
                        'workshop_double_paid':lambda:workshop_transaction(browser,url,args.output_dir,args.seed,'copy',False,True),
                        'workshop_double_free':lambda:workshop_transaction(browser,url,args.output_dir,args.seed,'copy',True,True),
                        **{f'workshop_filter_{name}':(lambda n=name:workshop_filter_keyboard(browser,url,args.output_dir,args.seed,n)) for name in PROFILES},
-                       **{f'tactics_visual_{name}':(lambda n=name:tactics_visual(browser,url,args.output_dir,args.seed,n)) for name in PROFILES},
-                       **{f'rhythm_{mode}':(lambda m=mode:rhythm_scoring(browser,url,args.output_dir,args.seed,m)) for mode in ('focus','flow')},
-                       **{f'contract_{name}':(lambda n=name:contract_run(browser,url,args.output_dir,args.seed,n)) for name in ('first_success','first_fail','clean_fail','clean_success','variety_success')},
                        'boss_rewards':lambda:boss_rewards(browser,url,args.output_dir,args.seed),
                        'workshop_cancel_double':lambda:workshop_cancel_double(browser,url,args.output_dir,args.seed),
                        'workshop_cross_store':lambda:workshop_cross_store(browser,url,args.output_dir,args.seed),
                        'workshop_tab_focus':lambda:workshop_tab_focus(browser,url,args.output_dir,args.seed),
                        'standard_pack_refresh':lambda:standard_pack_refresh(browser,url,args.output_dir,args.seed),
-                       **{f'boss_tactics_hud_{name}':(lambda n=name:boss_tactics_hud(browser,url,args.output_dir,args.seed,n)) for name in PROFILES}}
+                       **{f'boss_hud_{name}':(lambda n=name:boss_hud(browser,url,args.output_dir,args.seed,n)) for name in PROFILES}}
                 require(not args.only or not (set(args.only)-set(cases)),f'unknown cases: {args.only}')
                 for name,run in cases.items():
                     if args.only and name not in args.only:continue

@@ -36,11 +36,10 @@ test('碾压奖励按完整倍数发放并有上限，碾压锤翻倍；结算�
   const row=s.payout.find(([label])=>label.startsWith('碾压'));assert(row);assert.equal(row[1],2);
   assert.equal(s.payout.at(-1)[1],s.money-before);
 });
-test('节拍器让节奏连招倍率翻倍，上限同步翻倍',()=>{
-  const {g}=playing();const s=g.getState();s.rhythmMode='focus';
-  assert.equal(g.rhythmForHand({...s,rhythm:{lastKey:'pair',chain:2},jokers:[]},'pair').bonus,4);
-  assert.equal(g.rhythmForHand({...s,rhythm:{lastKey:'pair',chain:2},jokers:[{id:'metronome'}]},'pair').bonus,8);
-  assert.equal(g.rhythmForHand({...s,rhythm:{lastKey:'pair',chain:5},jokers:[{id:'metronome'}]},'pair').bonus,16);
+test('压轴随本盲出手数成长：第 1 手 +5，第 4 手 +20，与剩余出牌无关',()=>{
+  const {g}=playing();const s=g.getState();const j=[{id:'finale',uid:4,ed:0,state:0}],one=[card(2,0,1)];
+  for(const [played,total] of [[[],42],[['high'],77],[['high','pair','high'],147]])
+    assert.equal(g.scoreHand({...s,boss:null,jokers:j,hand:one,blindPlayed:played,handsLeft:3},one,()=>0).total,total);
 });
 test('同心结需要至少三张同色，百搭牌可配合任一颜色',()=>{
   const {g}=playing();const s=g.getState();const j=[{id:'twins',uid:3,ed:0,state:0}];
@@ -66,9 +65,18 @@ test('推荐计入小丑：持有偶数小丑时偏好偶数高牌，同分时�
   const best=g.bestSelection(s);assert.equal(best.total,g.scoreHand({...s,handsLeft:s.handsLeft-1},s.hand.filter(c=>best.ids.includes(c.id)),()=>0).total);
   assert.deepEqual([...best.ids],[3]);assert.equal(best.total,55);
 });
-test('节拍器只在单人商店出现，多人模式卡池排除',()=>{
-  const {game:g,run}=harness(3);g.newGame(false);
-  assert.equal(run('jokerOffered({id:"metronome"})'),true);
-  run('MP.on=true');assert.equal(run('jokerOffered({id:"metronome"})'),false);assert.equal(run('jokerOffered({id:"finale"})'),true);
-  for(let i=0;i<200;i++)assert.notEqual(run('rollJokerItem(false).id'),'metronome');
+test('旧存档移除节奏与悬赏：进行中的押金退回，持有的节拍器按卖价折现，货架上的换成破绽猎手',()=>{
+  const {game:g,run,storage,load}=harness(5);g.newGame(false);g.chooseBlind();load('session');
+  const s=g.getState();g.persistRun();const saved=JSON.parse(storage.get('pixel-balatro.run.v1'));
+  const money=saved.state.money;
+  Object.assign(saved.state,{rhythmMode:'focus',rhythm:{lastKey:'pair',chain:2},contractChoice:null,contract:{id:'clean',discards:0,settled:false},
+    jokers:[{id:'metronome',uid:77,state:0,price:6,sell:3,ed:0},{id:'joker',uid:78,state:0,price:4,sell:2,ed:0}]});
+  const decoded=g.decodeRun(JSON.stringify(saved));assert(decoded,'old save must load');
+  assert.equal(decoded.state.money,money+2+3);assert.deepEqual([...decoded.state.jokers.map(j=>j.id)],['joker']);
+  for(const key of ['rhythmMode','rhythm','contract','contractChoice'])assert(!(key in decoded.state),key);
+  const shopState={...JSON.parse(saved.checkpoint),screen:'shop',jokers:[],shop:{disc:1,rerollCost:5,workshopUsed:false,
+    jokers:[{id:'metronome',price:6,ed:0,sold:false}],cons:[],packs:[{id:'buffoon',sold:false,options:[{id:'metronome',price:6,ed:0}]}]}};
+  const normal=run('normalizeRunState')(JSON.parse(JSON.stringify(shopState)));
+  assert.equal(normal.shop.jokers[0].id,'weakspot');assert.equal(normal.shop.packs[0].options[0].id,'weakspot');
+  assert.equal(run('JDEFS.length'),54);assert(!run('JDEFS.some(j=>j.id==="metronome")'));
 });

@@ -44,8 +44,8 @@ test('每张小丑的独立效果都有明确的数值样例',()=>{
     ['scholar',180,[card(14)]],['duo',56,pairs],['tribe',520,flush],['order',600,straight],
     ['blackboard',21,undefined,{}, {hand:[card(2),card(3,0)]}],
     ['boots',77,undefined,{}, {money:25}],['fortune',35,undefined,{}, {tarotsUsed:4}],['compass',32],
-    ['weakspot',77,undefined,{}, {anteBoss:{id:'arm',weak:'high'}}],['crusher',7],['metronome',7],
-    ['finale',147,undefined,{}, {handsLeft:0}],['prism',10,[{...card(2),wild:true}]],
+    ['weakspot',77,undefined,{}, {anteBoss:{id:'arm',weak:'high'}}],['crusher',7],
+    ['finale',147,undefined,{}, {blindPlayed:['high','high','high']}],['prism',10,[{...card(2),wild:true}]],
     ['twins',378,[card(2,1,1),card(5,3,2),card(9,1,3)]],
   ];
   assert.deepEqual(tests.map(x=>x[0]).sort(),Array.from(definitions,j=>j.id).sort());

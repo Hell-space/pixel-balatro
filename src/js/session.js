@@ -1,3 +1,19 @@
+// 1.7.1 removed rhythm, blind bounties and the metronome joker. Older runs keep playing:
+// a bounty still in play returns its $2 deposit, an owned metronome is sold at its sale price,
+// and a metronome still in stock becomes the same-tier weak-point hunter.
+const REMOVED_JOKER_SWAP={metronome:'weakspot'};
+function retireRemovedRules(s) {
+  if(s.screen==='play'&&s.contract&&!s.contract.settled&&Number.isFinite(s.money)) s.money+=2;
+  for(const key of ['rhythmMode','rhythm','contractChoice','contract']) delete s[key];
+  if(Array.isArray(s.jokers)) s.jokers=s.jokers.filter(j=>{
+    if(!REMOVED_JOKER_SWAP[j?.id]) return true;
+    if(Number.isFinite(s.money)&&Number.isFinite(j.sell)) s.money+=j.sell;
+    return false;
+  });
+  const swap=item=>REMOVED_JOKER_SWAP[item?.id]?{...item,id:REMOVED_JOKER_SWAP[item.id]}:item;
+  if(Array.isArray(s.shop?.jokers)) s.shop.jokers=s.shop.jokers.map(swap);
+  for(const pack of s.shop?.packs||[]) if(pack.id==='buffoon'&&Array.isArray(pack.options)) pack.options=pack.options.map(swap);
+}
 // Compatible with 1.1.0 saves. A previous valid snapshot protects against a damaged latest write.
 const RUN_KEY='pixel-balatro.run.v1', BACKUP_KEY=RUN_KEY+'.backup';
 let lastWrite='', storageUnavailable=false;
@@ -6,15 +22,10 @@ function normalizeRunState(input) {
   const s=input, finite=n=>Number.isFinite(n)&&n>=0;
   s.deckId??='classic'; s.stakeId??='white'; s.tarotsUsed??=0; s.blindPlayed??=[];s.bossHistory??=[];
   s.workshopCredits??=0; s.bossReward??=null;
-  s.rhythmMode??='none'; s.rhythm??={lastKey:null,chain:0};s.contractChoice??=null;s.contract??=null;
+  retireRemovedRules(s);
   s.reserve??={cardId:null,used:false};
   if(typeof s.reserve.used!=='boolean'||(s.reserve.cardId!==null&&!Number.isSafeInteger(s.reserve.cardId))||
     (s.reserve.used&&s.reserve.cardId!==null))throw Error('底牌状态损坏');
-  if(!RHYTHMS.some(r=>r.id===s.rhythmMode)||!Number.isInteger(s.rhythm.chain)||s.rhythm.chain<0||s.rhythm.chain>5||
-    (s.rhythm.lastKey!==null&&!HORDER.includes(s.rhythm.lastKey))||
-    (s.contractChoice!==null&&!CONTRACTS.some(c=>c.id===s.contractChoice))||
-    (s.contract&&(!CONTRACTS.some(c=>c.id===s.contract.id)||!Number.isInteger(s.contract.discards)||s.contract.discards<0||typeof s.contract.settled!=='boolean')))
-    throw Error('备战规则损坏');
   if(!Number.isSafeInteger(s.workshopCredits)||s.workshopCredits<0) throw Error('工坊次数损坏');
   if(s.bossReward && (s.screen!=='cash'||s.blindIdx!==2||s.bossReward.ante!==s.ante||
     !HORDER.includes(s.bossReward.handKey))) throw Error('成长奖励损坏');

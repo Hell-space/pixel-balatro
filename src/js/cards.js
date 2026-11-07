@@ -74,8 +74,7 @@ const JDEFS = [
   // —— 1.7.0 原创小丑 ——
   { id:'weakspot', ic:'🎯', name:'破绽猎手', price:6, rar:1, desc:'打出本底注 Boss 的破绽牌型时 +10 倍率（小盲、大盲同样生效）' },
   { id:'crusher', ic:'🔨', name:'碾压锤', price:5, rar:0, desc:'碾压奖励翻倍，上限提高到 $6' },
-  { id:'metronome', ic:'🥁', name:'节拍器', price:6, rar:1, desc:'出牌节奏的连招倍率翻倍（每连 +4，最多 +16）' },
-  { id:'finale', ic:'🎆', name:'压轴', price:5, rar:0, desc:'本盲注最后一次出牌时 +20 倍率' },
+  { id:'finale', ic:'🎆', name:'压轴', price:5, rar:0, desc:'本盲注每出 1 手牌 +5 倍率（含本手：第 1 手 +5，第 4 手 +20）' },
   { id:'prism', ic:'🔷', name:'棱镜', price:7, rar:1, desc:'每张计分的百搭花色牌 ×1.5 倍率' },
   { id:'twins', ic:'🎎', name:'同心结', price:5, rar:0, desc:'打出至少 3 张牌且全为红色或全为黑色时 +40 筹码、+6 倍率' },
 ];

@@ -193,7 +193,6 @@ function renderStats() {
   const bd = $('bossDesc');
   if (S.boss) { bd.style.display = 'block'; bd.textContent = S.boss.desc + '｜🎯 ' + bossWeakLabel(S.boss); }
   else bd.style.display = 'none';
-  const tactics=tacticsStatus();$('tacticsStatus').textContent=tactics;$('tacticsStatus').hidden=!tactics;
 }
 function jokerDesc(j) {
   let d = j.desc;

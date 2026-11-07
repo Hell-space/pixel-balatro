@@ -1,17 +1,4 @@
 /* The workshop is a card tray, with the transaction always in reach. */
-.tacticsEntry {display:block;width:100%;margin:10px 0 0;min-height:40px;border:1px solid #879e80;border-radius:5px;background:#234b3b;color:var(--paper);font-size:13px;padding:7px}
-.tacticsBox {width:640px;max-width:100%!important;display:flex;flex-direction:column;overflow:hidden;padding:16px!important;max-height:100%}
-.tacticsBox h2 {margin:0 0 10px}.tacticsBox h3 {font-size:15px;margin:0 0 4px;color:var(--brass)}
-.tacticsBody {min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left;padding:3px}
-.tacticsBody p {font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 8px}
-.tacticChoice {width:100%;display:flex;flex-direction:column;gap:4px;border:1px solid #688974;border-radius:5px;background:#173b31;color:var(--paper);padding:10px;margin:0 0 6px;text-align:left;min-height:42px}
-.tacticChoice b {font-size:14px}.tacticChoice span,.tacticChoice small {font-size:12px;line-height:1.4;color:var(--muted)}
-.tacticChoice[aria-pressed=true] {border-color:var(--brass);background:#3b5139;box-shadow:inset 3px 0 var(--brass)}
-.tacticChoice:disabled {opacity:.5}
-.tacticsBox>.pxbtn {flex-shrink:0;margin:10px 0 0;min-height:44px}
-#tacticsStatus {color:var(--brass);font-size:11px;line-height:1.5;grid-column:1/-1;grid-row:5}
-@media(min-width:580px) and (max-width:1000px) and (max-height:540px) {#tacticsStatus {grid-row:6}}
-@media(max-width:579px) {.tacticsBody {grid-template-columns:1fr;gap:12px}.tacticsBox h2 {font-size:20px}}
 #ovShop #shopWorkshop {grid-template-columns:minmax(0,1fr);grid-template-rows:auto repeat(3,minmax(0,1fr));gap:6px}
 .workshopStatus {margin:0;font-size:12px;line-height:1.5;color:var(--brass)}
 .workshopService {display:grid;grid-template-columns:26px 1fr auto;gap:2px 8px;align-content:center;align-items:center;

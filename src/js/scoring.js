@@ -84,7 +84,6 @@ async function doPlay() {
   S.money+=result.money;
   S.lastResult={name:HANDS[ev.key].name,total:result.total,chips,mult,money:result.money,
     events:result.events.map(e=>({text:e.text,chips:e.chips,mult:e.mult}))};
-  S.rhythm=result.rhythm;
 
   // —— 总分 ——
   const total = Math.floor(chips * mult);
@@ -146,7 +145,6 @@ function doDiscard() {
   if (!sel.length) { msg('请先选择要弃掉的牌', 1); return; }
   animateDiscard(sel);
   S.discLeft--;
-  if(S.contract)S.contract.discards++;
   S.hand = S.hand.filter(c => !c.sel);
   S.jokers.forEach(j => { if (j.id === 'green' && j.state) { j.state = 0; jokerPop(j, '清零!'); } });
   sfxBad();
@@ -177,7 +175,6 @@ function beatBlind() {
   }
   const overkill=overkillBonus(S);
   if(overkill.money){S.payout.push(['碾压 '+(Math.floor(overkill.ratio*10)/10)+'× 目标',overkill.money]);total+=overkill.money;}
-  total+=settleContract();
   S.payout.push(['合计',total]);
   renderPayout();
   S.money += total;

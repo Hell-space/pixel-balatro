@@ -44,7 +44,7 @@ def open_reserve(page,mobile):
 def state(page):
     return page.evaluate("""() => ({screen:S.screen,reserve:{...S.reserve},hand:S.hand.map(c=>c.id),
       draw:S.drawPile.map(c=>c.id),deck:S.deckAll.map(c=>c.id),money:S.money,hands:S.handsLeft,
-      discard:S.discLeft,score:S.score,rhythm:{...S.rhythm},contract:S.contract})""")
+      discard:S.discLeft,score:S.score})""")
 
 
 def double_at(page,locator,mobile):
@@ -95,7 +95,7 @@ def reserve_flow(browser,url,out,seed,profile):
         stored=state(page);expected_draw=initial['draw'][:-1]
         if (stored['reserve']!={'cardId':selected_id,'used':False} or
             set(stored['hand'])!=set(initial['hand'])-{selected_id}|{initial['draw'][-1]} or stored['draw']!=expected_draw or
-            any(stored[k]!=initial[k] for k in ('money','hands','discard','score','rhythm','contract','deck'))):
+            any(stored[k]!=initial[k] for k in ('money','hands','discard','score','deck'))):
             issues.append({'requirement':'store and replace exactly one card without advancing resources','initial':initial,'stored':stored})
         screenshot(page,out,f'{profile}-stored')
         reload_and_resume(page,mobile,'#handRow .card')
@@ -111,7 +111,7 @@ def reserve_flow(browser,url,out,seed,profile):
         page.locator('#ovReserve').wait_for(state='hidden');swapped=state(page)
         if (swapped['reserve']!={'cardId':None,'used':True} or selected_id not in swapped['hand'] or
             replacement_id in swapped['hand'] or replacement_id in swapped['draw'] or
-            any(swapped[k]!=stored[k] for k in ('money','hands','discard','score','rhythm','contract','deck'))):
+            any(swapped[k]!=stored[k] for k in ('money','hands','discard','score','deck'))):
             issues.append({'requirement':'retrieve exactly once without advancing resources','stored':stored,'swapped':swapped,'replaced':replacement_id})
         reload_and_resume(page,mobile,'#handRow .card')
         resumed=state(page)
@@ -139,8 +139,7 @@ def dense_reserve(browser,url,out,seed,profile):
           S.jokerSlots=6;S.jokers=[];JDEFS.slice(0,6).forEach(addJoker);
           S.consSlots=3;S.cons=TAROTS.slice(0,3).map(t=>({...t,kind:'tarot',price:3}));
           S.blindIdx=2;S.boss=BOSSES.find(b=>b.id==='hook');S.anteBoss=S.boss;
-          S.rhythmMode='focus';S.rhythm={lastKey:'pair',chain:3};
-          S.contract={id:'variety',discards:0,settled:false};S.blindPlayed=['high','pair'];
+          S.blindPlayed=['high','pair'];
           S.target=99999999;S.score=12345678;renderAll();persistRun();
           return {id:c.id,card:{...c},hand:S.hand.length,jokers:S.jokers.length,cons:S.cons.length};
         }""")
@@ -149,11 +148,8 @@ def dense_reserve(browser,url,out,seed,profile):
           const rect=e=>{const r=e.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height}};
           const hit=e=>{const r=e.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
             const h=x>=0&&x<innerWidth&&y>=0&&y<innerHeight?document.elementFromPoint(x,y):null;return !!h&&(h===e||e.contains(h));};
-          return Object.fromEntries(['#bossDesc','#tacticsStatus','#reserveBtn','#handRow','#btnPlay','#btnDiscard','#targetVal','#scoreVal'].map(s=>[s,{...rect(document.querySelector(s)),hit:hit(document.querySelector(s))}]));
+          return Object.fromEntries(['#bossDesc','#reserveBtn','#handRow','#btnPlay','#btnDiscard','#targetVal','#scoreVal'].map(s=>[s,{...rect(document.querySelector(s)),hit:hit(document.querySelector(s))}]));
         }""")
-        boss,tactics=data['#bossDesc'],data['#tacticsStatus']
-        overlap=max(0,min(boss['right'],tactics['right'])-max(boss['left'],tactics['left']))*max(0,min(boss['bottom'],tactics['bottom'])-max(boss['top'],tactics['top']))
-        if overlap>1:issues.append({'requirement':'boss and tactics text do not overlap','area':overlap,'geometry':data})
         for selector in ('#reserveBtn','#btnPlay','#btnDiscard'):
             r=data[selector]
             if r['left']<0 or r['top']<0 or r['right']>spec['width'] or r['bottom']>spec['height'] or not r['hit']:
@@ -205,7 +201,7 @@ def dense_reserve(browser,url,out,seed,profile):
           card:{...S.deckAll.find(c=>c.id===id)}})""",fixture['id'])
         if resumed!=restored:issues.append({'requirement':'retrieved enhanced card survives reload','before':restored,'after':resumed})
         require(not errors,f'page errors: {errors}')
-        return {'status':'failed' if issues else 'passed','fixture':'normal first blind; 10-card hand, full six jokers/three consumables, enhanced card, boss/tactics and high scores directly assigned; touch/mouse thereafter',
+        return {'status':'failed' if issues else 'passed','fixture':'normal first blind; 10-card hand, full six jokers/three consumables, enhanced card, boss and high scores directly assigned; touch/mouse thereafter',
                 'loadout':fixture,'table_geometry':data,'picker_before':geom_before,'picker_after':geom_after,
                 'hand_swipes':swipes,'preview':preview,'stored':retained,'pocket':pocket,'restored':restored,'resumed':resumed,'issues':issues,'page_errors':errors}
     except Exception:
@@ -439,11 +435,11 @@ def tutorial_info(browser,url,out,seed):
     try:
         page.goto(url,wait_until='domcontentloaded');start_blind(page,True)
         page.evaluate("""() => {S.handSize=10;S.jokerSlots=6;S.baseHands=5;S.baseDisc=3;
-          S.workshopCredits=2;S.rhythmMode='focus';renderAll();}""")
+          S.workshopCredits=2;renderAll();}""")
         page.locator('#menuBtn').tap();page.locator('#ovMenu button').filter(has_text='本局信息').tap()
         page.locator('#ovInfo').wait_for(state='visible');info=page.locator('#infoBody').inner_text()
         screenshot(page,out,'info-dynamic')
-        for pattern in (r'手牌上限\s*10',r'工坊免费次数\s*2',r'出牌节奏\s*专注',r'出牌/盲注\s*5',r'弃牌/盲注\s*3'):
+        for pattern in (r'手牌上限\s*10',r'工坊免费次数\s*2',r'出牌/盲注\s*5',r'弃牌/盲注\s*3'):
             if not re.search(pattern,info):issues.append({'requirement':'run information reflects active state','pattern':pattern,'text':info})
         page.locator('#ovInfo button').filter(has_text='关闭').tap();page.locator('#menuBtn').tap()
         page.locator('#ovMenu button').filter(has_text='新手教程').tap();page.locator('#tutBox').wait_for(state='visible')
@@ -462,7 +458,7 @@ def tutorial_info(browser,url,out,seed):
         screenshot(page,out,'tutorial-dynamic-reserve')
         page.locator('#tutBox button').filter(has_text='跳过').tap()
         require(not errors,f'page errors: {errors}')
-        return {'status':'failed' if issues else 'passed','fixture':'normal first blind; hand limit, joker slots, per-blind counters, workshop credits and rhythm directly assigned; menus and tutorial by touch',
+        return {'status':'failed' if issues else 'passed','fixture':'normal first blind; hand limit, joker slots, per-blind counters, workshop credits directly assigned; menus and tutorial by touch',
                 'info':info,'tutorial':found,'issues':issues,'page_errors':errors}
     finally:context.close()
 
@@ -501,10 +497,10 @@ def multiplayer_no_reserve(browser,url,out,seed):
         for page in (host,guest):page.locator('#ovBlinds').wait_for(state='visible',timeout=15000)
         host.locator('#blindCols .cur .bbtn:not(.skip)').click();host.locator('#handRow .card').first.wait_for(state='visible')
         observed=host.evaluate("""() => ({on:MP.on,hidden:document.querySelector('#reserveBtn').hidden,
-          showTactics:!document.querySelector('#tacticsEntry').hidden,hands:S.baseHands,discards:S.baseDisc})""")
+          hands:S.baseHands,discards:S.baseDisc})""")
         screenshot(host,out,'multiplayer-no-reserve')
-        if not observed['on'] or not observed['hidden'] or observed['showTactics'] or (observed['hands'],observed['discards'])!=(4,3):
-            issues.append({'requirement':'multiplayer keeps classic 4/3 and no reserve/tactics','observed':observed})
+        if not observed['on'] or not observed['hidden'] or (observed['hands'],observed['discards'])!=(4,3):
+            issues.append({'requirement':'multiplayer keeps classic 4/3 and no reserve','observed':observed})
         require(not any(errors),f'page errors: {errors}')
         return {'status':'failed' if issues else 'passed','fixture':'two isolated real browser clients, local relay, actual multiplayer lobby and blind start by mouse',
                 'room':code,'observed':observed,'issues':issues,'page_errors':errors}

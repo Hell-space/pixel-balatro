@@ -117,10 +117,6 @@ function scoreEventFx(event) {
       feedback(el, [{ transform: 'translateY(0)' }, { transform: 'translateY(-12px) scale(1.08) rotate(3deg)', offset: .4 }, { transform: 'translateY(0)' }], 260, true);
       const c = centerOf(el); sparkBurst(c.x, c.y, { count: 8, tone: 'mult', spread: 42, size: 5 }); floatText(c.x, c.r.y, event.text, 'mult', true);
     }
-  } else if (event.kind === 'rhythm') {
-    const c = centerOf($('previewBox'));
-    floatText(c.x, c.r.y, event.text.split(' · ')[0] + '！', 'chips', true);
-    sparkBurst(c.x, c.r.y + 6, { count: 10, tone: 'chips', spread: 60, size: 5 });
   } else if (event.kind === 'weak') {
     stamp('破绽！', 'weak', { scoring: true, duration: 760, y: 36 });
     shakeTable(7);

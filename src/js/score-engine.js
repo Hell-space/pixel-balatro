@@ -1,13 +1,5 @@
 // Pure scoring: animation, previews and tests consume the same calculation.
 const WEAK_MULT=1.5;
-function rhythmForHand(state,key) {
-  const mode=state.rhythmMode,previous=state.rhythm||{lastKey:null,chain:0};
-  if(!['focus','flow'].includes(mode))return {lastKey:null,chain:0,bonus:0};
-  const continues=previous.lastKey&&(mode==='focus'?previous.lastKey===key:previous.lastKey!==key);
-  const chain=continues?Math.min(5,previous.chain+1):1;
-  const step=(state.jokers||[]).some(j=>j.id==='metronome')?4:2;
-  return {lastKey:key,chain,bonus:(chain-1)*step};
-}
 // Each Boss shows one hand type it is weak against; the same hand gets ×1.5 in that Boss blind.
 function bossWeakKey(boss) { return boss&&HANDS[boss.weak]?boss.weak:null; }
 function bossWeakLabel(boss) {
@@ -97,11 +89,6 @@ function scoreHand(state, cards, random = Math.random) {
     const times=c.seal==='red'?2:1;
     mult*=Math.pow(1.5,times); emit('held',c.id,times===2?'×2.25 钢铁 + 红封':'×1.5 钢铁');
   }
-  const rhythm=rhythmForHand(state,hand.key);
-  if(rhythm.bonus) {
-    mult+=rhythm.bonus;
-    emit('rhythm',null,(state.rhythmMode==='focus'?'专注':'变奏')+' '+rhythm.chain+' 连 · +'+rhythm.bonus+' 倍率');
-  }
   for (const j of state.jokers) {
     let c=0,m=0,x=1;
     switch (j.id) {
@@ -143,7 +130,7 @@ function scoreHand(state, cards, random = Math.random) {
       case 'baron': x=Math.pow(1.5,held.filter(k=>k.rank===13).reduce((n,k)=>n+(k.seal==='red'?2:1),0)); break;
       case 'moon': m=13*held.filter(k=>k.rank===12).reduce((n,k)=>n+(k.seal==='red'?2:1),0); break;
       case 'weakspot': if(bossWeakKey(state.anteBoss)===hand.key) m=10; break;
-      case 'finale': if(state.handsLeft===0) m=20; break;
+      case 'finale': m=5*((state.blindPlayed||[]).length+1); break;
       case 'twins': {
         const colors=new Set(cards.filter(k=>!k.wild).map(k=>RED(k.suit)));
         if(cards.length>=3&&colors.size<=1){c=40;m=6;}
@@ -161,5 +148,5 @@ function scoreHand(state, cards, random = Math.random) {
   if(state.boss&&bossWeakKey(state.boss)===hand.key) {
     mult*=WEAK_MULT; emit('weak',null,'破绽 · '+HANDS[hand.key].name+' ×'+WEAK_MULT);
   }
-  return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events,rhythm};
+  return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events};
 }

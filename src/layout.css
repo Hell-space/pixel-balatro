@@ -203,7 +203,6 @@ body::after {display:none}
   #blindBox.largeScore>#targetVal {grid-column:1;grid-row:5}
   #blindBox.largeScore>#scorebarWrap {grid-row:6}
   #blindBox.largeScore>#bossDesc {grid-row:7}
-  #blindBox.largeScore>#tacticsStatus {grid-row:8}
   #main {min-height:fit-content;padding:4px 8px}#jokerBar {min-height:44px}
   .jslot,.joker {width:42px;height:50px;min-height:50px}
   #playArea {min-height:46px}#playedRow .card {height:56px}

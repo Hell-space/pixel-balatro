@@ -413,7 +413,6 @@ body::after {display:none}
   #blindBox.largeScore>#targetVal {grid-column:1;grid-row:5}
   #blindBox.largeScore>#scorebarWrap {grid-row:6}
   #blindBox.largeScore>#bossDesc {grid-row:7}
-  #blindBox.largeScore>#tacticsStatus {grid-row:8}
   #main {min-height:fit-content;padding:4px 8px}#jokerBar {min-height:44px}
   .jslot,.joker {width:42px;height:50px;min-height:50px}
   #playArea {min-height:46px}#playedRow .card {height:56px}
@@ -660,19 +659,6 @@ body::after {display:none}
 }
 
 /* The workshop is a card tray, with the transaction always in reach. */
-.tacticsEntry {display:block;width:100%;margin:10px 0 0;min-height:40px;border:1px solid #879e80;border-radius:5px;background:#234b3b;color:var(--paper);font-size:13px;padding:7px}
-.tacticsBox {width:640px;max-width:100%!important;display:flex;flex-direction:column;overflow:hidden;padding:16px!important;max-height:100%}
-.tacticsBox h2 {margin:0 0 10px}.tacticsBox h3 {font-size:15px;margin:0 0 4px;color:var(--brass)}
-.tacticsBody {min-height:0;overflow:auto;display:grid;grid-template-columns:1fr 1fr;gap:14px;text-align:left;padding:3px}
-.tacticsBody p {font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 8px}
-.tacticChoice {width:100%;display:flex;flex-direction:column;gap:4px;border:1px solid #688974;border-radius:5px;background:#173b31;color:var(--paper);padding:10px;margin:0 0 6px;text-align:left;min-height:42px}
-.tacticChoice b {font-size:14px}.tacticChoice span,.tacticChoice small {font-size:12px;line-height:1.4;color:var(--muted)}
-.tacticChoice[aria-pressed=true] {border-color:var(--brass);background:#3b5139;box-shadow:inset 3px 0 var(--brass)}
-.tacticChoice:disabled {opacity:.5}
-.tacticsBox>.pxbtn {flex-shrink:0;margin:10px 0 0;min-height:44px}
-#tacticsStatus {color:var(--brass);font-size:11px;line-height:1.5;grid-column:1/-1;grid-row:5}
-@media(min-width:580px) and (max-width:1000px) and (max-height:540px) {#tacticsStatus {grid-row:6}}
-@media(max-width:579px) {.tacticsBody {grid-template-columns:1fr;gap:12px}.tacticsBox h2 {font-size:20px}}
 #ovShop #shopWorkshop {grid-template-columns:minmax(0,1fr);grid-template-rows:auto repeat(3,minmax(0,1fr));gap:6px}
 .workshopStatus {margin:0;font-size:12px;line-height:1.5;color:var(--brass)}
 .workshopService {display:grid;grid-template-columns:26px 1fr auto;gap:2px 8px;align-content:center;align-items:center;
@@ -766,7 +752,7 @@ button,input {font-family:var(--ui)}
 .dialogBody {flex:1 1 auto;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:2px 3px}
 .dialogBox>:not(.dialogBody) {flex-shrink:0}
 .dialogActions {display:flex;gap:8px;border-top:1px solid #8fa78250;padding-top:10px;min-width:0}
-.dialogActions .pxbtn,.dialogActions .tacticsEntry {flex:1;min-width:0;min-height:44px;margin:0;padding:10px 12px;font-size:14px;line-height:1.4;white-space:normal;overflow-wrap:anywhere}
+.dialogActions .pxbtn {flex:1;min-width:0;min-height:44px;margin:0;padding:10px 12px;font-size:14px;line-height:1.4;white-space:normal;overflow-wrap:anywhere}
 .segmented {display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:5px;min-width:0}
 .segmented button {min-width:0;min-height:44px;padding:6px;border:1px solid #6d8974;border-radius:5px;color:var(--paper);background:#153b31;font-size:14px;line-height:1.2}
 .segmented [aria-pressed=true] {border-color:var(--brass);background:#3d563e;color:#ffe5a1;box-shadow:inset 0 -2px #e1bf70}
@@ -840,7 +826,7 @@ button:disabled {cursor:default}
 #stakeChoices {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}#stakeChoices .sbtn {min-width:0;min-height:44px;padding:8px}
 #stakeRule {margin:10px 0 0;min-height:0;font-size:12px;color:var(--muted)}#setupRecord {min-height:0;margin-top:6px}
 .box.blindSelectBox {width:760px}.blindHeading {margin:0}.blindHeading span {white-space:nowrap}
-.blindSelectBox #blindCols {padding:2px;min-width:0;gap:8px}.blindSelectBox .tacticsEntry {margin:0;font-size:13px}
+.blindSelectBox #blindCols {padding:2px;min-width:0;gap:8px}
 .bcol .bbtn {min-height:44px}
 .box.resultBox {width:440px}.resultBox>h1 {color:var(--brass);font-size:34px}.resultBox .dialogBody {font-size:14px;line-height:1.8;text-align:left}
 #cashRows {display:block;min-width:0;width:100%}#cashRows p {font-size:14px;padding:6px 0;margin:0}#cashRows p:last-child {padding-top:12px;margin-top:8px}
@@ -1065,7 +1051,6 @@ button:disabled {cursor:default}
     <div class="panel" id="blindBox">
       <div id="blindName">🔸 小盲注</div>
       <div id="bossDesc"></div>
-      <div id="tacticsStatus" hidden></div>
       <div class="lbl" id="targetLbl" style="margin-top:5px">目标分数</div>
       <div id="targetVal">300</div>
       <div class="lbl">当前得分</div>
@@ -1204,16 +1189,6 @@ button:disabled {cursor:default}
 <div class="ov" id="ovBlinds"><div class="box dialogBox blindSelectBox">
   <h2 class="blindHeading">选择盲注 <span>底注 <b id="bsAnte">1</b></span></h2>
   <div id="blindCols" class="dialogBody"></div>
-  <div class="dialogActions"><button class="tacticsEntry" id="tacticsEntry" onclick="openTactics()">备战 · 选择节奏与悬赏</button></div>
-</div></div>
-
-<div class="ov" id="ovTactics"><div class="box tacticsBox">
-  <h2>盲注备战</h2>
-  <div class="tacticsBody">
-    <section><h3>出牌节奏</h3><p>从第二手起连招；断连或换盲清零。倍率在计分牌之后、小丑之前增加。</p><div id="rhythmChoices"></div></section>
-    <section><h3>盲注悬赏</h3><p>开打扣 $2；达标过关返还奖金（含押金），未完成不返。跳过不扣钱。</p><div id="contractChoices"></div></section>
-  </div>
-  <button class="pxbtn" onclick="hide('ovTactics')">完成备战</button>
 </div></div>
 
 <!-- 结算 -->
@@ -1508,8 +1483,7 @@ const JDEFS = [
   // —— 1.7.0 原创小丑 ——
   { id:'weakspot', ic:'🎯', name:'破绽猎手', price:6, rar:1, desc:'打出本底注 Boss 的破绽牌型时 +10 倍率（小盲、大盲同样生效）' },
   { id:'crusher', ic:'🔨', name:'碾压锤', price:5, rar:0, desc:'碾压奖励翻倍，上限提高到 $6' },
-  { id:'metronome', ic:'🥁', name:'节拍器', price:6, rar:1, desc:'出牌节奏的连招倍率翻倍（每连 +4，最多 +16）' },
-  { id:'finale', ic:'🎆', name:'压轴', price:5, rar:0, desc:'本盲注最后一次出牌时 +20 倍率' },
+  { id:'finale', ic:'🎆', name:'压轴', price:5, rar:0, desc:'本盲注每出 1 手牌 +5 倍率（含本手：第 1 手 +5，第 4 手 +20）' },
   { id:'prism', ic:'🔷', name:'棱镜', price:7, rar:1, desc:'每张计分的百搭花色牌 ×1.5 倍率' },
   { id:'twins', ic:'🎎', name:'同心结', price:5, rar:0, desc:'打出至少 3 张牌且全为红色或全为黑色时 +40 筹码、+6 倍率' },
 ];
@@ -1631,7 +1605,6 @@ function newGame(withTut, deckId='classic', stakeId='white') {
     anteBoss: null, anteVoucher: null, skipTags: [],
     deckId:deck?.id||'classic',stakeId:stake.id,tarotsUsed:0,blindPlayed:[],bossHistory:[],
     workshopCredits:0,bossReward:null,
-    rhythmMode:'none',rhythm:{lastKey:null,chain:0},contractChoice:null,contract:null,
     reserve:{cardId:null,used:false},
   };
   S.money=deck?.money??4;
@@ -1767,7 +1740,6 @@ function showBlindSelect() {
     }
     cols.appendChild(d);
   }
-  renderTacticsEntry();
   renderStats();
   show('ovBlinds');
   saveCheckpoint();   // 静默存档：只保留最新一个保存点
@@ -1775,7 +1747,6 @@ function showBlindSelect() {
 }
 function skipBlind(tg) {
   if(S.screen!=='select'||S.blindIdx>=2)return;
-  S.contractChoice=null;
   hideTip();
   applyTag(tg);
   sfxCash();
@@ -1785,7 +1756,6 @@ function skipBlind(tg) {
 }
 function chooseBlind() {
   if(S.screen!=='select')return;
-  if(S.contractChoice&&S.money<2)return msg('悬赏需要 $2，可以在备战中取消。',1);
   hideTip();
   hide('ovBlinds');
   startBlind();
@@ -1794,7 +1764,6 @@ function chooseBlind() {
 function effHandSize() { return S.handSize - (S.boss && S.boss.id === 'manacle' ? 1 : 0); }
 function startBlind() {
   S.reserve={cardId:null,used:false};
-  startTactics();
   const m = blindMeta();
   S.boss = S.blindIdx === 2 ? S.anteBoss : null;
   S.target = m.target;
@@ -2096,7 +2065,6 @@ function renderStats() {
   const bd = $('bossDesc');
   if (S.boss) { bd.style.display = 'block'; bd.textContent = S.boss.desc + '｜🎯 ' + bossWeakLabel(S.boss); }
   else bd.style.display = 'none';
-  const tactics=tacticsStatus();$('tacticsStatus').textContent=tactics;$('tacticsStatus').hidden=!tactics;
 }
 function jokerDesc(j) {
   let d = j.desc;
@@ -2160,14 +2128,6 @@ function renderAll() { renderStats(); renderJokers(); renderCons(); renderHand()
 // ── score-engine ──
 // Pure scoring: animation, previews and tests consume the same calculation.
 const WEAK_MULT=1.5;
-function rhythmForHand(state,key) {
-  const mode=state.rhythmMode,previous=state.rhythm||{lastKey:null,chain:0};
-  if(!['focus','flow'].includes(mode))return {lastKey:null,chain:0,bonus:0};
-  const continues=previous.lastKey&&(mode==='focus'?previous.lastKey===key:previous.lastKey!==key);
-  const chain=continues?Math.min(5,previous.chain+1):1;
-  const step=(state.jokers||[]).some(j=>j.id==='metronome')?4:2;
-  return {lastKey:key,chain,bonus:(chain-1)*step};
-}
 // Each Boss shows one hand type it is weak against; the same hand gets ×1.5 in that Boss blind.
 function bossWeakKey(boss) { return boss&&HANDS[boss.weak]?boss.weak:null; }
 function bossWeakLabel(boss) {
@@ -2257,11 +2217,6 @@ function scoreHand(state, cards, random = Math.random) {
     const times=c.seal==='red'?2:1;
     mult*=Math.pow(1.5,times); emit('held',c.id,times===2?'×2.25 钢铁 + 红封':'×1.5 钢铁');
   }
-  const rhythm=rhythmForHand(state,hand.key);
-  if(rhythm.bonus) {
-    mult+=rhythm.bonus;
-    emit('rhythm',null,(state.rhythmMode==='focus'?'专注':'变奏')+' '+rhythm.chain+' 连 · +'+rhythm.bonus+' 倍率');
-  }
   for (const j of state.jokers) {
     let c=0,m=0,x=1;
     switch (j.id) {
@@ -2303,7 +2258,7 @@ function scoreHand(state, cards, random = Math.random) {
       case 'baron': x=Math.pow(1.5,held.filter(k=>k.rank===13).reduce((n,k)=>n+(k.seal==='red'?2:1),0)); break;
       case 'moon': m=13*held.filter(k=>k.rank===12).reduce((n,k)=>n+(k.seal==='red'?2:1),0); break;
       case 'weakspot': if(bossWeakKey(state.anteBoss)===hand.key) m=10; break;
-      case 'finale': if(state.handsLeft===0) m=20; break;
+      case 'finale': m=5*((state.blindPlayed||[]).length+1); break;
       case 'twins': {
         const colors=new Set(cards.filter(k=>!k.wild).map(k=>RED(k.suit)));
         if(cards.length>=3&&colors.size<=1){c=40;m=6;}
@@ -2321,7 +2276,7 @@ function scoreHand(state, cards, random = Math.random) {
   if(state.boss&&bossWeakKey(state.boss)===hand.key) {
     mult*=WEAK_MULT; emit('weak',null,'破绽 · '+HANDS[hand.key].name+' ×'+WEAK_MULT);
   }
-  return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events,rhythm};
+  return {hand,base,chips,mult,total:Math.floor(chips*mult),money,events};
 }
 
 // ── scoring ──
@@ -2411,7 +2366,6 @@ async function doPlay() {
   S.money+=result.money;
   S.lastResult={name:HANDS[ev.key].name,total:result.total,chips,mult,money:result.money,
     events:result.events.map(e=>({text:e.text,chips:e.chips,mult:e.mult}))};
-  S.rhythm=result.rhythm;
 
   // —— 总分 ——
   const total = Math.floor(chips * mult);
@@ -2473,7 +2427,6 @@ function doDiscard() {
   if (!sel.length) { msg('请先选择要弃掉的牌', 1); return; }
   animateDiscard(sel);
   S.discLeft--;
-  if(S.contract)S.contract.discards++;
   S.hand = S.hand.filter(c => !c.sel);
   S.jokers.forEach(j => { if (j.id === 'green' && j.state) { j.state = 0; jokerPop(j, '清零!'); } });
   sfxBad();
@@ -2504,7 +2457,6 @@ function beatBlind() {
   }
   const overkill=overkillBonus(S);
   if(overkill.money){S.payout.push(['碾压 '+(Math.floor(overkill.ratio*10)/10)+'× 目标',overkill.money]);total+=overkill.money;}
-  total+=settleContract();
   S.payout.push(['合计',total]);
   renderPayout();
   S.money += total;
@@ -2594,7 +2546,7 @@ const PACKS = [
 ];
 function rollJokerItem(forceUnc, exclude=[]) {
   const owned = new Set([...S.jokers.map(j => j.id),...exclude]);
-  let pool = JDEFS.filter(j => !owned.has(j.id) && jokerOffered(j));
+  let pool = JDEFS.filter(j => !owned.has(j.id));
   if (forceUnc) pool = pool.filter(j => j.rar >= 1);
   if (!pool.length) pool = JDEFS.slice();
   const r = Math.random();
@@ -2608,8 +2560,6 @@ function rollJokerItem(forceUnc, exclude=[]) {
   else if (e < 0.17) { def.ed = 1; def.price += 2; }
   return def;
 }
-// Rhythm is a single-player tactic, so its joker is not offered in matches.
-function jokerOffered(def) { return !(MP.on && def.id === 'metronome'); }
 function addJoker(def) {
   S.jokers.push({ ...def, uid: ++cid, state: def.state || 0,
     sell: Math.max(1, Math.ceil((def.price || 4) / 2)) });
@@ -2994,7 +2944,7 @@ function useCons(i) {
     case 'judge': {
       if (S.jokers.length >= S.jokerSlots) { msg('小丑槽位已满，无法使用审判', 1); return; }
       const owned = new Set(S.jokers.map(j => j.id));
-      const pool = JDEFS.filter(j => !owned.has(j.id) && jokerOffered(j));
+      const pool = JDEFS.filter(j => !owned.has(j.id));
       const j = randOf(pool);
       if(!j) return;
       addJoker({ ...j });
@@ -3204,91 +3154,6 @@ function chooseBossReward(choice) {
   hide('ovReward');sfxUp();openShop();persistRun();return true;
 }
 
-// ── tactics ──
-const CONTRACTS=[
-  {id:'first',name:'一手过关',payout:8,desc:'只出一手牌就击败盲注'},
-  {id:'clean',name:'不弃一牌',payout:6,desc:'不使用弃牌，击败盲注'},
-  {id:'variety',name:'三路出击',payout:9,desc:'打出至少三种不同牌型，再击败盲注'},
-];
-const RHYTHMS=[
-  {id:'none',name:'常规',desc:'沿用普通计分'},
-  {id:'focus',name:'专注',desc:'连续同牌型，每次 +2 倍率，最多 +8'},
-  {id:'flow',name:'变奏',desc:'连续换牌型，每次 +2 倍率，最多 +8'},
-];
-function contractAvailable(contract) {
-  if(contract.id==='variety'&&S.blindIdx===2&&S.anteBoss?.id==='needle')return false;
-  if(contract.id==='clean'&&((S.blindIdx===2&&S.anteBoss?.id==='water')||S.baseDisc===0))return false;
-  return true;
-}
-function renderTacticsEntry() {
-  $('tacticsEntry').hidden=MP.on;
-  const rhythm=RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0],contract=CONTRACTS.find(c=>c.id===S.contractChoice);
-  $('tacticsEntry').textContent='备战 · '+rhythm.name+(contract?' · '+contract.name+' 押 $2':' · 选择悬赏');
-}
-function openTactics() {
-  if(S.screen!=='select'||MP.on) return;
-  renderTactics();show('ovTactics');
-}
-function renderTactics() {
-  const modes=$('rhythmChoices');modes.replaceChildren();
-  for(const rhythm of RHYTHMS) {
-    const button=document.createElement('button');button.className='tacticChoice';button.dataset.rhythm=rhythm.id;
-    button.setAttribute('aria-pressed',String(S.rhythmMode===rhythm.id));
-    button.innerHTML='<b>'+rhythm.name+'</b><span>'+rhythm.desc+'</span>';
-    button.onclick=()=>selectRhythm(rhythm.id);modes.append(button);
-  }
-  const offers=$('contractChoices');offers.replaceChildren();
-  const skip=document.createElement('button');skip.className='tacticChoice';skip.dataset.contract='none';
-  skip.setAttribute('aria-pressed',String(!S.contractChoice));skip.textContent='不接悬赏';skip.onclick=()=>selectContract(null);offers.append(skip);
-  for(const contract of CONTRACTS) {
-    const button=document.createElement('button');button.className='tacticChoice';button.dataset.contract=contract.id;
-    button.disabled=!contractAvailable(contract)||S.money<2;
-    button.setAttribute('aria-pressed',String(S.contractChoice===contract.id));
-    button.innerHTML='<b>'+contract.name+' · 返 $'+contract.payout+'</b><span>'+contract.desc+'</span>'+
-      (button.disabled?'<small>'+(!contractAvailable(contract)?'本盲注不适用':'需要 $2 押金')+'</small>':'');
-    button.onclick=()=>selectContract(contract.id);offers.append(button);
-  }
-}
-function selectRhythm(mode) {
-  if(S.screen!=='select'||MP.on||!RHYTHMS.some(r=>r.id===mode))return false;
-  S.rhythmMode=mode;renderTactics();renderTacticsEntry();saveCheckpoint();persistRun();return true;
-}
-function selectContract(id) {
-  const def=CONTRACTS.find(c=>c.id===id);
-  if(S.screen!=='select'||MP.on||(id!==null&&(!def||!contractAvailable(def)||S.money<2)))return false;
-  S.contractChoice=id;renderTactics();renderTacticsEntry();saveCheckpoint();persistRun();return true;
-}
-function startTactics() {
-  S.rhythm={lastKey:null,chain:0};S.contract=null;
-  if(!MP.on&&S.contractChoice) {
-    const def=CONTRACTS.find(c=>c.id===S.contractChoice);
-    if(def&&contractAvailable(def)&&S.money>=2) {
-      S.money-=2;S.contract={id:def.id,discards:0,settled:false};
-    }
-  }
-  S.contractChoice=null;
-}
-function contractResult() {
-  if(!S.contract)return null;
-  const def=CONTRACTS.find(c=>c.id===S.contract.id);
-  const count=S.blindPlayed.length,distinct=new Set(S.blindPlayed).size;
-  const met=def.id==='first'?count===1:def.id==='clean'?S.contract.discards===0:distinct>=3;
-  return {def,met,detail:def.id==='first'?(count>1?'已失约':count+' / 1 手'):def.id==='clean'?(S.contract.discards?'已失约':'尚未弃牌'):distinct+' / 3 牌型'};
-}
-function settleContract() {
-  if(MP.on||!S.contract||S.contract.settled)return 0;
-  const result=contractResult();S.contract.settled=true;
-  S.payout.push(['悬赏 · '+result.def.name+(result.met?'':'（未完成）'),result.met?result.def.payout:0]);
-  return result.met?result.def.payout:0;
-}
-function tacticsStatus() {
-  if(MP.on||S.screen!=='play')return '';
-  const rhythm=RHYTHMS.find(r=>r.id===S.rhythmMode),parts=[];
-  if(rhythm&&rhythm.id!=='none')parts.push(rhythm.name+' '+(S.rhythm?.chain||0)+' 连');
-  const contract=contractResult();if(contract)parts.push(contract.def.name+' · '+contract.detail);
-  return parts.join(' ｜ ');
-}
-
 // ── reserve ──
 // A single extra card can be kept outside the hand, then exchanged once per blind.
 let reserveDraft=null, tableClickUntil=0;
@@ -3388,7 +3253,7 @@ function openInfo() {
   const metrics=[['金币','$'+fmt(S.money)],['最高单次',fmt(S.bestHand)],['总出牌',S.totHands],['手牌上限',S.handSize],
     ['牌组张数',S.deckAll.length],['已用星球',S.planetsUsed],['已加入牌',S.cardsAdded],['出牌 / 盲注',S.baseHands],
     ['弃牌 / 盲注',S.baseDisc],['利息上限','$'+S.interestCap],['本底注 Boss',S.anteBoss.name+' · '+bossWeakLabel(S.anteBoss)]];
-  if(!MP.on)metrics.push(['工坊免费次数',S.workshopCredits],['出牌节奏',(RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0]).name]);
+  if(!MP.on)metrics.push(['工坊免费次数',S.workshopCredits]);
   let h='<div class="runIdentity"><b>'+(DECKS.find(d=>d.id===S.deckId)?.name||'经典牌组')+'</b><span>'+
     (STAKES.find(t=>t.id===S.stakeId)?.name||'白注')+'</span></div><div class="runMetrics">'+metrics.map(([label,value])=>
     '<div><span>'+label+'</span><b>'+value+'</b></div>').join('')+'</div><h3 class="infoHeading">优惠券</h3>';
@@ -3456,7 +3321,7 @@ const TUT = [
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
     '商店还卖两种消耗牌，买了存在这里，点击使用：<br><b class="blue">🌌 星球牌</b>：永久提升某个牌型的等级（筹码和倍率都涨）。<br><b class="gold">🔮 塔罗牌</b>：强化手牌（钢铁/玻璃/黄金/百搭花色等）、复制、销毁牌、变钱。百搭花色不改变点数，仍需相同点数组成对子。<br>商店里还有 <b class="blue">🎁 卡包</b>和 <b class="gold">🎟️ 优惠券</b>（$10 永久强化，如 +1 出牌次数）！' },
   { sel: null, title: '底牌与主动构筑', body:
-    '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。<br>盲注前「备战」可选节奏和悬赏；商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
+    '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。<br>商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
   { sel: null, title: '实战建议', body:
     '① 前期优先买小丑牌，别裸奔打分。<br>② 认准 1~2 个主力牌型（如同花/顺子），星球牌全升它。<br>③ 弃牌是资源：先弃散牌凑型，最后一手再梭哈。<br>④ Boss 禁用花色时提前看牌库（🂠）调整思路。<br><br>教程结束！菜单中的「新手教程」可随时重看。祝你好运，小丑！🎉' },
 ];
@@ -3954,10 +3819,6 @@ function scoreEventFx(event) {
       feedback(el, [{ transform: 'translateY(0)' }, { transform: 'translateY(-12px) scale(1.08) rotate(3deg)', offset: .4 }, { transform: 'translateY(0)' }], 260, true);
       const c = centerOf(el); sparkBurst(c.x, c.y, { count: 8, tone: 'mult', spread: 42, size: 5 }); floatText(c.x, c.r.y, event.text, 'mult', true);
     }
-  } else if (event.kind === 'rhythm') {
-    const c = centerOf($('previewBox'));
-    floatText(c.x, c.r.y, event.text.split(' · ')[0] + '！', 'chips', true);
-    sparkBurst(c.x, c.r.y + 6, { count: 10, tone: 'chips', spread: 60, size: 5 });
   } else if (event.kind === 'weak') {
     stamp('破绽！', 'weak', { scoring: true, duration: 760, y: 36 });
     shakeTable(7);
@@ -4112,6 +3973,22 @@ function shopEnterFx() {
 })();
 
 // ── session ──
+// 1.7.1 removed rhythm, blind bounties and the metronome joker. Older runs keep playing:
+// a bounty still in play returns its $2 deposit, an owned metronome is sold at its sale price,
+// and a metronome still in stock becomes the same-tier weak-point hunter.
+const REMOVED_JOKER_SWAP={metronome:'weakspot'};
+function retireRemovedRules(s) {
+  if(s.screen==='play'&&s.contract&&!s.contract.settled&&Number.isFinite(s.money)) s.money+=2;
+  for(const key of ['rhythmMode','rhythm','contractChoice','contract']) delete s[key];
+  if(Array.isArray(s.jokers)) s.jokers=s.jokers.filter(j=>{
+    if(!REMOVED_JOKER_SWAP[j?.id]) return true;
+    if(Number.isFinite(s.money)&&Number.isFinite(j.sell)) s.money+=j.sell;
+    return false;
+  });
+  const swap=item=>REMOVED_JOKER_SWAP[item?.id]?{...item,id:REMOVED_JOKER_SWAP[item.id]}:item;
+  if(Array.isArray(s.shop?.jokers)) s.shop.jokers=s.shop.jokers.map(swap);
+  for(const pack of s.shop?.packs||[]) if(pack.id==='buffoon'&&Array.isArray(pack.options)) pack.options=pack.options.map(swap);
+}
 // Compatible with 1.1.0 saves. A previous valid snapshot protects against a damaged latest write.
 const RUN_KEY='pixel-balatro.run.v1', BACKUP_KEY=RUN_KEY+'.backup';
 let lastWrite='', storageUnavailable=false;
@@ -4120,15 +3997,10 @@ function normalizeRunState(input) {
   const s=input, finite=n=>Number.isFinite(n)&&n>=0;
   s.deckId??='classic'; s.stakeId??='white'; s.tarotsUsed??=0; s.blindPlayed??=[];s.bossHistory??=[];
   s.workshopCredits??=0; s.bossReward??=null;
-  s.rhythmMode??='none'; s.rhythm??={lastKey:null,chain:0};s.contractChoice??=null;s.contract??=null;
+  retireRemovedRules(s);
   s.reserve??={cardId:null,used:false};
   if(typeof s.reserve.used!=='boolean'||(s.reserve.cardId!==null&&!Number.isSafeInteger(s.reserve.cardId))||
     (s.reserve.used&&s.reserve.cardId!==null))throw Error('底牌状态损坏');
-  if(!RHYTHMS.some(r=>r.id===s.rhythmMode)||!Number.isInteger(s.rhythm.chain)||s.rhythm.chain<0||s.rhythm.chain>5||
-    (s.rhythm.lastKey!==null&&!HORDER.includes(s.rhythm.lastKey))||
-    (s.contractChoice!==null&&!CONTRACTS.some(c=>c.id===s.contractChoice))||
-    (s.contract&&(!CONTRACTS.some(c=>c.id===s.contract.id)||!Number.isInteger(s.contract.discards)||s.contract.discards<0||typeof s.contract.settled!=='boolean')))
-    throw Error('备战规则损坏');
   if(!Number.isSafeInteger(s.workshopCredits)||s.workshopCredits<0) throw Error('工坊次数损坏');
   if(s.bossReward && (s.screen!=='cash'||s.blindIdx!==2||s.bossReward.ante!==s.ante||
     !HORDER.includes(s.bossReward.handKey))) throw Error('成长奖励损坏');
@@ -4380,7 +4252,7 @@ addEventListener('keydown',e=>{
       e.preventDefault(); controls[e.shiftKey?controls.length-1:0].focus();
     }
   }
-  if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovTactics'].includes(top.id)) hide(top.id);
+  if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection'].includes(top.id)) hide(top.id);
   if(e.key==='Escape'&&top.id==='ovSetup'){hide('ovSetup');show('ovStart');}
   if(e.key==='Escape'&&top.id==='ovWorkshop')closeWorkshop();
   if(e.key==='Escape'&&top.id==='ovReserve')closeReserve();
@@ -4571,7 +4443,7 @@ function nativeBack(){
   if(top?.id==='ovSetup'){hide('ovSetup');show('ovStart');return false;}
   if(top?.id==='ovMpLobby'){mpCancel();return false;}
   if(top?.id==='ovRestart'){hide('ovRestart');show('ovStart');return false;}
-  if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave','ovTactics'].includes(top.id)){hide(top.id);return false;}
+  if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave'].includes(top.id)){hide(top.id);return false;}
   if(top?.id==='ovPack'){closePack();return false;}
   if(top?.id==='ovWorkshop'){closeWorkshop();return false;}
   if(top?.id==='ovReserve'){closeReserve();return false;}

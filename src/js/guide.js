@@ -15,7 +15,7 @@ function openInfo() {
   const metrics=[['金币','$'+fmt(S.money)],['最高单次',fmt(S.bestHand)],['总出牌',S.totHands],['手牌上限',S.handSize],
     ['牌组张数',S.deckAll.length],['已用星球',S.planetsUsed],['已加入牌',S.cardsAdded],['出牌 / 盲注',S.baseHands],
     ['弃牌 / 盲注',S.baseDisc],['利息上限','$'+S.interestCap],['本底注 Boss',S.anteBoss.name+' · '+bossWeakLabel(S.anteBoss)]];
-  if(!MP.on)metrics.push(['工坊免费次数',S.workshopCredits],['出牌节奏',(RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0]).name]);
+  if(!MP.on)metrics.push(['工坊免费次数',S.workshopCredits]);
   let h='<div class="runIdentity"><b>'+(DECKS.find(d=>d.id===S.deckId)?.name||'经典牌组')+'</b><span>'+
     (STAKES.find(t=>t.id===S.stakeId)?.name||'白注')+'</span></div><div class="runMetrics">'+metrics.map(([label,value])=>
     '<div><span>'+label+'</span><b>'+value+'</b></div>').join('')+'</div><h3 class="infoHeading">优惠券</h3>';
@@ -83,7 +83,7 @@ const TUT = [
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
     '商店还卖两种消耗牌，买了存在这里，点击使用：<br><b class="blue">🌌 星球牌</b>：永久提升某个牌型的等级（筹码和倍率都涨）。<br><b class="gold">🔮 塔罗牌</b>：强化手牌（钢铁/玻璃/黄金/百搭花色等）、复制、销毁牌、变钱。百搭花色不改变点数，仍需相同点数组成对子。<br>商店里还有 <b class="blue">🎁 卡包</b>和 <b class="gold">🎟️ 优惠券</b>（$10 永久强化，如 +1 出牌次数）！' },
   { sel: null, title: '底牌与主动构筑', body:
-    '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。<br>盲注前「备战」可选节奏和悬赏；商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
+    '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。<br>商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
   { sel: null, title: '实战建议', body:
     '① 前期优先买小丑牌，别裸奔打分。<br>② 认准 1~2 个主力牌型（如同花/顺子），星球牌全升它。<br>③ 弃牌是资源：先弃散牌凑型，最后一手再梭哈。<br>④ Boss 禁用花色时提前看牌库（🂠）调整思路。<br><br>教程结束！菜单中的「新手教程」可随时重看。祝你好运，小丑！🎉' },
 ];

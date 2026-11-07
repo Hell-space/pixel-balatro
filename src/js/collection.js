@@ -71,7 +71,7 @@ function nativeBack(){
   if(top?.id==='ovSetup'){hide('ovSetup');show('ovStart');return false;}
   if(top?.id==='ovMpLobby'){mpCancel();return false;}
   if(top?.id==='ovRestart'){hide('ovRestart');show('ovStart');return false;}
-  if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave','ovTactics'].includes(top.id)){hide(top.id);return false;}
+  if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave'].includes(top.id)){hide(top.id);return false;}
   if(top?.id==='ovPack'){closePack();return false;}
   if(top?.id==='ovWorkshop'){closeWorkshop();return false;}
   if(top?.id==='ovReserve'){closeReserve();return false;}

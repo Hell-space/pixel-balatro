@@ -19,7 +19,6 @@
     <div class="panel" id="blindBox">
       <div id="blindName">🔸 小盲注</div>
       <div id="bossDesc"></div>
-      <div id="tacticsStatus" hidden></div>
       <div class="lbl" id="targetLbl" style="margin-top:5px">目标分数</div>
       <div id="targetVal">300</div>
       <div class="lbl">当前得分</div>
@@ -158,16 +157,6 @@
 <div class="ov" id="ovBlinds"><div class="box dialogBox blindSelectBox">
   <h2 class="blindHeading">选择盲注 <span>底注 <b id="bsAnte">1</b></span></h2>
   <div id="blindCols" class="dialogBody"></div>
-  <div class="dialogActions"><button class="tacticsEntry" id="tacticsEntry" onclick="openTactics()">备战 · 选择节奏与悬赏</button></div>
-</div></div>
-
-<div class="ov" id="ovTactics"><div class="box tacticsBox">
-  <h2>盲注备战</h2>
-  <div class="tacticsBody">
-    <section><h3>出牌节奏</h3><p>从第二手起连招；断连或换盲清零。倍率在计分牌之后、小丑之前增加。</p><div id="rhythmChoices"></div></section>
-    <section><h3>盲注悬赏</h3><p>开打扣 $2；达标过关返还奖金（含押金），未完成不返。跳过不扣钱。</p><div id="contractChoices"></div></section>
-  </div>
-  <button class="pxbtn" onclick="hide('ovTactics')">完成备战</button>
 </div></div>
 
 <!-- 结算 -->
