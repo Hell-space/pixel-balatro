@@ -2,7 +2,8 @@ const SETTINGS_KEY='pixel-balatro.settings.v1';
 const settings={speed:1,music:true,sound:true};
 // A second tap from the dismissed picker must not activate a different shop action underneath it.
 document.addEventListener('click',e=>{
-  if(Date.now()<shopClickUntil&&e.target.closest('#ovShop')) {
+  if((Date.now()<shopClickUntil&&e.target.closest('#ovShop'))||
+     (Date.now()<tableClickUntil&&e.target.closest('#game'))) {
     e.preventDefault();e.stopImmediatePropagation();
   }
 },true);
@@ -75,6 +76,7 @@ addEventListener('keydown',e=>{
   if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovTactics'].includes(top.id)) hide(top.id);
   if(e.key==='Escape'&&top.id==='ovSetup'){hide('ovSetup');show('ovStart');}
   if(e.key==='Escape'&&top.id==='ovWorkshop')closeWorkshop();
+  if(e.key==='Escape'&&top.id==='ovReserve')closeReserve();
 });
 let owned=null, sellConfirm=false;
 function openMenu() {

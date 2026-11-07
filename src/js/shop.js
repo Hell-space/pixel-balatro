@@ -59,6 +59,7 @@ function genShopMain() {
     { ...randOf(TAROTS), kind: 'tarot', price: 3, sold: false },
   ];
 }
+function shopActionReady() { return !!S&&S.screen==='shop'&&!!S.shop&&!S.busy&&!S.pack&&!workshopDraft; }
 function openShop() {
   if(S.screen!=='cash'||S.winPending) return;
   if(S.bossReward) return openBossReward();
@@ -102,6 +103,7 @@ function renderShop() {
   $('shopSlots').textContent = S.jokers.length + '/' + S.jokerSlots;
   $('shopCons').textContent = S.cons.length + '/' + S.consSlots;
   $('rerollBtn').textContent = '🎲 刷新 $' + S.shop.rerollCost;
+  $('rerollBtn').disabled=S.money<S.shop.rerollCost;
   const box = $('shopItems');
   box.innerHTML = '';
   S.shop.jokers.forEach((j, i) => {
@@ -125,7 +127,7 @@ function renderShop() {
   if (S.anteVoucher && !S.shop.voucherSold && !S.vouchers.includes(S.anteVoucher.id)) {
     vb.appendChild(shopItemEl(S.anteVoucher, shopPrice(10), ' ru', null, buyVoucher));
   } else {
-    vb.innerHTML = '<p style="color:#556;font-size:12px">' +
+    vb.innerHTML = '<p class="shopEmpty">' +
       (S.anteVoucher ? '本底注的优惠券已购买 ✔' : '优惠券已全部收集！') + '</p>';
   }
   renderInventory($('shopOwned'));
@@ -134,6 +136,7 @@ function renderShop() {
   renderJokers(); renderCons(); renderStats();
 }
 function buyJoker(i) {
+  if(!shopActionReady()||!S.shop.jokers[i])return false;
   const j = S.shop.jokers[i];
   if (j.sold) return;
   const p = shopPrice(j.price);
@@ -149,6 +152,7 @@ function buyJoker(i) {
   acquireFeedback(from,j,$('shopOwned').querySelector('.ownedRow[data-kind="joker"]')?.lastElementChild);
 }
 function buyCons(i) {
+  if(!shopActionReady()||!S.shop.cons[i])return false;
   const t = S.shop.cons[i];
   if (t.sold) return;
   const p = shopPrice(t.price);
@@ -166,6 +170,7 @@ function buyCons(i) {
   acquireFeedback(from,t,$('shopOwned').querySelector('.ownedRow[data-kind="cons"]')?.lastElementChild);
 }
 function buyVoucher() {
+  if(!shopActionReady())return false;
   const v = S.anteVoucher;
   if(!v || S.shop.voucherSold || S.vouchers.includes(v.id)) return;
   const p = shopPrice(10);
@@ -188,6 +193,7 @@ function buyVoucher() {
   renderShop();
 }
 function doReroll() {
+  if(!shopActionReady())return false;
   if (S.money < S.shop.rerollCost) { msg('钱不够刷新！', 1); return; }
   S.money -= S.shop.rerollCost;
   S.shop.rerollCost += 2;
@@ -206,6 +212,7 @@ function leaveShop() {
 
 // ================= 卡包 =================
 function buyPack(i) {
+  if(!shopActionReady()||!S.shop.packs[i])return false;
   const p=S.shop.packs[i];
   if(p.sold || S.pack) return;
   const cost=shopPrice(p.price);

@@ -4,7 +4,16 @@
 
 **在线游戏：https://hell-space.github.io/pixel-balatro/**
 
-**Android 下载：[GitHub Release v1.4.0](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.4.0)** · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.4.0/PixelBalatro-1.4.0-android.apk)
+**Android 下载：[GitHub Release v1.5.0](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.5.0)** · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.5.0/PixelBalatro-1.5.0-android.apk)
+
+## 1.5.0
+
+- **袖中底牌**：单人每盲注藏一张手牌并补一张，之后可选另一张换回；存入、换回各一次，不耗金币和出弃牌次数。
+- 底牌保留全部强化，暂存时不触发留手效果；换出的牌本盲不再抽到，下一盲重置。藏入后或换回后退出都能继续。
+- 工坊使用后仍显示未用完的免费次数；排序高亮当前模式，牌库区分已抽出、底牌和牌组空缺；本局信息和教程同步新规则。
+- 关闭持有牌详情、卡包或工坊后防连续触摸误点，过期商店回调不会购买或刷新；缺钱时刷新按钮显示不可用。
+
+用法与边界见 [底牌说明](docs/reserve.md)；测试与手机界面检查见 [1.5.0 验证记录](docs/verification-1.5.0.md)。
 
 ## 1.4.0
 
@@ -55,13 +64,13 @@
 
 菜单包含牌型表、剩余牌库、图鉴、计分明细、音乐/音效开关，以及 1×/2×/4×/立即四档计分速度。键盘支持 Tab 聚焦、Enter 出牌和 X 弃牌。
 
-Android 用户可在 GitHub 手机端打开仓库的 Releases → v1.4.0 → Assets，下载 `PixelBalatro-1.4.0-android.apk`。已有 1.3.x 直接覆盖安装，不要先卸载。Release 同时提供离线 HTML 和 SHA-256 校验文件。
+Android 用户可在 GitHub 手机端打开仓库的 Releases → v1.5.0 → Assets，下载 `PixelBalatro-1.5.0-android.apk`。已有 1.3.x / 1.4.0 直接覆盖安装，不要先卸载。Release 同时提供离线 HTML 和 SHA-256 校验文件。
 
-本地交付文件为 `outputs/PixelBalatro-1.4.0-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
+本地交付文件为 `outputs/PixelBalatro-1.5.0-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
 
 ## 存档与兼容
 
-单人进度自动保存，标题页可继续游戏。1.4.0 兼容 1.1/1.2/1.3.x 存档，旧局保留既有次数、经济和持有牌，节奏默认为常规，不倒补 Boss 奖励。工坊次数、待选战利品、连招与悬赏进度都保存。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽；旧标准包尚未选取的普通候选会补上强化。
+单人进度自动保存，标题页可继续游戏。1.5.0 兼容 1.1/1.2/1.3.x/1.4.0 存档，旧局保留既有次数、经济和持有牌，新增底牌默认可用，不倒补 Boss 奖励。底牌、工坊次数、待选战利品、连招与悬赏进度都保存。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽；旧标准包尚未选取的普通候选会补上强化。
 
 计分动画中途退出会恢复到该次出牌前的稳定状态。设置和通关记录独立保存，不因开新局清除。清除网站或应用数据会丢失存档；同签名 APK 覆盖更新保留数据。
 

@@ -14,18 +14,22 @@ function openInfo() {
     '<p style="text-align:left">💰 金钱 <b class="gold">$' + S.money + '</b>　🏆 最高单次 <b class="gold">' + fmt(S.bestHand) + '</b>　🃏 总出牌 <b class="blue">' + S.totHands + '</b></p>' +
     '<p style="text-align:left">🎴 手牌上限 <b>' + S.handSize + '</b>　🂠 牌组张数 <b>' + S.deckAll.length + '</b>　🌌 已用星球 <b>' + S.planetsUsed + '</b>　➕ 已加入牌 <b>' + S.cardsAdded + '</b></p>' +
     '<p style="text-align:left">🃏 出牌/盲注 <b>' + S.baseHands + '</b>　🗑️ 弃牌/盲注 <b>' + S.baseDisc + '</b>　利息上限 <b class="green">$' + S.interestCap + '</b></p>' +
+    (!MP.on?'<p style="text-align:left">工坊免费次数 <b>'+S.workshopCredits+'</b>　出牌节奏 <b>'+(RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0]).name+'</b></p>':'')+
     '<p style="text-align:left;color:#57e6ff;margin-top:8px">🎟️ 已拥有的优惠券：</p>';
   if (S.vouchers.length) {
     h += '<p style="text-align:left">' + S.vouchers.map(id => {
       const v = VOUCHERS.find(x => x.id === id);
       return v.ic + ' <span class="gold">' + v.name + '</span> — ' + v.desc;
     }).join('<br>') + '</p>';
-  } else h += '<p style="text-align:left;color:#667">还没有。商店里每个底注会出现一张 $10 优惠券，永久生效，值得投资！</p>';
+  } else h += '<p style="text-align:left;color:var(--muted)">暂未持有优惠券。</p>';
   $('infoBody').innerHTML = h;
   show('ovInfo');
 }
 function openDeck() {
   const g = $('deckGrid');
+  const stored=reserveCard();
+  $('deckSummary').innerHTML='<span>待抽 <b>'+S.drawPile.length+'</b></span><span>手牌 <b>'+S.hand.length+'</b></span>'+
+    (stored?'<span>底牌 <b>'+cardLabel(stored)+'</b></span>':'')+'<span>牌组 <b>'+S.deckAll.length+'</b></span>';
   g.innerHTML = '<div class="hd">花色</div>' + [14,13,12,11,10,9,8,7,6,5,4,3,2].map(r => '<div class="hd">' + rankName(r) + '</div>').join('');
   const inPile = new Set(S.drawPile.map(c => c.id));
   for (let s = 0; s < 4; s++) {
@@ -33,7 +37,10 @@ function openDeck() {
     for (const r of [14,13,12,11,10,9,8,7,6,5,4,3,2]) {
       const cards = S.deckAll.filter(c => c.suit === s && c.rank === r);
       const live = cards.filter(c => inPile.has(c.id)).length;
-      g.innerHTML += '<div class="' + (live ? '' : 'gone') + '">' + (cards.length > 1 ? live + '/' + cards.length : (live ? '●' : '○')) + '</div>';
+      const reserved=cards.some(c=>c.id===stored?.id);
+      g.innerHTML += '<div class="' + (!cards.length?'absent':live?'':'gone')+(reserved?' reserved':'') + '" title="'+
+        SUITS[s]+rankName(r)+'：待抽 '+live+' / 共 '+cards.length+(reserved?'，一张为底牌':'')+'">' +
+        (!cards.length?'—':cards.length>1?live+'/'+cards.length:live?'●':reserved?'底':'○') + '</div>';
     }
   }
   show('ovDeck');
@@ -44,7 +51,7 @@ const TUT = [
   { sel: null, title: '🃏 欢迎来到像素小丑牌！', body:
     '这是一款<b class="gold">用扑克牌得分</b>的 Roguelike 游戏。<br>核心循环：<b class="blue">打出牌型得分 → 击败盲注 → 拿钱进商店买小丑牌变强 → 挑战更高的底注</b>。<br>撑过 8 个底注即通关！我们一步步来看。' },
   { sel: '#handRow', title: '1️⃣ 你的手牌', body:
-    '每回合手上有 <b class="gold">8 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；长按可看牌面效果。<br>下方「按点数 / 按花色」按钮可以整理手牌，找同花时很好用。' },
+    '本局手牌上限为 <b class="gold">{handSize} 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；长按可看牌面效果。<br>下方「按点数 / 按花色」按钮可以整理手牌，找同花时很好用。' },
   { sel: '#previewBox', title: '2️⃣ 牌型与预览', body:
     '选中牌后，这里会实时显示组成的<b class="gold">牌型</b>和计入小丑及牌面效果的预计分数。随机倍率会显示范围。<br>牌型从弱到强：高牌 → 对子 → 两对 → 三条 → 顺子 → 同花 → 葫芦 → 四条 → 同花顺。<br>随时点菜单中的「牌型表」查看完整数值。' },
   { sel: '#previewBox', title: '3️⃣ 得分公式（重点！）', body:
@@ -56,10 +63,12 @@ const TUT = [
   { sel: '#statsBox', title: '6️⃣ 金钱与利息', body:
     '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（通常上限 $5）。绿色牌组改为每次剩余出牌 $2、弃牌 $1，没有利息。' },
   { sel: '#jokerRow', title: '7️⃣ 小丑牌（构筑核心！）', body:
-    '商店里买的<b class="gold">小丑牌</b>会显示在这里（最多 5 张），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来，分数会滚雪球。点击小丑可查看效果、调整左右顺序或卖出。' },
+    '商店里买的<b class="gold">小丑牌</b>会显示在这里（本局 {jokerSlots} 个槽位），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
     '商店还卖两种消耗牌，买了存在这里，点击使用：<br><b class="blue">🌌 星球牌</b>：永久提升某个牌型的等级（筹码和倍率都涨）。<br><b class="gold">🔮 塔罗牌</b>：强化手牌（钢铁/玻璃/黄金/百搭花色等）、复制、销毁牌、变钱。百搭花色不改变点数，仍需相同点数组成对子。<br>商店里还有 <b class="blue">🎁 卡包</b>和 <b class="gold">🎟️ 优惠券</b>（$10 永久强化，如 +1 出牌次数）！' },
-  { sel: null, title: '9️⃣ 实战建议', body:
+  { sel: null, title: '底牌与主动构筑', body:
+    '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。<br>盲注前「备战」可选节奏和悬赏；商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
+  { sel: null, title: '实战建议', body:
     '① 前期优先买小丑牌，别裸奔打分。<br>② 认准 1~2 个主力牌型（如同花/顺子），星球牌全升它。<br>③ 弃牌是资源：先弃散牌凑型，最后一手再梭哈。<br>④ Boss 禁用花色时提前看牌库（🂠）调整思路。<br><br>教程结束！菜单中的「新手教程」可随时重看。祝你好运，小丑！🎉' },
 ];
 let tutI = 0, tutHl = null;
@@ -78,7 +87,8 @@ function tutShow() {
     if (el) { el.classList.add('tut-hl'); tutHl = el; }
   }
   $('tutTitle').textContent = t.title;
-  $('tutBody').innerHTML = t.body.replace('{hands}',S.baseHands).replace('{discards}',S.baseDisc);
+  $('tutBody').innerHTML = t.body.replace('{hands}',S.baseHands).replace('{discards}',S.baseDisc)
+    .replace('{handSize}',effHandSize()).replace('{jokerSlots}',S.jokerSlots);
   $('tutStep').textContent = (tutI + 1) + ' / ' + TUT.length;
   $('tutPrev').style.visibility = tutI === 0 ? 'hidden' : 'visible';
   $('tutNext').textContent = tutI === TUT.length - 1 ? '完成 ✓' : '下一步';

@@ -14,13 +14,13 @@ function harness(seed=1,root=path.join(__dirname,'..')) {
     localStorage:{getItem:key=>storage.get(key)??null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)},
     addEventListener(){},setTimeout:()=>0,clearTimeout(){},queueMicrotask(){},matchMedia:()=>({matches:true}),console});
   context.Math.random=random;
-  for(const name of ['cards','game','score-engine','scoring','shop',...['workshop','tactics'].filter(name=>fs.existsSync(path.join(root,'src/js',name+'.js')))])
+  for(const name of ['cards','game','score-engine','scoring','shop',...['workshop','tactics','reserve'].filter(name=>fs.existsSync(path.join(root,'src/js',name+'.js')))])
     vm.runInContext(source(root,name),context,{filename:name+'.js'});
   vm.runInContext(`
     const settings={speed:0};
-    for(const key of ['initAudio','sfxDeal','sfxCash','sfxUp','sfxBad','sfxWin','sfxTick','sfxJok','sfxTarot',
+    for(const key of ['initAudio','sfxDeal','sfxCash','sfxUp','sfxBad','sfxWin','sfxTick','sfxJok','sfxTarot','sfxSel',
       'renderStats','renderJokers','renderCons','renderHand','renderAll','renderInventory','hideTip','bindTip',
-      'mpSendState','persistRun','tutStart','syncDialogs','updatePreview','feedback','handPositions',
+      'mpSendState','persistRun','tutStart','syncDialogs','updatePreview','feedback','handPositions','renderReserveEntry',
       'animatePlayed','animateDiscard','totalFeedback','scoreFeedback','moneyFeedback','acquireFeedback']) globalThis[key]=()=>{};
     renderShop=()=>{}; popAt=()=>{}; jokerPop=()=>{}; globalThis.cardEl=()=>document.createElement('div');globalThis.cardTipHTML=()=>'';
     globalThis.sellPrice=j=>j.sell??Math.max(1,Math.ceil(j.price/2));

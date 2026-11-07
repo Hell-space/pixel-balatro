@@ -18,6 +18,27 @@ function chooser(g,s,cards=s.hand) {
   }return best;
 }
 function sample(pool,n,random){const a=pool.slice();for(let i=0;i<n&&i<a.length;i++){const j=i+Math.floor(random()*(a.length-i));[a[i],a[j]]=[a[j],a[i]];}return a.slice(0,n);}
+function tryReserve(g,s,best,log) {
+  if(typeof g.applyReserve!=='function'||s.reserve.used)return false;
+  const stored=s.deckAll.find(c=>c.id===s.reserve.cardId);
+  if(stored) {
+    let choice=null,value=best.total;
+    for(const card of s.hand) {
+      const next=s.hand.filter(c=>c!==card).concat(stored),score=chooser(g,s,next).total;
+      if(score>value){value=score;choice=card;}
+    }
+    if(choice&&g.applyReserve('retrieve',choice.id)) {
+      log.push({kind:'reserve',action:'retrieve',ante:s.ante,blind:s.blindIdx,stored:stored.id,out:choice.id,before:best.total,after:value});return true;
+    }
+  } else if(s.handsLeft>=2&&s.drawPile.length&&s.score+best.total<s.target) {
+    // Keep a useful spare outside the current scoring hand; never inspect the next draw.
+    const spare=s.hand.filter(c=>!best.cards.includes(c)&&!c.steel).sort((a,b)=>(b.bonus+b.multB*5+b.rank)-(a.bonus+a.multB*5+a.rank))[0];
+    if(spare&&g.applyReserve('store',spare.id)) {
+      log.push({kind:'reserve',action:'store',ante:s.ante,blind:s.blindIdx,card:spare.id});return true;
+    }
+  }
+  return false;
+}
 function discardChoice(g,s,random,best){
   const candidates=new Map(),put=keep=>{const ids=s.hand.filter(c=>!keep.includes(c)).slice(0,5).map(c=>c.id);if(ids.length)candidates.set(ids.join(','),ids);};
   for(let suit=0;suit<4;suit++)put(s.hand.filter(c=>c.suit===suit||c.wild));
@@ -101,7 +122,8 @@ async function simulate(seed,options={}){
     }
     g.chooseBlind();let actions=0;
     while(s.screen==='play'&&actions++<32){
-      const best=chooser(g,s);if(!best.cards.length)break;
+      let best=chooser(g,s);if(!best.cards.length)break;
+      if(options.reserve==='pocket'&&tryReserve(g,s,best,choices))best=chooser(g,s);
       let discard=null;
       if(s.score+best.total<s.target&&s.discLeft>0&&s.drawPile.length)discard=discardChoice(g,s,random,best);
       g.selectCards(discard||best.cards.map(c=>c.id));
@@ -115,14 +137,14 @@ async function simulate(seed,options={}){
   }
 }
 async function main(){
-  const count=Number(process.argv[2]||32),deck=process.argv[3]||'red',stake=process.argv[4]||'white',route=process.argv[5]||'balanced',rhythm=process.argv[6]||'none',contract=process.argv[7]||'none';
+  const count=Number(process.argv[2]||32),deck=process.argv[3]||'red',stake=process.argv[4]||'white',route=process.argv[5]||'balanced',rhythm=process.argv[6]||'none',contract=process.argv[7]||'none',reserve=process.argv[8]||'off';
   const root=process.env.BALANCE_ROOT;
-  const runs=[];for(let seed=1;seed<=count;seed++){runs.push(await simulate(seed,{deck,stake,route,rhythm,contract,root}));if(seed%8===0)console.log(`${deck}/${stake}/${route}: ${seed}/${count}`);}
-  const report={version:root?JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version:require('../package.json').version,deck,stake,route,rhythm,contract,count,wins:runs.filter(r=>r.win).length,
+  const runs=[];for(let seed=1;seed<=count;seed++){runs.push(await simulate(seed,{deck,stake,route,rhythm,contract,reserve,root}));if(seed%8===0)console.log(`${deck}/${stake}/${route}/${reserve}: ${seed}/${count}`);}
+  const report={version:root?JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8')).version:require('../package.json').version,deck,stake,route,rhythm,contract,reserve,count,wins:runs.filter(r=>r.win).length,
     reached:Array.from({length:8},(_,i)=>runs.filter(r=>r.rounds.some(x=>x.ante===i+1)).length),
     failures:Object.fromEntries([...new Set(runs.filter(r=>!r.win).map(r=>r.rounds.at(-1).boss))].map(id=>[id,runs.filter(r=>!r.win&&r.rounds.at(-1).boss===id).length])),
-    limits:'Greedy bot, three discard samples, no tarot or skip optimisation. Not a human win-rate estimate.',runs};
-  const out=process.env.BALANCE_OUTPUT||`.qa/balance-${report.version}-${deck}-${stake}-${route}-${rhythm}-${contract}.json`;fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2));console.log(JSON.stringify({...report,runs:undefined}));
+    limits:'Greedy bot, three discard samples, no tarot or skip optimisation; reserve keeps a spare and retrieves only for an immediate score gain. Not a human win-rate estimate.',runs};
+  const out=process.env.BALANCE_OUTPUT||`.qa/balance-${report.version}-${deck}-${stake}-${route}-${rhythm}-${contract}-${reserve}.json`;fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2));console.log(JSON.stringify({...report,runs:undefined}));
 }
 if(require.main===module)main().catch(e=>{console.error(e);process.exitCode=1;});
 module.exports={simulate,chooser};

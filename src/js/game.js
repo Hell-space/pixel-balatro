@@ -14,6 +14,7 @@ function freshDeck() {
 function newGame(withTut, deckId='classic', stakeId='white') {
   initAudio();
   workshopDraft=null;
+  reserveDraft=null;
   const deck=DECKS.find(d=>d.id===deckId),stake=STAKES.find(s=>s.id===stakeId)||STAKES[0];
   S = {
     deckAll: freshDeck(), money: 4, ante: 1, blindIdx: 0,
@@ -30,6 +31,7 @@ function newGame(withTut, deckId='classic', stakeId='white') {
     deckId:deck?.id||'classic',stakeId:stake.id,tarotsUsed:0,blindPlayed:[],bossHistory:[],
     workshopCredits:0,bossReward:null,
     rhythmMode:'none',rhythm:{lastKey:null,chain:0},contractChoice:null,contract:null,
+    reserve:{cardId:null,used:false},
   };
   S.money=deck?.money??4;
   S.baseHands+=deck?.hands||0; S.baseDisc+=(deck?.disc||0)+(stake.disc||0);
@@ -42,7 +44,10 @@ function newGame(withTut, deckId='classic', stakeId='white') {
 }
 const $ = id => document.getElementById(id);
 let modalOrder=0;
-function hide(id) { $(id).style.display='none'; queueMicrotask(syncDialogs); }
+function hide(id) {
+  if(S?.screen==='shop'&&['ovOwned','ovPack','ovWorkshop','ovReward'].includes(id))shopClickUntil=Date.now()+350;
+  $(id).style.display='none'; queueMicrotask(syncDialogs);
+}
 function show(id) { $(id).style.display='flex'; $(id).dataset.order=++modalOrder; queueMicrotask(syncDialogs); }
 const fmt = n => Math.floor(n).toLocaleString('en');
 const sleep = ms => {
@@ -118,6 +123,7 @@ function blindMetaFor(i) {
 function blindMeta() { return blindMetaFor(S.blindIdx); }
 function showBlindSelect() {
   S.screen = 'select';
+  S.reserve={cardId:null,used:false};
   S.boss = null;
   S.score=0; S.target=blindMeta().target;
   S.hand=[]; S.drawPile=S.deckAll.slice();
@@ -179,6 +185,7 @@ function chooseBlind() {
 }
 function effHandSize() { return S.handSize - (S.boss && S.boss.id === 'manacle' ? 1 : 0); }
 function startBlind() {
+  S.reserve={cardId:null,used:false};
   startTactics();
   const m = blindMeta();
   S.boss = S.blindIdx === 2 ? S.anteBoss : null;
@@ -226,7 +233,10 @@ function sortHand() {
   if (S.sortMode === 'rank') S.hand.sort((a, b) => b.rank - a.rank || a.suit - b.suit);
   else S.hand.sort((a, b) => a.suit - b.suit || b.rank - a.rank);
 }
-function setSort(m) { if (S.busy) return; S.sortMode = m; sortHand(); renderHand(); }
+function setSort(m) {
+  if (!S||S.busy||!['rank','suit'].includes(m)) return;
+  S.sortMode = m; sortHand(); renderHand();renderStats();
+}
 
 // ================= 牌型判定 =================
 const SUIT_BOSS = { hearts: 1, spades: 0, club: 2, window: 3 };

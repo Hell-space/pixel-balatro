@@ -20,7 +20,8 @@ function renderWorkshop() {
   const status=document.createElement('p'); status.className='workshopStatus';
   status.setAttribute('role','status');
   status.textContent=S.shop.workshopUsed?S.shop.workshopReceipt||'本店已完成改造':
-    '每店一次 · 牌组 '+S.deckAll.length+' 张'+(S.workshopCredits?' · 免费 '+S.workshopCredits+' 次':'');
+    '每店一次 · 牌组 '+S.deckAll.length+' 张';
+  if(S.workshopCredits)status.textContent+=' · 余 '+S.workshopCredits+' 次免费';
   box.append(status);
   for(const service of WORKSHOP) {
     const button=document.createElement('button'),issue=workshopIssue(service);

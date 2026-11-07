@@ -73,5 +73,6 @@ function nativeBack(){
   if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave','ovTactics'].includes(top.id)){hide(top.id);return false;}
   if(top?.id==='ovPack'){closePack();return false;}
   if(top?.id==='ovWorkshop'){closeWorkshop();return false;}
+  if(top?.id==='ovReserve'){closeReserve();return false;}
   openMenu();return false;
 }

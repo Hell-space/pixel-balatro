@@ -7,6 +7,9 @@ function normalizeRunState(input) {
   s.deckId??='classic'; s.stakeId??='white'; s.tarotsUsed??=0; s.blindPlayed??=[];s.bossHistory??=[];
   s.workshopCredits??=0; s.bossReward??=null;
   s.rhythmMode??='none'; s.rhythm??={lastKey:null,chain:0};s.contractChoice??=null;s.contract??=null;
+  s.reserve??={cardId:null,used:false};
+  if(typeof s.reserve.used!=='boolean'||(s.reserve.cardId!==null&&!Number.isSafeInteger(s.reserve.cardId))||
+    (s.reserve.used&&s.reserve.cardId!==null))throw Error('底牌状态损坏');
   if(!RHYTHMS.some(r=>r.id===s.rhythmMode)||!Number.isInteger(s.rhythm.chain)||s.rhythm.chain<0||s.rhythm.chain>5||
     (s.rhythm.lastKey!==null&&!HORDER.includes(s.rhythm.lastKey))||
     (s.contractChoice!==null&&!CONTRACTS.some(c=>c.id===s.contractChoice))||
@@ -30,7 +33,7 @@ function normalizeRunState(input) {
       ![null,'red','gold'].includes(c.seal)) throw Error('卡牌损坏');
     ids.add(c.id);
   }
-  const refs=[...s.hand,...s.drawPile];
+  const refs=[...s.hand,...s.drawPile,...(s.reserve.cardId===null?[]:[s.reserve.cardId])];
   if(new Set(refs).size!==refs.length || refs.some(id=>!ids.has(id))) throw Error('卡牌引用损坏');
   const catalog=(list,id)=>{ const def=list.find(x=>(x.id||x.key)===id); if(!def) throw Error('未知效果'); return def; };
   const joker=j=>{
@@ -98,7 +101,7 @@ function normalizeRunState(input) {
 function decodeRun(raw) {
   try {
     const data=JSON.parse(raw);
-    if(!data || ![1,2,3,4].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
+    if(!data || ![1,2,3,4,5].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
     data.state=normalizeRunState(data.state);
     const checkpoint=normalizeRunState(JSON.parse(data.checkpoint));
     data.checkpoint=JSON.stringify(checkpoint);
@@ -118,7 +121,7 @@ function readRun() {
 function persistRun() {
   if(!S||MP.on||S.busy||!saveStr) return;
   const state={...S,hand:S.hand.map(c=>c.id),drawPile:S.drawPile.map(c=>c.id),played:[],sellId:null};
-  const raw=JSON.stringify({version:4,cid,state,checkpoint:saveStr,meta:saveMeta});
+  const raw=JSON.stringify({version:5,cid,state,checkpoint:saveStr,meta:saveMeta});
   if(raw===lastWrite) return;
   try {
     const previous=localStorage.getItem(RUN_KEY);
@@ -148,6 +151,7 @@ function resumeGame() {
   state.hand=state.hand.map(id=>byId.get(id)); state.drawPile=state.drawPile.map(id=>byId.get(id));
   S=state; cid=slot.cid; saveStr=slot.checkpoint; saveMeta=slot.meta;
   workshopDraft=null;
+  reserveDraft=null;
   initAudio(); hide('ovStart'); renderAll();
   switch(S.screen) {
     case 'select': showBlindSelect(); break;

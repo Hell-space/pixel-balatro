@@ -4,11 +4,11 @@
 
 ## 安装
 
-交付文件：`outputs/PixelBalatro-1.4.0-android.apk`。传到手机后从文件管理器打开，按系统提示允许该文件管理器安装应用。包名 `io.github.hellspace.pixelbalatro`，版本 1.4.0 / versionCode 10400。
+交付文件：`outputs/PixelBalatro-1.5.0-android.apk`。传到手机后从文件管理器打开，按系统提示允许该文件管理器安装应用。包名 `io.github.hellspace.pixelbalatro`，版本 1.5.0 / versionCode 10500。
 
-手机端下载：[Release v1.4.0](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.4.0) → Assets → `PixelBalatro-1.4.0-android.apk`，或[直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.4.0/PixelBalatro-1.4.0-android.apk)。选择 APK 安装包；GitHub 自动提供的 Source code ZIP/TAR 是源码归档。
+手机端下载：[Release v1.5.0](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.5.0) → Assets → `PixelBalatro-1.5.0-android.apk`，或[直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.5.0/PixelBalatro-1.5.0-android.apk)。选择 APK 安装包；GitHub 自动提供的 Source code ZIP/TAR 是源码归档。
 
-已经安装 1.3.x 的设备直接覆盖安装，使用同一签名，保留原有进度和设置；不要先卸载旧版。1.4.0 增加工坊、Boss 三选一、悬赏与连招，规则见 [玩法说明](buildcraft.md)。
+已经安装 1.3.x / 1.4.0 的设备直接覆盖安装，使用同一签名，保留原有进度和设置；不要先卸载旧版。1.5.0 增加 [袖中底牌](reserve.md)，并保留工坊、Boss 三选一、悬赏与连招，原有规则见 [玩法说明](buildcraft.md)。
 
 最低 Android 8（API 26），使用系统 Android WebView 渲染；本轮实际验证 Android 9 / WebView 91.0.4472.114。APK 不含架构限定的原生库。若系统网页组件太旧，应先更新系统 WebView。
 
@@ -32,4 +32,4 @@ python -X utf8 scripts/build-android.py --sdk "你的 Android SDK 目录" --java
 
 ## 实机覆盖范围
 
-本轮复用独立雷电测试实例、非活动 Windows 桌面，没有使用或修改用户的其他模拟器游戏数据。当前验证见 [1.4.0 验证记录](verification-1.4.0.md)；历史玩法修复见 [1.3.2 验证记录](verification-1.3.2.md)，首次离线检查见 [1.3.0 验证记录](verification.md)。实体手机、Android 15/16 的系统栏和手势返回仍需要相应设备验证；SDK 36 编译成功不等于这些系统已实际测试。
+本轮复用独立雷电测试实例、非活动 Windows 桌面，没有使用或修改用户的其他模拟器游戏数据。当前验证见 [1.5.0 验证记录](verification-1.5.0.md)；主动构筑见 [1.4.0 验证记录](verification-1.4.0.md)，首次离线检查见 [1.3.0 验证记录](verification.md)。实体手机、Android 15/16 的系统栏和手势返回仍需要相应设备验证；SDK 36 编译成功不等于这些系统已实际测试。

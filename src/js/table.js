@@ -135,6 +135,11 @@ function updatePreview() {
 }
 function renderStats() {
   $('game').classList.toggle('isScoring',!!S.busy);
+  renderReserveEntry();
+  for(const mode of ['rank','suit']) {
+    const button=$(mode==='rank'?'btnSortRank':'btnSortSuit');
+    button.setAttribute('aria-pressed',String(S.sortMode===mode));button.disabled=S.busy;
+  }
   $('handsVal').textContent = S.handsLeft;
   $('discVal').textContent = S.discLeft;
   $('moneyVal').textContent = '$' + S.money;
@@ -147,6 +152,7 @@ function renderStats() {
   const oppSc = duel && MP.opp.ante === S.ante && MP.opp.blind === 2 ? MP.opp.score : 0;
   $('targetLbl').textContent = duel ? '⚔️ 对手得分' : '目标分数';
   const target=S.screen==='select'?blindMeta().target:S.target;
+  $('blindBox').classList.toggle('largeScore',Math.max(fmt(S.score).length,fmt(duel?oppSc:target).length)>6);
   $('targetVal').textContent = fmt(duel ? oppSc : target);
   $('scorebar').style.width = Math.min(100, S.score / Math.max(1, duel ? oppSc : S.target) * 100) + '%';
   if (MP.on) $('livesVal').textContent = '❤️'.repeat(Math.max(0, MP.lives)) || '💀';

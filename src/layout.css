@@ -182,15 +182,30 @@ body::after {display:none}
   #main {padding-inline:8px}.bcol .bname {font-size:14px}#statsBox {gap:2px 7px}
   #ovMpLobby .pxbtn {padding-inline:12px}
 }
+@media(max-width:579px) and (max-height:640px) {
+  #playArea {min-height:44px}
+  #handRow {row-gap:6px}
+  #handRow .card {height:62px}
+}
 @media(min-width:580px) and (max-width:1000px) and (max-height:540px) {
   #game {display:grid;grid-template-columns:155px minmax(0,1fr);grid-template-rows:44px 1fr}
   #rail {grid-column:1/-1} #side {padding:9px;border-right:1px solid var(--seam)}
   #statsBox {gap:5px;flex-direction:column;align-items:stretch}
-  #blindBox {grid-template-columns:1fr 1fr}#blindName {grid-column:1/-1;grid-row:1}
+  #blindBox {grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#blindName {grid-column:1/-1;grid-row:1}
   #blindBox>#targetLbl,#blindBox>.lbl:not(#targetLbl) {grid-row:2}
   #blindBox>#targetLbl,#targetVal {grid-column:2}#blindBox>.lbl:not(#targetLbl),#scoreVal {grid-column:1}
   #targetVal,#scoreVal {grid-row:3}#scorebarWrap {grid-row:4}#bossDesc {grid-row:5}
+  #blindBox>* {min-width:0;overflow-wrap:anywhere}
+  #blindBox.largeScore {grid-template-columns:minmax(0,1fr)}
+  #blindBox.largeScore>.lbl:not(#targetLbl) {grid-column:1;grid-row:2}
+  #blindBox.largeScore>#scoreVal {grid-column:1;grid-row:3}
+  #blindBox.largeScore>#targetLbl {grid-column:1;grid-row:4}
+  #blindBox.largeScore>#targetVal {grid-column:1;grid-row:5}
+  #blindBox.largeScore>#scorebarWrap {grid-row:6}
+  #blindBox.largeScore>#bossDesc {grid-row:7}
+  #blindBox.largeScore>#tacticsStatus {grid-row:8}
   #main {min-height:fit-content;padding:4px 8px}#jokerBar {min-height:44px}
+  .jslot,.joker {width:42px;height:50px;min-height:50px}
   #playArea {min-height:46px}#playedRow .card {height:56px}
   #handRow {display:flex;flex-wrap:wrap;gap:4px;padding-top:6px}
   #handRow .card {width:clamp(40px,6.4vw,56px);height:58px}

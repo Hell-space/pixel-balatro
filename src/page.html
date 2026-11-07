@@ -53,6 +53,7 @@
     <div id="playArea"><div class="tableSeal" aria-hidden="true"><svg viewBox="0 0 80 80"><use href="#jester"/></svg></div>
       <div id="playedRow"></div>
       <div id="totalPop"></div>
+      <button id="reserveBtn" onclick="openReserve()" hidden>底牌 · 藏入</button>
     </div>
     <div class="panel" id="previewBox">
       <div id="prevName">选择手牌</div>
@@ -67,10 +68,10 @@
     </div>
     <div id="handWrap"><div id="handRow" role="group" aria-label="手牌"></div></div>
     <div id="btnRow">
-      <button class="bigbtn midbtn" onclick="setSort('rank')">按点数</button>
+      <button class="bigbtn midbtn" id="btnSortRank" aria-pressed="true" onclick="setSort('rank')">按点数</button>
       <button class="bigbtn" id="btnPlay" disabled onclick="doPlay()">出牌</button>
       <button class="bigbtn" id="btnDiscard" disabled onclick="doDiscard()">弃牌</button>
-      <button class="bigbtn midbtn" onclick="setSort('suit')">按花色</button>
+      <button class="bigbtn midbtn" id="btnSortSuit" aria-pressed="false" onclick="setSort('suit')">按花色</button>
     </div>
   </div>
 </div>
@@ -195,6 +196,14 @@
   <button class="pxbtn" onclick="leaveShop()">下一盲注 ▶</button></div>
 </div></div>
 
+<div class="ov" id="ovReserve"><div class="box reserveBox">
+  <h2>袖中底牌</h2>
+  <p id="reserveRule"></p><p id="reserveRuleDetail"></p>
+  <div class="reserveBody"><div id="reservePocket" aria-label="已藏底牌"></div><div id="reserveHand" role="group" aria-label="选择一张手牌"></div></div>
+  <div id="reservePreview" aria-live="polite"></div>
+  <div class="reserveActions"><button class="pxbtn gray" onclick="closeReserve()">取消</button><button class="pxbtn" id="reserveConfirm" onclick="confirmReserve()" disabled>选择一张手牌</button></div>
+</div></div>
+
 <!-- 开卡包 -->
 <div class="ov" id="ovWorkshop"><div class="box workshopBox">
   <h2 id="workshopTitle"></h2>
@@ -261,6 +270,7 @@
 <!-- 牌库 -->
 <div class="ov" id="ovDeck"><div class="box" style="max-width:560px">
   <h2>🂠 剩余牌库</h2>
+  <div id="deckSummary" class="deckSummary"></div>
   <div id="deckGrid"></div>
   <p style="color:#9caeb1;font-size:12px">变暗 = 已抽出/已打出。弃掉的牌本盲注内不会回来。</p>
   <button class="pxbtn" onclick="hide('ovDeck')">关闭</button>

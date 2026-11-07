@@ -392,15 +392,30 @@ body::after {display:none}
   #main {padding-inline:8px}.bcol .bname {font-size:14px}#statsBox {gap:2px 7px}
   #ovMpLobby .pxbtn {padding-inline:12px}
 }
+@media(max-width:579px) and (max-height:640px) {
+  #playArea {min-height:44px}
+  #handRow {row-gap:6px}
+  #handRow .card {height:62px}
+}
 @media(min-width:580px) and (max-width:1000px) and (max-height:540px) {
   #game {display:grid;grid-template-columns:155px minmax(0,1fr);grid-template-rows:44px 1fr}
   #rail {grid-column:1/-1} #side {padding:9px;border-right:1px solid var(--seam)}
   #statsBox {gap:5px;flex-direction:column;align-items:stretch}
-  #blindBox {grid-template-columns:1fr 1fr}#blindName {grid-column:1/-1;grid-row:1}
+  #blindBox {grid-template-columns:minmax(0,1fr) minmax(0,1fr)}#blindName {grid-column:1/-1;grid-row:1}
   #blindBox>#targetLbl,#blindBox>.lbl:not(#targetLbl) {grid-row:2}
   #blindBox>#targetLbl,#targetVal {grid-column:2}#blindBox>.lbl:not(#targetLbl),#scoreVal {grid-column:1}
   #targetVal,#scoreVal {grid-row:3}#scorebarWrap {grid-row:4}#bossDesc {grid-row:5}
+  #blindBox>* {min-width:0;overflow-wrap:anywhere}
+  #blindBox.largeScore {grid-template-columns:minmax(0,1fr)}
+  #blindBox.largeScore>.lbl:not(#targetLbl) {grid-column:1;grid-row:2}
+  #blindBox.largeScore>#scoreVal {grid-column:1;grid-row:3}
+  #blindBox.largeScore>#targetLbl {grid-column:1;grid-row:4}
+  #blindBox.largeScore>#targetVal {grid-column:1;grid-row:5}
+  #blindBox.largeScore>#scorebarWrap {grid-row:6}
+  #blindBox.largeScore>#bossDesc {grid-row:7}
+  #blindBox.largeScore>#tacticsStatus {grid-row:8}
   #main {min-height:fit-content;padding:4px 8px}#jokerBar {min-height:44px}
+  .jslot,.joker {width:42px;height:50px;min-height:50px}
   #playArea {min-height:46px}#playedRow .card {height:56px}
   #handRow {display:flex;flex-wrap:wrap;gap:4px;padding-top:6px}
   #handRow .card {width:clamp(40px,6.4vw,56px);height:58px}
@@ -708,6 +723,44 @@ select:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
   .rewardChoice b {font-size:14px}.rewardUpgrade {padding:5px;display:grid;grid-template-columns:130px 1fr;gap:6px}
   .rewardUpgrade select {margin:0;font-size:12px}.rewardIcon {font-size:25px}
 }
+
+/* A small brass clasp on the table opens the card pocket. */
+#reserveBtn {position:absolute;right:4px;bottom:3px;min-height:44px;max-width:100%;padding:6px 12px;border:1px solid #a99b68;border-radius:6px;background:#183d31;color:var(--brass);font-size:12px;z-index:1}
+#reserveBtn:disabled {color:var(--muted);border-color:var(--seam);opacity:.65;cursor:default}
+.isScoring #reserveBtn {visibility:hidden}
+.reserveBox {width:650px;max-width:100%!important;height:min(650px,100%);display:grid;grid-template-rows:auto auto auto minmax(70px,1fr) minmax(30px,76px) auto;gap:8px;overflow:hidden;padding:16px!important}
+.reserveBox h2 {margin:0}.reserveBox>p {margin:0;font-size:12px;text-align:left;line-height:1.5}
+#reserveRuleDetail {color:var(--muted)}
+.reserveBody {min-height:0;display:grid;grid-template-columns:100px minmax(0,1fr);gap:14px;overflow:hidden}
+#reservePocket {min-height:0;overflow:auto;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:left}
+#reservePocket>div:not(.card) {font-size:11px;line-height:1.5;max-width:100%}
+#reservePocket .card,.emptyPocket {width:70px;height:98px;flex-shrink:0}
+.emptyPocket {display:grid;place-content:center;border:2px dashed #acb18a;border-radius:6px;color:var(--muted);background:#163b3066}
+#reserveHand {min-height:0;overflow:auto;overscroll-behavior:contain;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-content:start;gap:10px 7px;padding:5px}
+#reserveHand .card {width:100%;height:auto;aspect-ratio:5/7;min-width:0;margin:0;transform:none}
+#reserveHand .card.sel {border-color:#d59127;box-shadow:0 0 0 2px #ffe19a}
+#reservePreview {min-height:0;overflow:auto;border-top:1px solid var(--seam);padding-top:6px;text-align:left;font-size:12px;line-height:1.5}
+.reserveActions {display:flex;gap:8px}.reserveActions .pxbtn {margin:0;min-height:44px;padding:8px;font-size:13px}.reserveActions #reserveConfirm {flex:1}
+#btnSortRank[aria-pressed=true],#btnSortSuit[aria-pressed=true] {border-color:var(--brass);color:var(--brass);background:#36513f}
+.deckSummary {display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;font-size:12px;color:var(--muted);margin:0 0 12px}
+.deckSummary b {color:var(--brass)}#deckGrid .absent {color:#789087;background:transparent}#deckGrid .reserved {box-shadow:inset 0 0 0 1px var(--brass);color:var(--brass)}
+#ovShop .shopEmpty {color:var(--muted);font-size:13px;align-self:center}
+@media(max-width:579px) {
+  .reserveBox {padding:12px!important;gap:6px}
+  .reserveBox h2 {font-size:20px}.reserveBody {grid-template-columns:64px minmax(0,1fr);gap:6px}
+  #reservePocket .card,.emptyPocket {width:56px;height:79px}
+  #reserveHand {grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 6px}
+}
+@media(min-width:580px) and (max-height:440px) {
+  #reserveBtn {bottom:0;font-size:11px;padding:4px 8px}
+  .reserveBox {padding:10px!important;grid-template-rows:24px auto auto minmax(60px,1fr) 44px;grid-template-columns:minmax(0,1fr) 170px;gap:5px 12px}
+  .reserveBox h2 {grid-column:1/-1;font-size:18px}.reserveBox>p {grid-column:1/-1}
+  .reserveBody {grid-row:4/6;grid-column:1;grid-template-columns:70px minmax(0,1fr);gap:8px}
+  #reserveHand {grid-template-columns:repeat(4,minmax(0,1fr))}
+  #reservePocket .card,.emptyPocket {width:56px;height:79px}
+  #reservePreview {grid-row:4;grid-column:2}.reserveActions {grid-row:5;grid-column:2;gap:5px}
+  .reserveActions .pxbtn {font-size:12px;padding:4px}
+}
 </style>
 </head>
 <body>
@@ -777,6 +830,7 @@ select:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
     <div id="playArea"><div class="tableSeal" aria-hidden="true"><svg viewBox="0 0 80 80"><use href="#jester"/></svg></div>
       <div id="playedRow"></div>
       <div id="totalPop"></div>
+      <button id="reserveBtn" onclick="openReserve()" hidden>底牌 · 藏入</button>
     </div>
     <div class="panel" id="previewBox">
       <div id="prevName">选择手牌</div>
@@ -791,10 +845,10 @@ select:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
     </div>
     <div id="handWrap"><div id="handRow" role="group" aria-label="手牌"></div></div>
     <div id="btnRow">
-      <button class="bigbtn midbtn" onclick="setSort('rank')">按点数</button>
+      <button class="bigbtn midbtn" id="btnSortRank" aria-pressed="true" onclick="setSort('rank')">按点数</button>
       <button class="bigbtn" id="btnPlay" disabled onclick="doPlay()">出牌</button>
       <button class="bigbtn" id="btnDiscard" disabled onclick="doDiscard()">弃牌</button>
-      <button class="bigbtn midbtn" onclick="setSort('suit')">按花色</button>
+      <button class="bigbtn midbtn" id="btnSortSuit" aria-pressed="false" onclick="setSort('suit')">按花色</button>
     </div>
   </div>
 </div>
@@ -919,6 +973,14 @@ select:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
   <button class="pxbtn" onclick="leaveShop()">下一盲注 ▶</button></div>
 </div></div>
 
+<div class="ov" id="ovReserve"><div class="box reserveBox">
+  <h2>袖中底牌</h2>
+  <p id="reserveRule"></p><p id="reserveRuleDetail"></p>
+  <div class="reserveBody"><div id="reservePocket" aria-label="已藏底牌"></div><div id="reserveHand" role="group" aria-label="选择一张手牌"></div></div>
+  <div id="reservePreview" aria-live="polite"></div>
+  <div class="reserveActions"><button class="pxbtn gray" onclick="closeReserve()">取消</button><button class="pxbtn" id="reserveConfirm" onclick="confirmReserve()" disabled>选择一张手牌</button></div>
+</div></div>
+
 <!-- 开卡包 -->
 <div class="ov" id="ovWorkshop"><div class="box workshopBox">
   <h2 id="workshopTitle"></h2>
@@ -985,6 +1047,7 @@ select:focus-visible {outline:3px solid #fff0ab;outline-offset:2px}
 <!-- 牌库 -->
 <div class="ov" id="ovDeck"><div class="box" style="max-width:560px">
   <h2>🂠 剩余牌库</h2>
+  <div id="deckSummary" class="deckSummary"></div>
   <div id="deckGrid"></div>
   <p style="color:#9caeb1;font-size:12px">变暗 = 已抽出/已打出。弃掉的牌本盲注内不会回来。</p>
   <button class="pxbtn" onclick="hide('ovDeck')">关闭</button>
@@ -1270,6 +1333,7 @@ function freshDeck() {
 function newGame(withTut, deckId='classic', stakeId='white') {
   initAudio();
   workshopDraft=null;
+  reserveDraft=null;
   const deck=DECKS.find(d=>d.id===deckId),stake=STAKES.find(s=>s.id===stakeId)||STAKES[0];
   S = {
     deckAll: freshDeck(), money: 4, ante: 1, blindIdx: 0,
@@ -1286,6 +1350,7 @@ function newGame(withTut, deckId='classic', stakeId='white') {
     deckId:deck?.id||'classic',stakeId:stake.id,tarotsUsed:0,blindPlayed:[],bossHistory:[],
     workshopCredits:0,bossReward:null,
     rhythmMode:'none',rhythm:{lastKey:null,chain:0},contractChoice:null,contract:null,
+    reserve:{cardId:null,used:false},
   };
   S.money=deck?.money??4;
   S.baseHands+=deck?.hands||0; S.baseDisc+=(deck?.disc||0)+(stake.disc||0);
@@ -1298,7 +1363,10 @@ function newGame(withTut, deckId='classic', stakeId='white') {
 }
 const $ = id => document.getElementById(id);
 let modalOrder=0;
-function hide(id) { $(id).style.display='none'; queueMicrotask(syncDialogs); }
+function hide(id) {
+  if(S?.screen==='shop'&&['ovOwned','ovPack','ovWorkshop','ovReward'].includes(id))shopClickUntil=Date.now()+350;
+  $(id).style.display='none'; queueMicrotask(syncDialogs);
+}
 function show(id) { $(id).style.display='flex'; $(id).dataset.order=++modalOrder; queueMicrotask(syncDialogs); }
 const fmt = n => Math.floor(n).toLocaleString('en');
 const sleep = ms => {
@@ -1374,6 +1442,7 @@ function blindMetaFor(i) {
 function blindMeta() { return blindMetaFor(S.blindIdx); }
 function showBlindSelect() {
   S.screen = 'select';
+  S.reserve={cardId:null,used:false};
   S.boss = null;
   S.score=0; S.target=blindMeta().target;
   S.hand=[]; S.drawPile=S.deckAll.slice();
@@ -1435,6 +1504,7 @@ function chooseBlind() {
 }
 function effHandSize() { return S.handSize - (S.boss && S.boss.id === 'manacle' ? 1 : 0); }
 function startBlind() {
+  S.reserve={cardId:null,used:false};
   startTactics();
   const m = blindMeta();
   S.boss = S.blindIdx === 2 ? S.anteBoss : null;
@@ -1482,7 +1552,10 @@ function sortHand() {
   if (S.sortMode === 'rank') S.hand.sort((a, b) => b.rank - a.rank || a.suit - b.suit);
   else S.hand.sort((a, b) => a.suit - b.suit || b.rank - a.rank);
 }
-function setSort(m) { if (S.busy) return; S.sortMode = m; sortHand(); renderHand(); }
+function setSort(m) {
+  if (!S||S.busy||!['rank','suit'].includes(m)) return;
+  S.sortMode = m; sortHand(); renderHand();renderStats();
+}
 
 // ================= 牌型判定 =================
 const SUIT_BOSS = { hearts: 1, spades: 0, club: 2, window: 3 };
@@ -1676,6 +1749,11 @@ function updatePreview() {
 }
 function renderStats() {
   $('game').classList.toggle('isScoring',!!S.busy);
+  renderReserveEntry();
+  for(const mode of ['rank','suit']) {
+    const button=$(mode==='rank'?'btnSortRank':'btnSortSuit');
+    button.setAttribute('aria-pressed',String(S.sortMode===mode));button.disabled=S.busy;
+  }
   $('handsVal').textContent = S.handsLeft;
   $('discVal').textContent = S.discLeft;
   $('moneyVal').textContent = '$' + S.money;
@@ -1688,6 +1766,7 @@ function renderStats() {
   const oppSc = duel && MP.opp.ante === S.ante && MP.opp.blind === 2 ? MP.opp.score : 0;
   $('targetLbl').textContent = duel ? '⚔️ 对手得分' : '目标分数';
   const target=S.screen==='select'?blindMeta().target:S.target;
+  $('blindBox').classList.toggle('largeScore',Math.max(fmt(S.score).length,fmt(duel?oppSc:target).length)>6);
   $('targetVal').textContent = fmt(duel ? oppSc : target);
   $('scorebar').style.width = Math.min(100, S.score / Math.max(1, duel ? oppSc : S.target) * 100) + '%';
   if (MP.on) $('livesVal').textContent = '❤️'.repeat(Math.max(0, MP.lives)) || '💀';
@@ -2175,6 +2254,7 @@ function genShopMain() {
     { ...randOf(TAROTS), kind: 'tarot', price: 3, sold: false },
   ];
 }
+function shopActionReady() { return !!S&&S.screen==='shop'&&!!S.shop&&!S.busy&&!S.pack&&!workshopDraft; }
 function openShop() {
   if(S.screen!=='cash'||S.winPending) return;
   if(S.bossReward) return openBossReward();
@@ -2218,6 +2298,7 @@ function renderShop() {
   $('shopSlots').textContent = S.jokers.length + '/' + S.jokerSlots;
   $('shopCons').textContent = S.cons.length + '/' + S.consSlots;
   $('rerollBtn').textContent = '🎲 刷新 $' + S.shop.rerollCost;
+  $('rerollBtn').disabled=S.money<S.shop.rerollCost;
   const box = $('shopItems');
   box.innerHTML = '';
   S.shop.jokers.forEach((j, i) => {
@@ -2241,7 +2322,7 @@ function renderShop() {
   if (S.anteVoucher && !S.shop.voucherSold && !S.vouchers.includes(S.anteVoucher.id)) {
     vb.appendChild(shopItemEl(S.anteVoucher, shopPrice(10), ' ru', null, buyVoucher));
   } else {
-    vb.innerHTML = '<p style="color:#556;font-size:12px">' +
+    vb.innerHTML = '<p class="shopEmpty">' +
       (S.anteVoucher ? '本底注的优惠券已购买 ✔' : '优惠券已全部收集！') + '</p>';
   }
   renderInventory($('shopOwned'));
@@ -2250,6 +2331,7 @@ function renderShop() {
   renderJokers(); renderCons(); renderStats();
 }
 function buyJoker(i) {
+  if(!shopActionReady()||!S.shop.jokers[i])return false;
   const j = S.shop.jokers[i];
   if (j.sold) return;
   const p = shopPrice(j.price);
@@ -2265,6 +2347,7 @@ function buyJoker(i) {
   acquireFeedback(from,j,$('shopOwned').querySelector('.ownedRow[data-kind="joker"]')?.lastElementChild);
 }
 function buyCons(i) {
+  if(!shopActionReady()||!S.shop.cons[i])return false;
   const t = S.shop.cons[i];
   if (t.sold) return;
   const p = shopPrice(t.price);
@@ -2282,6 +2365,7 @@ function buyCons(i) {
   acquireFeedback(from,t,$('shopOwned').querySelector('.ownedRow[data-kind="cons"]')?.lastElementChild);
 }
 function buyVoucher() {
+  if(!shopActionReady())return false;
   const v = S.anteVoucher;
   if(!v || S.shop.voucherSold || S.vouchers.includes(v.id)) return;
   const p = shopPrice(10);
@@ -2304,6 +2388,7 @@ function buyVoucher() {
   renderShop();
 }
 function doReroll() {
+  if(!shopActionReady())return false;
   if (S.money < S.shop.rerollCost) { msg('钱不够刷新！', 1); return; }
   S.money -= S.shop.rerollCost;
   S.shop.rerollCost += 2;
@@ -2322,6 +2407,7 @@ function leaveShop() {
 
 // ================= 卡包 =================
 function buyPack(i) {
+  if(!shopActionReady()||!S.shop.packs[i])return false;
   const p=S.shop.packs[i];
   if(p.sold || S.pack) return;
   const cost=shopPrice(p.price);
@@ -2588,7 +2674,8 @@ function renderWorkshop() {
   const status=document.createElement('p'); status.className='workshopStatus';
   status.setAttribute('role','status');
   status.textContent=S.shop.workshopUsed?S.shop.workshopReceipt||'本店已完成改造':
-    '每店一次 · 牌组 '+S.deckAll.length+' 张'+(S.workshopCredits?' · 免费 '+S.workshopCredits+' 次':'');
+    '每店一次 · 牌组 '+S.deckAll.length+' 张';
+  if(S.workshopCredits)status.textContent+=' · 余 '+S.workshopCredits+' 次免费';
   box.append(status);
   for(const service of WORKSHOP) {
     const button=document.createElement('button'),issue=workshopIssue(service);
@@ -2784,6 +2871,87 @@ function tacticsStatus() {
   return parts.join(' ｜ ');
 }
 
+// ── reserve ──
+// A single extra card can be kept outside the hand, then exchanged once per blind.
+let reserveDraft=null, tableClickUntil=0;
+function reserveCard(state=S) { return state.deckAll.find(c=>c.id===state.reserve?.cardId); }
+function reserveIssue(action,cardId) {
+  if(!S||MP.on||S.screen!=='play'||S.busy) return '当前无法使用底牌';
+  if(S.reserve.used) return '本盲底牌已用完';
+  const expected=S.reserve.cardId===null?'store':'retrieve';
+  if(action!==expected) return '底牌状态已变化';
+  if(action==='store'&&!S.drawPile.length) return '牌库已空，无法藏牌补牌';
+  if(action==='retrieve'&&!reserveCard()) return '底牌不可用';
+  if(cardId!==undefined&&!S.hand.some(c=>c.id===cardId)) return '请选择一张手牌';
+  return '';
+}
+function renderReserveEntry() {
+  const button=$('reserveBtn');
+  button.hidden=MP.on||S.screen!=='play';
+  const card=reserveCard(),action=card?'retrieve':'store';
+  button.disabled=!!reserveIssue(action);
+  button.textContent=S.reserve.used?'底牌 · 已用':card?'底牌 · '+cardLabel(card):!S.drawPile.length?'底牌 · 牌库已空':'底牌 · 藏入';
+  button.setAttribute('aria-label',card?'换回底牌 '+cardLabel(card):button.textContent);
+}
+function openReserve() {
+  const action=S?.reserve?.cardId===null?'store':'retrieve';
+  if(reserveIssue(action))return false;
+  const selected=S.hand.filter(c=>c.sel);
+  reserveDraft={action,cardId:selected.length===1?selected[0].id:null};
+  const held=reserveCard(),pocket=$('reservePocket');pocket.replaceChildren();
+  if(held) {
+    pocket.append(cardEl({...held,sel:false,justDealt:false}));
+    const desc=document.createElement('div');desc.innerHTML=cardTipHTML(held);pocket.append(desc);
+  } else pocket.innerHTML='<div class="emptyPocket" aria-hidden="true">底牌</div>';
+  $('reserveRule').textContent=held?'选一张手牌换回底牌；换出的牌本盲不再抽到。':'选一张手牌藏入并补一张，本盲可再换回一次。';
+  $('reserveRuleDetail').textContent='不耗出牌、弃牌或金币；底牌不触发留手效果。';
+  const grid=$('reserveHand');grid.replaceChildren();
+  for(const card of S.hand) {
+    const el=cardEl({...card,sel:false,justDealt:false},true);
+    el.setAttribute('aria-label',cardLabel(card));
+    el.setAttribute('aria-pressed',String(card.id===reserveDraft.cardId));
+    el.classList.toggle('sel',card.id===reserveDraft.cardId);
+    el.onclick=()=>{
+      reserveDraft.cardId=card.id;
+      for(const other of grid.children) {
+        const active=other.dataset.cardId===String(card.id);
+        other.classList.toggle('sel',active);other.setAttribute('aria-pressed',String(active));
+      }
+      hideTip();renderReservePreview();
+    };
+    grid.append(el);
+  }
+  renderReservePreview();show('ovReserve');return true;
+}
+function renderReservePreview() {
+  if(!reserveDraft)return;
+  const card=S.hand.find(c=>c.id===reserveDraft.cardId),stored=reserveCard();
+  $('reservePreview').innerHTML=card?cardTipHTML(card):'选择一张手牌';
+  const button=$('reserveConfirm');button.disabled=!card||!!reserveIssue(reserveDraft.action,card?.id);
+  button.textContent=!card?'选择一张手牌':stored?'换回 '+cardLabel(stored):'藏入 '+cardLabel(card);
+}
+function closeReserve() {
+  reserveDraft=null;tableClickUntil=Date.now()+350;hideTip();hide('ovReserve');
+}
+function confirmReserve() { return reserveDraft?applyReserve(reserveDraft.action,reserveDraft.cardId):false; }
+function applyReserve(action,cardId) {
+  if(reserveIssue(action,cardId))return false;
+  const card=S.hand.find(c=>c.id===cardId);
+  if(!card)return false;
+  const stored=reserveCard();
+  S.hand=S.hand.filter(c=>c!==card);card.sel=false;
+  if(action==='store') {
+    S.reserve.cardId=card.id;
+    const next=S.drawPile.pop();next.sel=false;next.justDealt=true;S.hand.push(next);sfxDeal();
+  } else {
+    stored.sel=false;stored.justDealt=true;S.hand.push(stored);
+    S.reserve={cardId:null,used:true};sfxSel();
+  }
+  sortHand();closeReserve();renderAll();
+  msg(action==='store'?'已藏入 '+cardLabel(card)+'，本盲还可换回一次。':'已换回 '+cardLabel(stored));
+  persistRun();return true;
+}
+
 // ── guide ──
 function openChart() {
   let h = '<table><tr><th>牌型</th><th>等级</th><th>筹码 × 倍率</th><th>本局打出</th><th>示例</th></tr>';
@@ -2801,18 +2969,22 @@ function openInfo() {
     '<p style="text-align:left">💰 金钱 <b class="gold">$' + S.money + '</b>　🏆 最高单次 <b class="gold">' + fmt(S.bestHand) + '</b>　🃏 总出牌 <b class="blue">' + S.totHands + '</b></p>' +
     '<p style="text-align:left">🎴 手牌上限 <b>' + S.handSize + '</b>　🂠 牌组张数 <b>' + S.deckAll.length + '</b>　🌌 已用星球 <b>' + S.planetsUsed + '</b>　➕ 已加入牌 <b>' + S.cardsAdded + '</b></p>' +
     '<p style="text-align:left">🃏 出牌/盲注 <b>' + S.baseHands + '</b>　🗑️ 弃牌/盲注 <b>' + S.baseDisc + '</b>　利息上限 <b class="green">$' + S.interestCap + '</b></p>' +
+    (!MP.on?'<p style="text-align:left">工坊免费次数 <b>'+S.workshopCredits+'</b>　出牌节奏 <b>'+(RHYTHMS.find(r=>r.id===S.rhythmMode)||RHYTHMS[0]).name+'</b></p>':'')+
     '<p style="text-align:left;color:#57e6ff;margin-top:8px">🎟️ 已拥有的优惠券：</p>';
   if (S.vouchers.length) {
     h += '<p style="text-align:left">' + S.vouchers.map(id => {
       const v = VOUCHERS.find(x => x.id === id);
       return v.ic + ' <span class="gold">' + v.name + '</span> — ' + v.desc;
     }).join('<br>') + '</p>';
-  } else h += '<p style="text-align:left;color:#667">还没有。商店里每个底注会出现一张 $10 优惠券，永久生效，值得投资！</p>';
+  } else h += '<p style="text-align:left;color:var(--muted)">暂未持有优惠券。</p>';
   $('infoBody').innerHTML = h;
   show('ovInfo');
 }
 function openDeck() {
   const g = $('deckGrid');
+  const stored=reserveCard();
+  $('deckSummary').innerHTML='<span>待抽 <b>'+S.drawPile.length+'</b></span><span>手牌 <b>'+S.hand.length+'</b></span>'+
+    (stored?'<span>底牌 <b>'+cardLabel(stored)+'</b></span>':'')+'<span>牌组 <b>'+S.deckAll.length+'</b></span>';
   g.innerHTML = '<div class="hd">花色</div>' + [14,13,12,11,10,9,8,7,6,5,4,3,2].map(r => '<div class="hd">' + rankName(r) + '</div>').join('');
   const inPile = new Set(S.drawPile.map(c => c.id));
   for (let s = 0; s < 4; s++) {
@@ -2820,7 +2992,10 @@ function openDeck() {
     for (const r of [14,13,12,11,10,9,8,7,6,5,4,3,2]) {
       const cards = S.deckAll.filter(c => c.suit === s && c.rank === r);
       const live = cards.filter(c => inPile.has(c.id)).length;
-      g.innerHTML += '<div class="' + (live ? '' : 'gone') + '">' + (cards.length > 1 ? live + '/' + cards.length : (live ? '●' : '○')) + '</div>';
+      const reserved=cards.some(c=>c.id===stored?.id);
+      g.innerHTML += '<div class="' + (!cards.length?'absent':live?'':'gone')+(reserved?' reserved':'') + '" title="'+
+        SUITS[s]+rankName(r)+'：待抽 '+live+' / 共 '+cards.length+(reserved?'，一张为底牌':'')+'">' +
+        (!cards.length?'—':cards.length>1?live+'/'+cards.length:live?'●':reserved?'底':'○') + '</div>';
     }
   }
   show('ovDeck');
@@ -2831,7 +3006,7 @@ const TUT = [
   { sel: null, title: '🃏 欢迎来到像素小丑牌！', body:
     '这是一款<b class="gold">用扑克牌得分</b>的 Roguelike 游戏。<br>核心循环：<b class="blue">打出牌型得分 → 击败盲注 → 拿钱进商店买小丑牌变强 → 挑战更高的底注</b>。<br>撑过 8 个底注即通关！我们一步步来看。' },
   { sel: '#handRow', title: '1️⃣ 你的手牌', body:
-    '每回合手上有 <b class="gold">8 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；长按可看牌面效果。<br>下方「按点数 / 按花色」按钮可以整理手牌，找同花时很好用。' },
+    '本局手牌上限为 <b class="gold">{handSize} 张牌</b>。<br>点击卡牌可以<b class="blue">选中（最多 5 张）</b>，再点一次取消；长按可看牌面效果。<br>下方「按点数 / 按花色」按钮可以整理手牌，找同花时很好用。' },
   { sel: '#previewBox', title: '2️⃣ 牌型与预览', body:
     '选中牌后，这里会实时显示组成的<b class="gold">牌型</b>和计入小丑及牌面效果的预计分数。随机倍率会显示范围。<br>牌型从弱到强：高牌 → 对子 → 两对 → 三条 → 顺子 → 同花 → 葫芦 → 四条 → 同花顺。<br>随时点菜单中的「牌型表」查看完整数值。' },
   { sel: '#previewBox', title: '3️⃣ 得分公式（重点！）', body:
@@ -2843,10 +3018,12 @@ const TUT = [
   { sel: '#statsBox', title: '6️⃣ 金钱与利息', body:
     '击败盲注可获得：<b class="green">基础奖励($3~5) + 剩余出牌次数×$1 + 利息</b>。<br>利息 = 每持有 $5 得 $1（通常上限 $5）。绿色牌组改为每次剩余出牌 $2、弃牌 $1，没有利息。' },
   { sel: '#jokerRow', title: '7️⃣ 小丑牌（构筑核心！）', body:
-    '商店里买的<b class="gold">小丑牌</b>会显示在这里（最多 5 张），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来，分数会滚雪球。点击小丑可查看效果、调整左右顺序或卖出。' },
+    '商店里买的<b class="gold">小丑牌</b>会显示在这里（本局 {jokerSlots} 个槽位），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
     '商店还卖两种消耗牌，买了存在这里，点击使用：<br><b class="blue">🌌 星球牌</b>：永久提升某个牌型的等级（筹码和倍率都涨）。<br><b class="gold">🔮 塔罗牌</b>：强化手牌（钢铁/玻璃/黄金/百搭花色等）、复制、销毁牌、变钱。百搭花色不改变点数，仍需相同点数组成对子。<br>商店里还有 <b class="blue">🎁 卡包</b>和 <b class="gold">🎟️ 优惠券</b>（$10 永久强化，如 +1 出牌次数）！' },
-  { sel: null, title: '9️⃣ 实战建议', body:
+  { sel: null, title: '底牌与主动构筑', body:
+    '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。<br>盲注前「备战」可选节奏和悬赏；商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
+  { sel: null, title: '实战建议', body:
     '① 前期优先买小丑牌，别裸奔打分。<br>② 认准 1~2 个主力牌型（如同花/顺子），星球牌全升它。<br>③ 弃牌是资源：先弃散牌凑型，最后一手再梭哈。<br>④ Boss 禁用花色时提前看牌库（🂠）调整思路。<br><br>教程结束！菜单中的「新手教程」可随时重看。祝你好运，小丑！🎉' },
 ];
 let tutI = 0, tutHl = null;
@@ -2865,7 +3042,8 @@ function tutShow() {
     if (el) { el.classList.add('tut-hl'); tutHl = el; }
   }
   $('tutTitle').textContent = t.title;
-  $('tutBody').innerHTML = t.body.replace('{hands}',S.baseHands).replace('{discards}',S.baseDisc);
+  $('tutBody').innerHTML = t.body.replace('{hands}',S.baseHands).replace('{discards}',S.baseDisc)
+    .replace('{handSize}',effHandSize()).replace('{jokerSlots}',S.jokerSlots);
   $('tutStep').textContent = (tutI + 1) + ' / ' + TUT.length;
   $('tutPrev').style.visibility = tutI === 0 ? 'hidden' : 'visible';
   $('tutNext').textContent = tutI === TUT.length - 1 ? '完成 ✓' : '下一步';
@@ -3148,6 +3326,9 @@ function normalizeRunState(input) {
   s.deckId??='classic'; s.stakeId??='white'; s.tarotsUsed??=0; s.blindPlayed??=[];s.bossHistory??=[];
   s.workshopCredits??=0; s.bossReward??=null;
   s.rhythmMode??='none'; s.rhythm??={lastKey:null,chain:0};s.contractChoice??=null;s.contract??=null;
+  s.reserve??={cardId:null,used:false};
+  if(typeof s.reserve.used!=='boolean'||(s.reserve.cardId!==null&&!Number.isSafeInteger(s.reserve.cardId))||
+    (s.reserve.used&&s.reserve.cardId!==null))throw Error('底牌状态损坏');
   if(!RHYTHMS.some(r=>r.id===s.rhythmMode)||!Number.isInteger(s.rhythm.chain)||s.rhythm.chain<0||s.rhythm.chain>5||
     (s.rhythm.lastKey!==null&&!HORDER.includes(s.rhythm.lastKey))||
     (s.contractChoice!==null&&!CONTRACTS.some(c=>c.id===s.contractChoice))||
@@ -3171,7 +3352,7 @@ function normalizeRunState(input) {
       ![null,'red','gold'].includes(c.seal)) throw Error('卡牌损坏');
     ids.add(c.id);
   }
-  const refs=[...s.hand,...s.drawPile];
+  const refs=[...s.hand,...s.drawPile,...(s.reserve.cardId===null?[]:[s.reserve.cardId])];
   if(new Set(refs).size!==refs.length || refs.some(id=>!ids.has(id))) throw Error('卡牌引用损坏');
   const catalog=(list,id)=>{ const def=list.find(x=>(x.id||x.key)===id); if(!def) throw Error('未知效果'); return def; };
   const joker=j=>{
@@ -3239,7 +3420,7 @@ function normalizeRunState(input) {
 function decodeRun(raw) {
   try {
     const data=JSON.parse(raw);
-    if(!data || ![1,2,3,4].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
+    if(!data || ![1,2,3,4,5].includes(data.version)||!Number.isSafeInteger(data.cid)||!data.checkpoint) return null;
     data.state=normalizeRunState(data.state);
     const checkpoint=normalizeRunState(JSON.parse(data.checkpoint));
     data.checkpoint=JSON.stringify(checkpoint);
@@ -3259,7 +3440,7 @@ function readRun() {
 function persistRun() {
   if(!S||MP.on||S.busy||!saveStr) return;
   const state={...S,hand:S.hand.map(c=>c.id),drawPile:S.drawPile.map(c=>c.id),played:[],sellId:null};
-  const raw=JSON.stringify({version:4,cid,state,checkpoint:saveStr,meta:saveMeta});
+  const raw=JSON.stringify({version:5,cid,state,checkpoint:saveStr,meta:saveMeta});
   if(raw===lastWrite) return;
   try {
     const previous=localStorage.getItem(RUN_KEY);
@@ -3289,6 +3470,7 @@ function resumeGame() {
   state.hand=state.hand.map(id=>byId.get(id)); state.drawPile=state.drawPile.map(id=>byId.get(id));
   S=state; cid=slot.cid; saveStr=slot.checkpoint; saveMeta=slot.meta;
   workshopDraft=null;
+  reserveDraft=null;
   initAudio(); hide('ovStart'); renderAll();
   switch(S.screen) {
     case 'select': showBlindSelect(); break;
@@ -3406,7 +3588,8 @@ const SETTINGS_KEY='pixel-balatro.settings.v1';
 const settings={speed:1,music:true,sound:true};
 // A second tap from the dismissed picker must not activate a different shop action underneath it.
 document.addEventListener('click',e=>{
-  if(Date.now()<shopClickUntil&&e.target.closest('#ovShop')) {
+  if((Date.now()<shopClickUntil&&e.target.closest('#ovShop'))||
+     (Date.now()<tableClickUntil&&e.target.closest('#game'))) {
     e.preventDefault();e.stopImmediatePropagation();
   }
 },true);
@@ -3479,6 +3662,7 @@ addEventListener('keydown',e=>{
   if(e.key==='Escape'&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovTactics'].includes(top.id)) hide(top.id);
   if(e.key==='Escape'&&top.id==='ovSetup'){hide('ovSetup');show('ovStart');}
   if(e.key==='Escape'&&top.id==='ovWorkshop')closeWorkshop();
+  if(e.key==='Escape'&&top.id==='ovReserve')closeReserve();
 });
 let owned=null, sellConfirm=false;
 function openMenu() {
@@ -3659,6 +3843,7 @@ function nativeBack(){
   if(top&&['ovMenu','ovChart','ovDeck','ovInfo','ovOwned','ovScore','ovCollection','ovLeave','ovTactics'].includes(top.id)){hide(top.id);return false;}
   if(top?.id==='ovPack'){closePack();return false;}
   if(top?.id==='ovWorkshop'){closeWorkshop();return false;}
+  if(top?.id==='ovReserve'){closeReserve();return false;}
   openMenu();return false;
 }
 </script>
