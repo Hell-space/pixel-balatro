@@ -34,4 +34,10 @@ Android 9 / WebView 91 独立实例中，从 1.4.0 覆盖首候选 APK（摘要 
 
 收尾恢复初始竖屏与方向设置，wifi_on=1、mobile_data=1、accelerometer_rotation=0、user_rotation=null、ROTATION_0 均与开始相同，网络未改。用户输入桌面保持 Default；仅停止独立实例 3，ADB 无设备、测试档保留，用户实例 0/1/2 未动。完整报告与证据在 `.qa/v150/android/REPORT.md`。实体手机、Android 15/16 与扬声器听感未测，宿主未改，未重复历史断网检查。
 
-GitHub Release 尚未发布。
+## GitHub 发布与下载
+
+[v1.5.0](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.5.0) 已发布为 Latest，非草稿、非预发布；标签与 Release 指向已验收游戏提交 `b4951f0bb71e26df1dc00ef0a9c5c00127719b3e`。发布运行 `42334204865` 成功，临时 `codex/release-v1.5.0` 分支自动删除，远端仅 main；安装包载荷与临时工作流未进入主分支。
+
+APK（82,462 字节）、HTML（219,949 字节）和校验文本（176 字节）均在未登录状态下载返回 200，并与本地验收文件逐字节相同，GitHub 附件摘要也相同。下载证据为 `.qa/v150/release-download-verification.json`。已有用户直接覆盖同签名 APK，不先卸载，可保留存档与设置。
+
+游戏提交的 Pages 运行 `42334160679` 成功，公开正常 HTML 地址与带版本参数的地址均为上述最终字节，根跳转页也与本地相同。记录为 `.qa/v150/deployment.json`；后续文档提交不更改 HTML，收尾再次核对最终 main 部署，避免把源码提交或缓存页当作已上线。
