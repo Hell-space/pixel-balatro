@@ -1,5 +1,6 @@
 let S = null;
 let cid = 0;
+let lastOpenDraw = null;
 // 多人对战全局状态（详见文件底部「多人对战」模块）
 const MP = { on:false, base:'', room:'', pid:'', host:false, name:'', oppName:'对手',
   lives:0, opp:{ lives:2, ante:1, blind:0, score:0, phase:'select' },
@@ -222,7 +223,12 @@ function applyTag(t) {
   }
   renderStats(); renderCons();
 }
+function openTopCard(state = S) {
+  if (MP.on || state?.deckId !== 'open' || state.screen !== 'play') return null;
+  return state.drawPile[state.drawPile.length - 1] || null;
+}
 function drawTo(n) {
+  if (S.hand.length < n) lastOpenDraw = openTopCard();
   while (S.hand.length < n && S.drawPile.length) {
     const c = S.drawPile.pop();
     c.sel = false; c.justDealt = true;

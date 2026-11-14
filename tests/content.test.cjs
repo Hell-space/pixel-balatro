@@ -1,13 +1,79 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const {harness}=require('./game-harness.cjs');
-test('五种牌组与难度只改变明示规则，旧版默认和多人保持原始起手',()=>{
+test('六种牌组与难度按明示规则发放初始资源',()=>{
   const {game:g}=harness();
-  for(const [id,money,hands,disc,slots] of [['classic',4,4,3,5],['red',4,4,4,5],['blue',0,5,3,5],['yellow',10,4,3,5],['green',4,4,3,5],['black',4,3,3,6]]){
+  for(const [id,money,hands,disc,slots] of [['classic',4,4,3,5],['red',4,4,4,5],['blue',0,5,3,5],['yellow',10,4,3,5],['green',4,4,3,5],['black',4,3,3,6],['open',4,4,3,5]]){
     g.newGame(false,id);const s=g.getState();assert.deepEqual([s.money,s.baseHands,s.baseDisc,s.jokerSlots],[money,hands,disc,slots]);
   }
   g.newGame(false,'red','gold');const s=g.getState();assert.equal(s.baseDisc,3);assert.equal(g.blindMetaFor(0).target,300);
   s.ante=2;assert.equal(g.blindMetaFor(0).target,1120);
+});
+
+test('明牌是实际第一张补牌，出牌与弃牌都按同一牌序补足',async()=>{
+  function position(score,target,hands) {
+    const {game:g}=harness(35);
+    g.newGame(false,'open');g.chooseBlind();
+    const s=g.getState();
+    const find=(rank,suit)=>s.deckAll.find(c=>c.rank===rank&&c.suit===suit);
+    s.hand=[[9,0],[10,1],[11,2],[12,3],[3,0],[3,1],[7,3],[2,2]].map(([r,k])=>find(r,k));
+    const king=find(13,0);
+    s.drawPile=s.deckAll.filter(c=>!s.hand.includes(c)&&c!==king).concat(king);
+    Object.assign(s,{score,target,handsLeft:hands,discLeft:1});
+    return {g,s,king};
+  }
+  const a=position(40,300,1);
+  assert.equal(a.g.openTopCard(),a.king);
+  assert.equal(a.g.applyReserve('store',a.s.hand[0].id),false);
+  a.g.selectCards([a.s.hand.find(c=>c.rank===2).id]);a.g.doDiscard();
+  assert(a.s.hand.includes(a.king));assert.equal(a.s.discLeft,0);
+  assert.equal(a.g.openTopCard(),a.s.drawPile.at(-1));
+  const straight=s=>s.hand.filter(c=>c.rank>=9&&c.rank<=13).map(c=>c.id);
+  a.g.selectCards(straight(a.s));await a.g.doPlay();
+  assert.equal(a.s.score,356);assert.equal(a.s.screen,'cash');assert.equal(a.g.openTopCard(),null);
+
+  const b=position(110,450,2);
+  b.g.selectCards(b.s.hand.filter(c=>c.rank===3).map(c=>c.id));await b.g.doPlay();
+  assert.equal(b.s.score,142);assert(b.s.hand.includes(b.king));assert.equal(b.s.drawPile.length,42);
+  b.g.selectCards(straight(b.s));await b.g.doPlay();
+  assert.equal(b.s.score,458);assert.equal(b.s.discLeft,1);assert.equal(b.s.screen,'cash');
+});
+
+test('明牌续局保持牌序与强化，零弃牌和塔罗补牌、牌库空时均使用真实状态',async()=>{
+  const {game:g,load,run}=harness(8);
+  g.newGame(false,'open','gold');
+  assert.equal(g.openTopCard(),null);
+  const before=g.getState();before.blindIdx=2;before.anteBoss=run("BOSSES.find(b=>b.id==='water')");
+  g.showBlindSelect();g.chooseBlind();
+  const first=g.openTopCard();Object.assign(first,{steel:true,seal:'red',bonus:30});
+  load('session');g.persistRun();g.resumeGame();
+  const s=g.getState(),top=g.openTopCard(),next=s.drawPile.at(-2);
+  assert.equal(s.deckId,'open');assert.equal(s.discLeft,0);
+  assert.equal(top.id,first.id);assert.equal(top,s.deckAll.find(c=>c.id===first.id));
+  g.selectCards([s.hand[0].id]);g.doDiscard();
+  assert.equal(g.openTopCard(),top);
+  s.cons=[{id:'tower',kind:'tarot',price:3}];g.useCons(0);
+  assert(s.hand.includes(top));assert.equal(top.seal,'red');assert.equal(g.openTopCard(),next);
+  assert.equal(s.drawPile.length,43);assert.equal(s.discLeft,0);
+  s.drawPile=[next];s.target=100000;
+  g.selectCards([s.hand[0].id]);await g.doPlay();
+  assert(s.hand.includes(next));assert.equal(g.openTopCard(),null);
+  g.persistRun();g.resumeGame();assert.equal(g.openTopCard(),null);
+});
+
+test('经典单人和联机不公开牌序，明牌牌组看牌不改变洗牌、计分和留手效果',()=>{
+  const open=harness(205),classic=harness(205);
+  for(const [h,deck] of [[open,'open'],[classic,'classic']]) {
+    h.game.newGame(false,deck);h.game.chooseBlind();
+  }
+  const s=open.game.getState(),other=classic.game.getState();
+  assert.deepEqual(Array.from(s.drawPile,c=>c.id),Array.from(other.drawPile,c=>c.id));
+  assert.equal(classic.game.openTopCard(),null);
+  const cards=[s.hand[0]],pts=open.game.scoreHand(s,cards).total;
+  Object.assign(open.game.openTopCard(),{steel:true,seal:'red',glass:true,ed:3});
+  assert.equal(open.game.scoreHand(s,cards).total,pts);
+  open.run('MP.on=true');
+  assert.equal(open.game.openTopCard(),null);assert(!open.game.openReserve());
 });
 test('之针和巨墙的选择界面目标与实际目标一致；Boss循环不重复且初期无高压组合',()=>{
   for(let seed=1;seed<=40;seed++){

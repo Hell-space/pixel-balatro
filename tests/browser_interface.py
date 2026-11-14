@@ -227,7 +227,7 @@ def surface_traversal(browser,url,out,seed,profile):
         page.goto(url,wait_until='domcontentloaded');assert_viewport(page,spec['width'])
         screenshot(page,out,f'{profile}-title')
         tap('#newBtn');inspect('#ovSetup','#beginRunBtn','setup')
-        require(page.locator('#deckChoices button').count()==5,'five deck choices missing')
+        require(page.locator('#deckChoices button').count()==6,'six deck choices expected')
         tap('#beginRunBtn');inspect('#ovBlinds','#blindCols .cur .bbtn:not(.skip)','blind-select')
         press(page.locator('#blindCols .cur .bbtn:not(.skip)'),mobile)
         page.locator('#handRow .card').first.wait_for(state='visible');screenshot(page,out,f'{profile}-table')

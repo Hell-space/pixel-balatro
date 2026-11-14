@@ -42,10 +42,11 @@ function openDeck() {
 }
 function renderDeckGrid() {
   const g = $('deckGrid');
-  const stored=reserveCard();
+  const stored=reserveCard(),top=openTopCard();
   $('deckSummary').innerHTML='<span>待抽 <b>'+S.drawPile.length+'</b></span><span>手牌 <b>'+S.hand.length+'</b></span>'+
-    (stored?'<span>底牌 <b>'+cardLabel(stored)+'</b></span>':'')+'<span>牌组 <b>'+S.deckAll.length+'</b></span>';
-  g.innerHTML='';
+    (stored?'<span>底牌 <b>'+cardLabel(stored)+'</b></span>':'')+'<span>牌组 <b>'+S.deckAll.length+'</b></span>'+
+    (top?'<span class="deckTopSummary">下张补牌 <b>'+cardLabel(top)+'</b></span>':'');
+  let groups=top?'<div class="openCardDetails">'+cardTipHTML(top)+'</div>':'';
   const inPile = new Set(S.drawPile.map(c => c.id));
   for (let s = 0; s < 4; s++) {
     if(deckFilter!=='all'&&Number(deckFilter)!==s)continue;
@@ -54,12 +55,17 @@ function renderDeckGrid() {
       const cards = S.deckAll.filter(c => c.suit === s && c.rank === r);
       const live = cards.filter(c => inPile.has(c.id)).length;
       const reserved=cards.some(c=>c.id===stored?.id);
-      cells+='<div class="deckCell '+(!cards.length?'absent':live?'':'gone')+(reserved?' reserved':'')+'" aria-label="'+
-        ['黑桃','红桃','梅花','方块'][s]+rankName(r)+'，待抽 '+live+'，共 '+cards.length+(reserved?'，含底牌':'')+'">'+
-        '<b>'+rankName(r)+'</b><span>'+(!cards.length?'—':live+'/'+cards.length)+(reserved?' 底':'')+'</span></div>';
+      const isTop=cards.includes(top);
+      const marker=reserved?' 底':isTop?' 顶':'';
+      const markClass=reserved?'reserved':isTop?'openTopCell':'';
+      const count=cards.length?live+'/'+cards.length:'—';
+      cells+='<div class="deckCell '+(!cards.length?'absent':live?'':'gone')+' '+markClass+'" aria-label="'+
+        ['黑桃','红桃','梅花','方块'][s]+rankName(r)+'，待抽 '+live+'，共 '+cards.length+(reserved?'，含底牌':isTop?'，下张补牌':'')+'">'+
+        '<b>'+rankName(r)+'</b><span>'+count+marker+'</span></div>';
     }
-    g.innerHTML+='<section class="deckSuitBlock"><h3 class="'+(RED(s)?'suitRed':'')+'">'+suitSVG({suit:s})+['黑桃','红桃','梅花','方块'][s]+'</h3><div class="deckRanks">'+cells+'</div></section>';
+    groups+='<section class="deckSuitBlock"><h3 class="'+(RED(s)?'suitRed':'')+'">'+suitSVG({suit:s})+['黑桃','红桃','梅花','方块'][s]+'</h3><div class="deckRanks">'+cells+'</div></section>';
   }
+  g.innerHTML=groups;
 }
 
 // ================= 新手教程 =================
@@ -82,8 +88,8 @@ const TUT = [
     '商店里买的<b class="gold">小丑牌</b>会显示在这里（本局 {jokerSlots} 个槽位），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
     '商店还卖两种消耗牌，买了存在这里，点击使用：<br><b class="blue">🌌 星球牌</b>：永久提升某个牌型的等级（筹码和倍率都涨）。<br><b class="gold">🔮 塔罗牌</b>：强化手牌（钢铁/玻璃/黄金/百搭花色等）、复制、销毁牌、变钱。百搭花色不改变点数，仍需相同点数组成对子。<br>商店里还有 <b class="blue">🎁 卡包</b>和 <b class="gold">🎟️ 优惠券</b>（$10 永久强化，如 +1 出牌次数）！' },
-  { sel: null, title: '底牌与主动构筑', body:
-    '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。<br>商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
+  { sel: null, title: '牌组与主动构筑', body:
+    '{deckTool}<br>商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
   { sel: null, title: '实战建议', body:
     '① 前期优先买小丑牌，别裸奔打分。<br>② 认准 1~2 个主力牌型（如同花/顺子），星球牌全升它。<br>③ 弃牌是资源：先弃散牌凑型，最后一手再梭哈。<br>④ Boss 禁用花色时提前看牌库（🂠）调整思路。<br><br>教程结束！菜单中的「新手教程」可随时重看。祝你好运，小丑！🎉' },
 ];
@@ -103,8 +109,11 @@ function tutShow() {
     if (el) { el.classList.add('tut-hl'); tutHl = el; }
   }
   $('tutTitle').textContent = t.title;
+  const deckTool = MP.on ? '对战中，双方使用经典牌组。' : S.deckId==='open'
+    ? '明牌牌组亮出<b class="gold">下张补牌</b>。可以弃一张精准拿它，也可以先打出一手赚分再补。一次补多张时，只有第一张提前可见。'
+    : '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。';
   $('tutBody').innerHTML = t.body.replace('{hands}',S.baseHands).replace('{discards}',S.baseDisc)
-    .replace('{handSize}',effHandSize()).replace('{jokerSlots}',S.jokerSlots);
+    .replace('{handSize}',effHandSize()).replace('{jokerSlots}',S.jokerSlots).replace('{deckTool}',deckTool);
   $('tutStep').textContent = (tutI + 1) + ' / ' + TUT.length;
   $('tutPrev').style.visibility = tutI === 0 ? 'hidden' : 'visible';
   $('tutNext').textContent = tutI === TUT.length - 1 ? '完成 ✓' : '下一步';

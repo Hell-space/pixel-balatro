@@ -106,7 +106,9 @@ function renderHand() {
     const el = cardEl(c, true);
     if(el.classList.contains('dealt')) el.style.setProperty('--deal-delay',(row.children.length*45)+'ms');
     el.style.setProperty('--i',i); el.style.setProperty('--k',(i-mid).toFixed(2)); el.style.setProperty('--k2',((i-mid)*(i-mid)).toFixed(2));
-    el.setAttribute('aria-label', (c.wild?'百搭花色，点数':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank));
+    const fromTop = c === lastOpenDraw && S.deckId === 'open';
+    el.classList.toggle('fromOpenTop',fromTop);
+    el.setAttribute('aria-label', (c.wild?'百搭花色，点数':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank)+(fromTop?'，刚从明牌牌顶摸入':''));
     el.setAttribute('aria-pressed',String(!!c.sel)); el.disabled=S.busy;
     el.onclick = () => toggleHandCard(c, el);
     row.appendChild(el);
@@ -126,6 +128,7 @@ function applyHint() {
 }
 function updatePreview() {
   const sel = S.hand.filter(c => c.sel);
+  updateOpenTopNote(sel.length);
   $('selCount').textContent = sel.length && !S.busy ? sel.length+'/5' : '';
   if (!S.busy) $('scoreEstimate').textContent='';
   if (!S.busy && !sel.length) {
@@ -160,6 +163,34 @@ function updatePreview() {
   $('btnPlay').classList.toggle('ready',!$('btnPlay').disabled);
   $('btnHint').disabled = S.busy || S.screen !== 'play' || !S.hand.length || S.handsLeft <= 0;
 }
+function renderDeckFace() {
+  const isOpen = !MP.on && S.deckId === 'open';
+  const showTop = isOpen && S.screen === 'play';
+  $('game').classList.toggle('openDeckTable',isOpen);
+  $('openTopReadout').hidden = !showTop;
+  const card = openTopCard(), face = $('deckFace');
+  face.hidden = !card;
+  face.replaceChildren();
+  if (card) {
+    const art = cardEl({...card,sel:false,justDealt:false});
+    face.append(art);
+  }
+  const pile = $('deckPile');
+  pile.setAttribute('aria-label',card ? '查看剩余牌库，下张补牌为'+cardLabel(card) : '查看剩余牌库');
+  if (showTop) $('openTopTitle').textContent = card ? '下张补牌 · '+(card.wild?'✦':SUITS[card.suit])+rankName(card.rank) : '牌库已空';
+}
+function updateOpenTopNote(selectedCount) {
+  if (S.deckId !== 'open' || MP.on || S.screen !== 'play') return;
+  const top = openTopCard();
+  let note = '本盲已无牌可补';
+  if (top) {
+    const count = Math.min(S.drawPile.length, effHandSize() - S.hand.length + selectedCount);
+    if (isDebuffed(top)) note = '此牌被 Boss 禁用';
+    else if (selectedCount && S.discLeft > 0 && !S.busy) note = count > 1 ? '若弃牌，另摸 '+(count-1)+' 张暗牌' : '若弃牌，只摸这张';
+    else note = '补牌时先摸这张';
+  }
+  $('openTopNote').textContent = note;
+}
 function renderStats() {
   $('game').classList.toggle('isScoring',!!S.busy);
   if(S.screen!=='over')$('game').classList.remove('lost');
@@ -176,6 +207,7 @@ function renderStats() {
   $('deckVal').textContent = (S.screen==='select'?S.deckAll.length:S.drawPile.length) + '/' + S.deckAll.length;
   $('deckPileCount').textContent = S.screen==='select'?S.deckAll.length:S.drawPile.length;
   $('deckPile').classList.toggle('empty', S.screen==='play' && !S.drawPile.length);
+  renderDeckFace();
   setNumber($('scoreVal'), S.score);
   trackMoney();
   // 对决盲注：目标栏实时显示对手分数

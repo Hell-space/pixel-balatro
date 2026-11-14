@@ -9,9 +9,10 @@ function openSetup(){hide('ovStart');renderSetup();show('ovSetup');}
 function renderSetup(){
   const decks=$('deckChoices');decks.replaceChildren();
   for(const deck of DECKS){
-    const b=document.createElement('button');b.className='deckChoice';
+    const b=document.createElement('button');b.className='deckChoice';b.dataset.deck=deck.id;
     b.style.setProperty('--deck-color',deck.color);b.setAttribute('aria-pressed',String(setupDeck===deck.id));
-    b.innerHTML='<span class="deckMini" aria-hidden="true">✦</span><b>'+deck.name+'</b><span>'+deck.desc+'</span>';
+    const mark=deck.id==='open'?'A♠':'✦';
+    b.innerHTML='<span class="deckMini" aria-hidden="true">'+mark+'</span><b>'+deck.name+'</b><span>'+deck.desc+'</span>';
     b.onclick=()=>{setupDeck=deck.id;renderSetup();};decks.append(b);
   }
   const stakes=$('stakeChoices');stakes.replaceChildren();

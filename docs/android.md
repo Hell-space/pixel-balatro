@@ -4,13 +4,13 @@
 
 ## 安装
 
-交付文件：`outputs/PixelBalatro-1.7.1-android.apk`。传到手机后从文件管理器打开，按系统提示允许该文件管理器安装应用。包名 `io.github.hellspace.pixelbalatro`，版本 1.7.1 / versionCode 10701。
+本地明牌牌组版位于 `outputs/PixelBalatro-1.8.0-android.apk`。传到手机后从文件管理器打开，按系统提示安装。包名为 `io.github.hellspace.pixelbalatro`，版本 1.8.0，versionCode 10800。
 
-手机端下载：[Release v1.7.1](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.7.1) → Assets → `PixelBalatro-1.7.1-android.apk`，或[直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.7.1/PixelBalatro-1.7.1-android.apk)。选择 APK 安装包；GitHub 自动提供的 Source code ZIP/TAR 是源码归档。
+手机端打开 v1.8.0 发布页，在 Assets 中选择 `PixelBalatro-1.8.0-android.apk`。[发布页](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.8.0) · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.8.0/PixelBalatro-1.8.0-android.apk)
 
-已经安装 1.3.x 到 1.7.0 的设备直接覆盖安装，使用同一签名，保留原有进度和设置；不要先卸载旧版。1.7.0 新增 Boss 破绽、碾压奖励、6 张小丑、推荐与滑动选牌和新动画，见 [玩法与动效](upgrade.md)；1.7.1 删除了出牌节奏和盲注悬赏，见 [玩法精简](cleanup.md)。
+已安装 1.3.x 至 1.7.1 的设备可直接用同签名安装包覆盖升级，保留进度和设置。升级后进入「开始游戏」，选「明牌牌组」即可体验新玩法。
 
-最低 Android 8（API 26），使用系统 Android WebView 渲染；本轮实际验证 Android 9 / WebView 91.0.4472.114。APK 不含架构限定的原生库。若系统网页组件太旧，应先更新系统 WebView。
+最低 Android 8（API 26），使用系统 Android WebView 渲染。1.8.0 已校验 APK 签名、版本及内置 HTML 的一致性，实体手机尚待验证。以往版本的模拟器记录见下文。
 
 返回键会依次关闭图鉴、菜单等界面；对局中返回键打开菜单，在标题页返回键离开应用。支持横竖屏、后台静音和自动存档。出牌动画被中断时，恢复至出牌前的稳定状态；不要把强行结束进程当作正常退出方法。
 

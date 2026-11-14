@@ -1016,6 +1016,95 @@ button:disabled {cursor:default}
 @media(min-width:580px) and (max-width:1000px) and (max-height:540px) {
   #deckPile {width:28px;height:38px;bottom:1px}#deckPile b {font-size:10px;line-height:14px}
 }
+
+/* The open deck uses a face-up dealing shoe. The actual hand keeps its familiar card faces. */
+.deckChoice[data-deck="open"] {
+  background:linear-gradient(125deg,#323b54,#232a3c);
+  border-color:#747e98;
+}
+.deckChoice[data-deck="open"][aria-pressed=true] {
+  background:linear-gradient(125deg,#424d6a,#293348);
+  border-color:#edc77f;
+}
+.deckChoice[data-deck="open"] .deckMini {
+  color:#293450;
+  background:#f5e8ca;
+  border-color:#7885aa;
+  font:700 15px Georgia,serif;
+  rotate:-5deg;
+  box-shadow:-3px 3px #7682a5,-5px 5px #242a3b;
+}
+
+#game.openDeckTable {
+  --seam:#47566d;
+  --muted:#c0c6d2;
+  --card-back:repeating-linear-gradient(48deg,transparent 0 3px,#efdec347 3px 4px),
+    repeating-linear-gradient(-48deg,#4d596e 0 3px,#74829a 3px 4px);
+  background-color:#30394d;
+  background-image:repeating-linear-gradient(48deg,transparent 0 3px,#e7e0f105 3px 4px),
+    radial-gradient(ellipse at 56% 40%,#465168,#2d374d 55%,#202839 100%);
+}
+.openDeckTable #rail,.openDeckTable #side {background:#202838;border-color:#475267}
+.openDeckTable #rail {box-shadow:0 1px #8a95ac24}
+.openDeckTable #side .panel,.openDeckTable #previewBox {
+  background:linear-gradient(115deg,#2a3346,#242c3b);
+  border-color:#626d805c;
+}
+.openDeckTable .tableGlow {background:radial-gradient(closest-side,#b0bddb1a,transparent 72%)}
+.openDeckTable + #infobar {background:#252d3d;color:#e6e4db}
+.openDeckTable #playArea::before {border-color:#d3bec82b;box-shadow:inset 0 0 0 5px #1e263517}
+.openDeckTable .jslot {border-color:#a4aec773;color:#c1c7d8c9}
+.openDeckTable #scorebarWrap {background:#171e2b}
+.openDeckTable .statrow span,.openDeckTable #prevLvl {color:#c4c9d3}
+.openDeckTable .hintBtn,.openDeckTable .midbtn {background:#2c3548;color:#e7d6ad;border-color:#707b91}
+.openDeckTable #btnRow .midbtn[aria-pressed=true] {background:#41485a;color:#ffe2a5;border-color:#d7b579}
+.openDeckTable .bigbtn:disabled {background:#303a4c!important;color:#b4bdca;border-color:#576479;box-shadow:0 2px #212736}
+
+.openDeckTable #deckPile {--shoe-w:48px;width:var(--shoe-w);height:66px;left:8px;bottom:10px}
+.openDeckTable #deckPile .pileStack i {box-shadow:0 2px #191d29}
+.openDeckTable #deckPileCount {bottom:-7px;background:#283246;color:#f1deb1;border-color:#9b947e;z-index:2}
+#deckFace,#deckFace .card {position:absolute;inset:0;width:100%;height:100%;margin:0}
+#deckFace .card {display:block;border-color:#b4a384;box-shadow:0 2px 4px #1b202680;cursor:inherit}
+#deckFace .rk {left:3px;top:1px;font-size:16px}
+#deckFace .st2 {right:2px;top:3px;font-size:12px}
+#deckFace .st {bottom:4px;right:3px;font-size:17px}
+#deckFace .pips {inset:31% 20% 24%}
+#deckFace .facePip {inset:32% 22% 20%;font-size:18px}
+#deckFace .facePip small {display:none}
+#deckFace .enhancements {bottom:6px;left:0;right:0;justify-content:center}
+#deckFace .enhancements .en {font-size:8px;line-height:10px;padding:0 1px}
+#deckFace .suitText {display:none}
+#openTopReadout {
+  position:absolute;left:70px;bottom:15px;
+  display:grid;gap:2px;text-align:left;pointer-events:none;
+}
+#openTopTitle {color:#ffe1a5;font:700 13px/1.4 var(--ui);letter-spacing:.05em}
+#openTopNote {color:#dde1e7;font:12px/1.4 var(--ui)}
+.isScoring #openTopReadout {visibility:hidden}
+.openDeckTable #handRow .fromOpenTop:not(.sel) {
+  border-color:#92b4f2;
+  box-shadow:0 0 0 1px #b1c9ef,0 3px 0 #475a81;
+}
+.deckSummary .deckTopSummary {color:#e7e9fc}
+#deckGrid .deckCell.openTopCell {border-color:#aebfe4;box-shadow:inset 0 -2px #9ab1df}
+#deckGrid .openCardDetails {flex:none;padding:9px 12px;text-align:left;background:#2b3345;color:#ede8df;border:1px solid #78839a;border-radius:5px;font:13px/1.5 var(--ui)}
+#deckGrid .openCardDetails .tn {font-weight:700;color:#ffe1a5}
+
+@media (max-width:760px),(max-width:1000px) and (max-height:540px) {
+  .openDeckTable #side .panel {background:none;border:0}
+  .openDeckTable #deckPile {--shoe-w:39px;height:52px;bottom:8px}
+  #openTopReadout {left:59px;bottom:10px}
+}
+@media (max-height:640px) {
+  .openDeckTable #deckPile {--shoe-w:31px;height:40px;bottom:6px}
+  #deckFace .pips,#deckFace .facePip {display:none}
+  #deckFace .st2 {display:block;right:1px;top:2px;font-size:10px}
+  #deckFace .rk {font-size:14px}
+  #deckFace .st {display:block;font-size:17px;bottom:1px}
+  #deckFace .enhancements {display:none}
+  #openTopReadout {left:50px;bottom:6px;gap:0}
+  #openTopNote {font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -1083,7 +1172,11 @@ button:disabled {cursor:default}
     </div>
     <div id="playArea"><div class="tableGlow" aria-hidden="true"></div><div class="tableSeal" aria-hidden="true"><svg viewBox="0 0 80 80"><use href="#jester"/></svg></div>
       <div id="playedRow"></div>
-      <button id="deckPile" onclick="openDeck()" aria-label="查看剩余牌库"><span class="pileStack" aria-hidden="true"><i></i><i></i><i></i></span><b id="deckPileCount">52</b></button>
+      <button id="deckPile" onclick="openDeck()" aria-label="查看剩余牌库">
+        <span class="pileStack" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span id="deckFace" aria-hidden="true" hidden></span><b id="deckPileCount">52</b>
+      </button>
+      <div id="openTopReadout" hidden><span id="openTopTitle"></span><span id="openTopNote"></span></div>
       <div id="totalPop"></div>
       <button id="reserveBtn" onclick="openReserve()" hidden>底牌 · 藏入</button>
     </div>
@@ -1564,6 +1657,7 @@ const DECKS = [
   {id:'yellow',name:'金色牌组',color:'#d4a74c',desc:'初始金币 $10',money:10},
   {id:'green',name:'绿色牌组',color:'#5e9769',desc:'无利息；结算每次剩余出牌 $2、每次剩余弃牌 $1',noInterest:true},
   {id:'black',name:'黑色牌组',color:'#5d596d',desc:'小丑槽位 +1，每个盲注 -1 次出牌',hands:-1,slots:1},
+  {id:'open',name:'明牌牌组',color:'#647fbb',desc:'牌库顶始终亮出一张，补牌时先摸它。取代袖中底牌。'},
 ];
 const STAKES = [
   {id:'white',name:'白注',desc:'标准目标与奖励',scale:1},
@@ -1575,6 +1669,7 @@ const ANTE_BASE = [0, 300, 800, 2000, 5000, 11000, 20000, 35000, 50000];
 // ── game ──
 let S = null;
 let cid = 0;
+let lastOpenDraw = null;
 // 多人对战全局状态（详见文件底部「多人对战」模块）
 const MP = { on:false, base:'', room:'', pid:'', host:false, name:'', oppName:'对手',
   lives:0, opp:{ lives:2, ante:1, blind:0, score:0, phase:'select' },
@@ -1797,7 +1892,12 @@ function applyTag(t) {
   }
   renderStats(); renderCons();
 }
+function openTopCard(state = S) {
+  if (MP.on || state?.deckId !== 'open' || state.screen !== 'play') return null;
+  return state.drawPile[state.drawPile.length - 1] || null;
+}
 function drawTo(n) {
+  if (S.hand.length < n) lastOpenDraw = openTopCard();
   while (S.hand.length < n && S.drawPile.length) {
     const c = S.drawPile.pop();
     c.sel = false; c.justDealt = true;
@@ -1978,7 +2078,9 @@ function renderHand() {
     const el = cardEl(c, true);
     if(el.classList.contains('dealt')) el.style.setProperty('--deal-delay',(row.children.length*45)+'ms');
     el.style.setProperty('--i',i); el.style.setProperty('--k',(i-mid).toFixed(2)); el.style.setProperty('--k2',((i-mid)*(i-mid)).toFixed(2));
-    el.setAttribute('aria-label', (c.wild?'百搭花色，点数':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank));
+    const fromTop = c === lastOpenDraw && S.deckId === 'open';
+    el.classList.toggle('fromOpenTop',fromTop);
+    el.setAttribute('aria-label', (c.wild?'百搭花色，点数':['黑桃','红桃','梅花','方块'][c.suit])+rankName(c.rank)+(fromTop?'，刚从明牌牌顶摸入':''));
     el.setAttribute('aria-pressed',String(!!c.sel)); el.disabled=S.busy;
     el.onclick = () => toggleHandCard(c, el);
     row.appendChild(el);
@@ -1998,6 +2100,7 @@ function applyHint() {
 }
 function updatePreview() {
   const sel = S.hand.filter(c => c.sel);
+  updateOpenTopNote(sel.length);
   $('selCount').textContent = sel.length && !S.busy ? sel.length+'/5' : '';
   if (!S.busy) $('scoreEstimate').textContent='';
   if (!S.busy && !sel.length) {
@@ -2032,6 +2135,34 @@ function updatePreview() {
   $('btnPlay').classList.toggle('ready',!$('btnPlay').disabled);
   $('btnHint').disabled = S.busy || S.screen !== 'play' || !S.hand.length || S.handsLeft <= 0;
 }
+function renderDeckFace() {
+  const isOpen = !MP.on && S.deckId === 'open';
+  const showTop = isOpen && S.screen === 'play';
+  $('game').classList.toggle('openDeckTable',isOpen);
+  $('openTopReadout').hidden = !showTop;
+  const card = openTopCard(), face = $('deckFace');
+  face.hidden = !card;
+  face.replaceChildren();
+  if (card) {
+    const art = cardEl({...card,sel:false,justDealt:false});
+    face.append(art);
+  }
+  const pile = $('deckPile');
+  pile.setAttribute('aria-label',card ? '查看剩余牌库，下张补牌为'+cardLabel(card) : '查看剩余牌库');
+  if (showTop) $('openTopTitle').textContent = card ? '下张补牌 · '+(card.wild?'✦':SUITS[card.suit])+rankName(card.rank) : '牌库已空';
+}
+function updateOpenTopNote(selectedCount) {
+  if (S.deckId !== 'open' || MP.on || S.screen !== 'play') return;
+  const top = openTopCard();
+  let note = '本盲已无牌可补';
+  if (top) {
+    const count = Math.min(S.drawPile.length, effHandSize() - S.hand.length + selectedCount);
+    if (isDebuffed(top)) note = '此牌被 Boss 禁用';
+    else if (selectedCount && S.discLeft > 0 && !S.busy) note = count > 1 ? '若弃牌，另摸 '+(count-1)+' 张暗牌' : '若弃牌，只摸这张';
+    else note = '补牌时先摸这张';
+  }
+  $('openTopNote').textContent = note;
+}
 function renderStats() {
   $('game').classList.toggle('isScoring',!!S.busy);
   if(S.screen!=='over')$('game').classList.remove('lost');
@@ -2048,6 +2179,7 @@ function renderStats() {
   $('deckVal').textContent = (S.screen==='select'?S.deckAll.length:S.drawPile.length) + '/' + S.deckAll.length;
   $('deckPileCount').textContent = S.screen==='select'?S.deckAll.length:S.drawPile.length;
   $('deckPile').classList.toggle('empty', S.screen==='play' && !S.drawPile.length);
+  renderDeckFace();
   setNumber($('scoreVal'), S.score);
   trackMoney();
   // 对决盲注：目标栏实时显示对手分数
@@ -2432,7 +2564,7 @@ function doDiscard() {
   sfxBad();
   drawTo(effHandSize());
   renderAll();
-  msg('弃掉了 ' + sel.length + ' 张牌');
+  msg('弃掉了 ' + sel.length + ' 张牌' + (lastOpenDraw ? '，先摸到 '+cardLabel(lastOpenDraw) : ''));
   checkStuck();
   persistRun();
 }
@@ -2975,8 +3107,9 @@ function useCons(i) {
   S.tarotsUsed=(S.tarotsUsed||0)+1;
   S.cons.splice(i, 1);
   S.hand.forEach(c => c.sel = false);
+  if(t.id==='tower') drawTo(effHandSize());
   renderAll(); if (S.shop) renderShop();
-  if(t.id==='tower') { drawTo(effHandSize()); renderHand(); checkStuck(); }
+  if(t.id==='tower') checkStuck();
   persistRun();
   if (t.id !== 'judge' && t.id !== 'emperor') msg(t.ic + ' ' + t.name + ' 已生效！');
 }
@@ -3160,6 +3293,7 @@ let reserveDraft=null, tableClickUntil=0;
 function reserveCard(state=S) { return state.deckAll.find(c=>c.id===state.reserve?.cardId); }
 function reserveIssue(action,cardId) {
   if(!S||MP.on||S.screen!=='play'||S.busy) return '当前无法使用底牌';
+  if(S.deckId==='open') return '明牌牌组使用亮出的牌库顶';
   if(S.reserve.used) return '本盲底牌已用完';
   const expected=S.reserve.cardId===null?'store':'retrieve';
   if(action!==expected) return '底牌状态已变化';
@@ -3170,7 +3304,7 @@ function reserveIssue(action,cardId) {
 }
 function renderReserveEntry() {
   const button=$('reserveBtn');
-  button.hidden=MP.on||S.screen!=='play';
+  button.hidden=MP.on||S.screen!=='play'||S.deckId==='open';
   const card=reserveCard(),action=card?'retrieve':'store';
   button.disabled=!!reserveIssue(action);
   button.textContent=S.reserve.used?'底牌 · 已用':card?'底牌 · '+cardLabel(card):!S.drawPile.length?'底牌 · 牌库已空':'底牌 · 藏入';
@@ -3280,10 +3414,11 @@ function openDeck() {
 }
 function renderDeckGrid() {
   const g = $('deckGrid');
-  const stored=reserveCard();
+  const stored=reserveCard(),top=openTopCard();
   $('deckSummary').innerHTML='<span>待抽 <b>'+S.drawPile.length+'</b></span><span>手牌 <b>'+S.hand.length+'</b></span>'+
-    (stored?'<span>底牌 <b>'+cardLabel(stored)+'</b></span>':'')+'<span>牌组 <b>'+S.deckAll.length+'</b></span>';
-  g.innerHTML='';
+    (stored?'<span>底牌 <b>'+cardLabel(stored)+'</b></span>':'')+'<span>牌组 <b>'+S.deckAll.length+'</b></span>'+
+    (top?'<span class="deckTopSummary">下张补牌 <b>'+cardLabel(top)+'</b></span>':'');
+  let groups=top?'<div class="openCardDetails">'+cardTipHTML(top)+'</div>':'';
   const inPile = new Set(S.drawPile.map(c => c.id));
   for (let s = 0; s < 4; s++) {
     if(deckFilter!=='all'&&Number(deckFilter)!==s)continue;
@@ -3292,12 +3427,17 @@ function renderDeckGrid() {
       const cards = S.deckAll.filter(c => c.suit === s && c.rank === r);
       const live = cards.filter(c => inPile.has(c.id)).length;
       const reserved=cards.some(c=>c.id===stored?.id);
-      cells+='<div class="deckCell '+(!cards.length?'absent':live?'':'gone')+(reserved?' reserved':'')+'" aria-label="'+
-        ['黑桃','红桃','梅花','方块'][s]+rankName(r)+'，待抽 '+live+'，共 '+cards.length+(reserved?'，含底牌':'')+'">'+
-        '<b>'+rankName(r)+'</b><span>'+(!cards.length?'—':live+'/'+cards.length)+(reserved?' 底':'')+'</span></div>';
+      const isTop=cards.includes(top);
+      const marker=reserved?' 底':isTop?' 顶':'';
+      const markClass=reserved?'reserved':isTop?'openTopCell':'';
+      const count=cards.length?live+'/'+cards.length:'—';
+      cells+='<div class="deckCell '+(!cards.length?'absent':live?'':'gone')+' '+markClass+'" aria-label="'+
+        ['黑桃','红桃','梅花','方块'][s]+rankName(r)+'，待抽 '+live+'，共 '+cards.length+(reserved?'，含底牌':isTop?'，下张补牌':'')+'">'+
+        '<b>'+rankName(r)+'</b><span>'+count+marker+'</span></div>';
     }
-    g.innerHTML+='<section class="deckSuitBlock"><h3 class="'+(RED(s)?'suitRed':'')+'">'+suitSVG({suit:s})+['黑桃','红桃','梅花','方块'][s]+'</h3><div class="deckRanks">'+cells+'</div></section>';
+    groups+='<section class="deckSuitBlock"><h3 class="'+(RED(s)?'suitRed':'')+'">'+suitSVG({suit:s})+['黑桃','红桃','梅花','方块'][s]+'</h3><div class="deckRanks">'+cells+'</div></section>';
   }
+  g.innerHTML=groups;
 }
 
 // ================= 新手教程 =================
@@ -3320,8 +3460,8 @@ const TUT = [
     '商店里买的<b class="gold">小丑牌</b>会显示在这里（本局 {jokerSlots} 个槽位），出牌时自动触发：加筹码、加倍率、甚至 <b class="red">×倍率</b>！<br>比如「快乐小丑」：牌型含对子就 +8 倍率。<br>把小丑和你常打的牌型搭配起来。点击小丑可查看效果、调整左右顺序或卖出。' },
   { sel: '#consRow', title: '8️⃣ 星球牌与塔罗牌', body:
     '商店还卖两种消耗牌，买了存在这里，点击使用：<br><b class="blue">🌌 星球牌</b>：永久提升某个牌型的等级（筹码和倍率都涨）。<br><b class="gold">🔮 塔罗牌</b>：强化手牌（钢铁/玻璃/黄金/百搭花色等）、复制、销毁牌、变钱。百搭花色不改变点数，仍需相同点数组成对子。<br>商店里还有 <b class="blue">🎁 卡包</b>和 <b class="gold">🎟️ 优惠券</b>（$10 永久强化，如 +1 出牌次数）！' },
-  { sel: null, title: '底牌与主动构筑', body:
-    '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。<br>商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
+  { sel: null, title: '牌组与主动构筑', body:
+    '{deckTool}<br>商店「工坊」可指定删牌、复制或强化；击败 Boss 后选择一次战利品。' },
   { sel: null, title: '实战建议', body:
     '① 前期优先买小丑牌，别裸奔打分。<br>② 认准 1~2 个主力牌型（如同花/顺子），星球牌全升它。<br>③ 弃牌是资源：先弃散牌凑型，最后一手再梭哈。<br>④ Boss 禁用花色时提前看牌库（🂠）调整思路。<br><br>教程结束！菜单中的「新手教程」可随时重看。祝你好运，小丑！🎉' },
 ];
@@ -3341,8 +3481,11 @@ function tutShow() {
     if (el) { el.classList.add('tut-hl'); tutHl = el; }
   }
   $('tutTitle').textContent = t.title;
+  const deckTool = MP.on ? '对战中，双方使用经典牌组。' : S.deckId==='open'
+    ? '明牌牌组亮出<b class="gold">下张补牌</b>。可以弃一张精准拿它，也可以先打出一手赚分再补。一次补多张时，只有第一张提前可见。'
+    : '单人每盲可用一次<b class="gold">袖中底牌</b>：牌桌上点「底牌」，藏一张手牌并补一张，之后可选一张换回。底牌不触发留手效果，不耗弃牌次数。';
   $('tutBody').innerHTML = t.body.replace('{hands}',S.baseHands).replace('{discards}',S.baseDisc)
-    .replace('{handSize}',effHandSize()).replace('{jokerSlots}',S.jokerSlots);
+    .replace('{handSize}',effHandSize()).replace('{jokerSlots}',S.jokerSlots).replace('{deckTool}',deckTool);
   $('tutStep').textContent = (tutI + 1) + ' / ' + TUT.length;
   $('tutPrev').style.visibility = tutI === 0 ? 'hidden' : 'visible';
   $('tutNext').textContent = tutI === TUT.length - 1 ? '完成 ✓' : '下一步';
@@ -4136,6 +4279,7 @@ function resumeGame() {
   const state=slot.state, byId=new Map(state.deckAll.map(c=>[c.id,c]));
   state.hand=state.hand.map(id=>byId.get(id)); state.drawPile=state.drawPile.map(id=>byId.get(id));
   S=state; cid=slot.cid; saveStr=slot.checkpoint; saveMeta=slot.meta;
+  lastOpenDraw=null;
   workshopDraft=null;
   reserveDraft=null;
   initAudio(); hide('ovStart'); renderAll();
@@ -4381,9 +4525,10 @@ function openSetup(){hide('ovStart');renderSetup();show('ovSetup');}
 function renderSetup(){
   const decks=$('deckChoices');decks.replaceChildren();
   for(const deck of DECKS){
-    const b=document.createElement('button');b.className='deckChoice';
+    const b=document.createElement('button');b.className='deckChoice';b.dataset.deck=deck.id;
     b.style.setProperty('--deck-color',deck.color);b.setAttribute('aria-pressed',String(setupDeck===deck.id));
-    b.innerHTML='<span class="deckMini" aria-hidden="true">✦</span><b>'+deck.name+'</b><span>'+deck.desc+'</span>';
+    const mark=deck.id==='open'?'A♠':'✦';
+    b.innerHTML='<span class="deckMini" aria-hidden="true">'+mark+'</span><b>'+deck.name+'</b><span>'+deck.desc+'</span>';
     b.onclick=()=>{setupDeck=deck.id;renderSetup();};decks.append(b);
   }
   const stakes=$('stakeChoices');stakes.replaceChildren();

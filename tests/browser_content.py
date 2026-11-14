@@ -17,7 +17,7 @@ BROWSER = Path(r"D:\Quark\quark.exe")
 OUTPUT = ROOT / ".qa" / "v13" / "browser-content"
 PROFILES = {"small": {"width": 320, "height": 568, "mobile": True},
             "portrait": {"width": 390, "height": 844, "mobile": True}}
-DECKS = ["红色牌组", "蓝色牌组", "金色牌组", "绿色牌组", "黑色牌组"]
+DECKS = ["红色牌组", "蓝色牌组", "金色牌组", "绿色牌组", "黑色牌组", "明牌牌组"]
 STAKES = ["白注", "红注", "金注"]
 TABS = ["小丑", "塔罗", "星球", "Boss", "通关"]
 
@@ -70,17 +70,17 @@ def profile_case(browser, url, profile, spec, part):
         press(page, page.locator("#collectionTabs button").filter(has_text="通关"), "通关记录")
         require(not page.locator("#collectionSearch").is_visible(), "通关记录不应显示搜索框")
         table = page.locator("#collectionBody table")
-        require(table.locator("tbody tr").count() == 5, "通关记录应有 5 行牌组")
+        require(table.locator("tbody tr").count() == len(DECKS), "通关记录缺少牌组")
         require(table.locator("thead th").all_inner_texts() == ["牌组", *STAKES], "通关记录难度表头不完整")
         for row, deck in zip(table.locator("tbody tr").all(), DECKS):
             require(row.locator("th").inner_text() == deck, f"记录缺少 {deck}")
             require(row.locator("td").all_inner_texts() == ["—", "—", "—"], f"新存档记录异常：{deck}")
         screenshot(page, folder, "records")
-        press(page, page.locator("#ovCollection > .box > button").last, "关闭图鉴")
+        press(page, page.get_by_role("button", name="关闭", exact=True), "关闭图鉴")
         require(page.locator("#ovStart").is_visible(), "关闭图鉴后未回到标题")
         require(not errors, f"浏览器脚本错误：{errors}")
         return {"status": "passed", "viewport": spec, "catalog_counts": counts,
-                "record_rows": 5}
+                "record_rows": len(DECKS)}
     except Exception:
         screenshot(page, folder, f"failure-{part}")
         raise
@@ -93,7 +93,7 @@ def setup_case(page, folder, spec, errors):
     press(page, page.locator("#newBtn"), "开始游戏")
     page.locator("#ovSetup").wait_for(state="visible")
     choices = page.locator("#deckChoices button")
-    require(choices.count() == 5, "牌组数量不是 5")
+    require(choices.count() == len(DECKS), "牌组数量不符")
     require([b.locator("b").inner_text() for b in choices.all()] == DECKS, "牌组列表不符")
     for i, deck in enumerate(DECKS):
         choice = page.locator("#deckChoices button").nth(i)
@@ -108,7 +108,10 @@ def setup_case(page, folder, spec, errors):
         require(page.locator("#stakeChoices button").nth(i).get_attribute("aria-pressed") == "true",
                 f"无法选中 {stake}")
         require(page.locator("#stakeRule").inner_text().strip(), f"{stake} 规则为空")
-        assert_reachable(page.locator("#stakeRule"), f"{stake} 规则")
+        rule = page.locator("#stakeRule")
+        rule.scroll_into_view_if_needed()
+        require(rule.evaluate("""el => {const r=el.getBoundingClientRect(), at=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);
+            return r.top>=0 && r.bottom<=innerHeight && el.contains(at);}"""), f"{stake} 规则被遮挡")
     press(page, page.locator("#deckChoices button").nth(2), "金色牌组")
     screenshot(page, folder, "setup")
     assert_reachable(page.locator("#beginRunBtn"), "开始这一局")
@@ -149,7 +152,7 @@ def records_case(page, folder, spec, errors):
     require(rows.nth(0).locator("td").all_inner_texts() == ["—", "—", "✓"], "红色金注记录错误")
     require(rows.nth(1).locator("td").all_inner_texts() == ["✓", "—", "—"], "蓝色白注记录错误")
     screenshot(page, folder, "records-fixture")
-    press(page, page.locator("#ovCollection > .box > button").last, "关闭已有通关记录")
+    press(page, page.get_by_role("button", name="关闭", exact=True), "关闭已有通关记录")
     press(page, page.locator("#newBtn"), "已有记录时开始游戏")
     press(page, page.locator("#stakeChoices button").filter(has_text="金注"), "选择金注")
     require("已通关" in page.locator("#setupRecord").inner_text(), "选择牌组时未显示已有记录")

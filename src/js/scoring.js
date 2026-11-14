@@ -150,7 +150,7 @@ function doDiscard() {
   sfxBad();
   drawTo(effHandSize());
   renderAll();
-  msg('弃掉了 ' + sel.length + ' 张牌');
+  msg('弃掉了 ' + sel.length + ' 张牌' + (lastOpenDraw ? '，先摸到 '+cardLabel(lastOpenDraw) : ''));
   checkStuck();
   persistRun();
 }

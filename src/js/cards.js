@@ -155,6 +155,7 @@ const DECKS = [
   {id:'yellow',name:'金色牌组',color:'#d4a74c',desc:'初始金币 $10',money:10},
   {id:'green',name:'绿色牌组',color:'#5e9769',desc:'无利息；结算每次剩余出牌 $2、每次剩余弃牌 $1',noInterest:true},
   {id:'black',name:'黑色牌组',color:'#5d596d',desc:'小丑槽位 +1，每个盲注 -1 次出牌',hands:-1,slots:1},
+  {id:'open',name:'明牌牌组',color:'#647fbb',desc:'牌库顶始终亮出一张，补牌时先摸它。取代袖中底牌。'},
 ];
 const STAKES = [
   {id:'white',name:'白注',desc:'标准目标与奖励',scale:1},

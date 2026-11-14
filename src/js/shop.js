@@ -451,8 +451,9 @@ function useCons(i) {
   S.tarotsUsed=(S.tarotsUsed||0)+1;
   S.cons.splice(i, 1);
   S.hand.forEach(c => c.sel = false);
+  if(t.id==='tower') drawTo(effHandSize());
   renderAll(); if (S.shop) renderShop();
-  if(t.id==='tower') { drawTo(effHandSize()); renderHand(); checkStuck(); }
+  if(t.id==='tower') checkStuck();
   persistRun();
   if (t.id !== 'judge' && t.id !== 'emperor') msg(t.ic + ' ' + t.name + ' 已生效！');
 }

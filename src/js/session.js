@@ -161,6 +161,7 @@ function resumeGame() {
   const state=slot.state, byId=new Map(state.deckAll.map(c=>[c.id,c]));
   state.hand=state.hand.map(id=>byId.get(id)); state.drawPile=state.drawPile.map(id=>byId.get(id));
   S=state; cid=slot.cid; saveStr=slot.checkpoint; saveMeta=slot.meta;
+  lastOpenDraw=null;
   workshopDraft=null;
   reserveDraft=null;
   initAudio(); hide('ovStart'); renderAll();

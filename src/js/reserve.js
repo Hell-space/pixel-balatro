@@ -3,6 +3,7 @@ let reserveDraft=null, tableClickUntil=0;
 function reserveCard(state=S) { return state.deckAll.find(c=>c.id===state.reserve?.cardId); }
 function reserveIssue(action,cardId) {
   if(!S||MP.on||S.screen!=='play'||S.busy) return '当前无法使用底牌';
+  if(S.deckId==='open') return '明牌牌组使用亮出的牌库顶';
   if(S.reserve.used) return '本盲底牌已用完';
   const expected=S.reserve.cardId===null?'store':'retrieve';
   if(action!==expected) return '底牌状态已变化';
@@ -13,7 +14,7 @@ function reserveIssue(action,cardId) {
 }
 function renderReserveEntry() {
   const button=$('reserveBtn');
-  button.hidden=MP.on||S.screen!=='play';
+  button.hidden=MP.on||S.screen!=='play'||S.deckId==='open';
   const card=reserveCard(),action=card?'retrieve':'store';
   button.disabled=!!reserveIssue(action);
   button.textContent=S.reserve.used?'底牌 · 已用':card?'底牌 · '+cardLabel(card):!S.drawPile.length?'底牌 · 牌库已空':'底牌 · 藏入';

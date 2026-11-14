@@ -2,9 +2,17 @@
 
 手机优先的 Roguelike 扑克牌构筑游戏，支持浏览器、独立 HTML 和离线 Android APK。图形、卡牌与音乐由本地代码生成，不依赖远程字体或图片。
 
-**在线游戏：https://hell-space.github.io/pixel-balatro/**
+**[在线玩像素小丑牌](https://hell-space.github.io/pixel-balatro/)**
 
-**Android 下载：[GitHub Release v1.7.1](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.7.1)** · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.7.1/PixelBalatro-1.7.1-android.apk)
+[下载 Android 安装包](https://github.com/Hell-space/pixel-balatro/releases/download/v1.8.0/PixelBalatro-1.8.0-android.apk) · [下载离线 HTML](https://github.com/Hell-space/pixel-balatro/releases/download/v1.8.0/balatro.html) · [v1.8.0 发布页](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.8.0)
+
+## 1.8.0 · 明牌牌组
+
+打开 `balatro.html`，在「开始游戏」里选「明牌牌组」。这副牌组用亮出的牌库顶取代袖中底牌。出牌、弃牌和塔罗触发补牌时，第一张就是桌上看见的那张。一次补多张，后面几张照常摸。点牌堆可看顶牌的强化与 Boss 禁用效果。
+
+手里有 9、10、J、Q 和一对 3，桌上亮着 K。如果只剩一次出牌，可以先弃一张散牌拿 K，再打 316 分的顺子。如果还有两次出牌，可以先打对 3 得 32 分，同时补进 K，还能留住一次弃牌。
+
+用 10,000 个相同的首盲分别测试两种信息条件，自动玩家有 5,485 次改变了第一步。白注首个小盲的过关数由 9,848 增至 9,924。两边都有 4 次出牌、3 次弃牌和同样的普通牌，差别只有是否知道下一张。可运行 `node scripts/simulate-open-top.cjs 10000 96 1` 复现。实验只覆盖这一个盲注。
 
 ## 1.7.1
 
@@ -67,7 +75,7 @@
 - 商店按小丑、消耗牌、卡包、优惠券、工坊切换，持有牌与底部操作保持可见；工坊长牌盘内部滚动，确认和取消保持可达。
 - 统一纸牌、绿毡、黄铜边框和计分区域，新增出牌移动、弃牌离场、筹码计分、购买入槽等反馈；支持减少动态和立即计分。
 
-- 5 种起始牌组、白/红/金 3 种难度，8 个底注后可继续无尽模式。
+- 6 种起始牌组、白/红/金 3 种难度，8 个底注后可继续无尽模式。
 - 54 张小丑、17 张塔罗、12 张星球、14 种 Boss（各有破绽牌型），另有幻灵牌、卡包、优惠券和跳关标签。
 - 新增学者、二重奏、部族、秩序、黑板、长靴、占卜师、罗盘，以及补齐四花色转换的塔罗。
 - 商店候选去重；首个普通商店提供 $4 计分小丑。Boss 分阶段出现，同一轮候选用尽前不重复；之针降低目标。
@@ -83,6 +91,7 @@
 | 金色 | 初始 $10 |
 | 绿色 | 无利息；每次剩余出牌奖励 $2、剩余弃牌 $1 |
 | 黑色 | 小丑槽位 +1，每盲注 -1 次出牌 |
+| 明牌 | 亮出下张补牌，取代袖中底牌 |
 
 白注采用标准目标；红注从底注 2 起目标 ×1.2；金注从底注 2 起目标 ×1.4，且每盲注少 1 次弃牌。多人模式继续使用相同的经典 4 出牌/3 弃牌规则，双方面对相同 Boss。
 
@@ -94,13 +103,13 @@
 
 菜单包含牌型表、剩余牌库、图鉴、计分明细、音乐/音效开关，以及 1×/2×/4×/立即四档计分速度。键盘支持 Tab 聚焦、Enter 出牌和 X 弃牌。
 
-Android 用户可在 GitHub 手机端打开仓库的 Releases → v1.7.1 → Assets，下载 `PixelBalatro-1.7.1-android.apk`。已有 1.3.x 到 1.7.0 直接覆盖安装，不要先卸载。Release 同时提供离线 HTML 和 SHA-256 校验文件。
+Android 用户可在 GitHub 手机端打开 Releases → v1.8.0 → Assets，下载 `PixelBalatro-1.8.0-android.apk`。已有旧版可用同签名安装包覆盖升级，保留游戏进度。发布页同时提供离线 HTML 和 SHA-256 校验文件。
 
-本地交付文件为 `outputs/PixelBalatro-1.7.1-android.apk`，安装、构建和签名保管方法见 [Android 说明](docs/android.md)。单人模式离线运行，APK 与网页版存档独立。
+带明牌牌组的本地安装包为 `outputs/PixelBalatro-1.8.0-android.apk`。单人模式可离线运行，APK 与网页版分别保存进度。[Android 安装和构建说明](docs/android.md)
 
 ## 存档与兼容
 
-单人进度自动保存，标题页可继续游戏。1.7.1 兼容 1.1 到 1.7.0 的存档，旧局保留既有次数、经济和持有牌，早期存档底牌默认可用，不倒补 Boss 奖励。底牌、工坊次数、待选战利品、连招与悬赏进度都保存。主存档损坏时可恢复上一份有效备份。卡包候选与开包状态会保存，取消退款后重开不会免费重抽；旧标准包尚未选取的普通候选会补上强化。
+单人进度自动保存，标题页可继续游戏。1.8.0 可读取 1.1 到 1.7.1 的存档。旧局保留所选牌组、既有次数、经济和持有牌。明牌牌组按保存的抽牌顺序恢复，下张补牌也随之恢复。袖中底牌、工坊次数、待选战利品和开包候选均会保存。主存档损坏时可恢复上一份有效备份。
 
 计分动画中途退出会恢复到该次出牌前的稳定状态。设置和通关记录独立保存，不因开新局清除。清除网站或应用数据会丢失存档；同签名 APK 覆盖更新保留数据。
 
@@ -136,18 +145,19 @@ npm run balance -- 24 red white
 
 `npm test` 检查生成文件一致性、所有 54 张小丑、Boss 破绽、碾压奖励、推荐选牌、牌型/新内容/经济规则，以及真实 Node SSE 房间的生命周期和重连去重。模拟器调用实际游戏流程至胜利或失败，不提高金币、次数或分数，输出原始结果到忽略的 `.qa/`；它是有限策略的自动玩家，不是人类胜率预测。
 
-已有 Python Playwright 和 Chromium 兼容浏览器时：
+已有 Python Playwright 和夸克浏览器时，可以运行界面测试。
 
 ```sh
 python tests/browser_smoke.py --browser "浏览器可执行文件"
 python tests/browser_extended.py --browser "浏览器可执行文件"
-python tests/browser_content.py --browser "浏览器可执行文件"
+python tests/browser_content.py
+python tests/browser_open_top.py
 python tests/browser_shop.py --browser "浏览器可执行文件" --output-dir .qa/browser-shop
 python tests/browser_motion.py --browser "浏览器可执行文件" --output-dir .qa/browser-motion
 python tests/browser_gameplay.py --browser "浏览器可执行文件" --mode fixed --output-dir .qa/browser-gameplay
 ```
 
-本轮实际验证范围和限制见 [1.7.1 验证记录](docs/verification-1.7.1.md)。历史记录：[1.7.0 玩法与动效](docs/verification-1.7.0.md)、[1.6.0 界面](docs/verification-1.6.0.md)、[1.5.0 底牌](docs/verification-1.5.0.md)、[1.4.0 构筑](docs/verification-1.4.0.md)、[1.3.2 玩法修复](docs/verification-1.3.2.md)、[1.3.1 商店与视觉](docs/verification-1.3.1.md)、[1.3.0 内容与平衡](docs/verification.md)。
+1.8.0 的明牌浏览器用例在四种视口实际走过选牌、弃牌、打出对子补 K、刷新续局和进入下一盲。旧版本记录见 [1.7.1 玩法精简](docs/verification-1.7.1.md)、[1.7.0 玩法与动效](docs/verification-1.7.0.md)、[1.6.0 界面](docs/verification-1.6.0.md)、[1.5.0 底牌](docs/verification-1.5.0.md)、[1.4.0 构筑](docs/verification-1.4.0.md)、[1.3.2 玩法修复](docs/verification-1.3.2.md)、[1.3.1 商店与视觉](docs/verification-1.3.1.md)、[1.3.0 内容与平衡](docs/verification.md)。
 
 ## 目录
 
