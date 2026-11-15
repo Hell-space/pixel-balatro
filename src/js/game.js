@@ -72,9 +72,9 @@ function msg(t, warn) {
 
 // ================= 盲注流程 =================
 const randOf = a => a[Math.floor(Math.random() * a.length)];
-function shuffle(a) {
+function shuffle(a, random = Math.random) {
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;

@@ -4,7 +4,13 @@
 
 **[在线玩像素小丑牌](https://hell-space.github.io/pixel-balatro/)**
 
-[下载 Android 安装包](https://github.com/Hell-space/pixel-balatro/releases/download/v1.8.0/PixelBalatro-1.8.0-android.apk) · [下载离线 HTML](https://github.com/Hell-space/pixel-balatro/releases/download/v1.8.0/balatro.html) · [v1.8.0 发布页](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.8.0)
+[下载 Android 安装包](https://github.com/Hell-space/pixel-balatro/releases/download/v1.9.0/PixelBalatro-1.9.0-android.apk) · [下载离线 HTML](https://github.com/Hell-space/pixel-balatro/releases/download/v1.9.0/balatro.html) · [v1.9.0 发布页](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.9.0)
+
+## 1.9.0 · 残局剧场
+
+进入在线游戏或打开离线 `balatro.html`，在标题页点「残局剧场」。六个手编残局都能直接选，每场用一至两手牌过关。结算单会列出每手的牌、筹码和倍率。一键「原牌重演」可以用同一副牌试另一种打法。「满堂彩」是这一场实际能打出的最高分。
+
+「每日加演」按设备的本地日期离线开出八张牌和两张小丑。每一场各自记录个人最高分。常规单人局也可以从牌桌菜单进入剧场，再回到进入前的那手牌。
 
 ## 1.8.0 · 明牌牌组
 
@@ -103,9 +109,9 @@
 
 菜单包含牌型表、剩余牌库、图鉴、计分明细、音乐/音效开关，以及 1×/2×/4×/立即四档计分速度。键盘支持 Tab 聚焦、Enter 出牌和 X 弃牌。
 
-Android 用户可在 GitHub 手机端打开 Releases → v1.8.0 → Assets，下载 `PixelBalatro-1.8.0-android.apk`。已有旧版可用同签名安装包覆盖升级，保留游戏进度。发布页同时提供离线 HTML 和 SHA-256 校验文件。
+Android 用户可在 GitHub 手机端打开 Releases → v1.9.0 → Assets，下载 `PixelBalatro-1.9.0-android.apk`。已有旧版可用同签名安装包覆盖升级，保留游戏进度。发布页同时提供离线 HTML 和 SHA-256 校验文件。
 
-带明牌牌组的本地安装包为 `outputs/PixelBalatro-1.8.0-android.apk`。单人模式可离线运行，APK 与网页版分别保存进度。[Android 安装和构建说明](docs/android.md)
+带残局剧场的本地安装包为 `outputs/PixelBalatro-1.9.0-android.apk`。单人模式可离线运行，APK 与网页版分别保存进度。[Android 安装和构建说明](docs/android.md)
 
 ## 存档与兼容
 
@@ -152,6 +158,7 @@ python tests/browser_smoke.py --browser "浏览器可执行文件"
 python tests/browser_extended.py --browser "浏览器可执行文件"
 python tests/browser_content.py
 python tests/browser_open_top.py
+python tests/browser_theater.py
 python tests/browser_shop.py --browser "浏览器可执行文件" --output-dir .qa/browser-shop
 python tests/browser_motion.py --browser "浏览器可执行文件" --output-dir .qa/browser-motion
 python tests/browser_gameplay.py --browser "浏览器可执行文件" --mode fixed --output-dir .qa/browser-gameplay

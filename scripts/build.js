@@ -3,8 +3,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8').replace(/\r\n/g, '\n').trimEnd();
-const modules = ['audio', 'cards', 'game', 'table', 'score-engine', 'scoring', 'shop', 'workshop', 'reserve', 'guide', 'multiplayer', 'feedback', 'motion', 'session', 'controls', 'collection'];
-const css = ['table', 'layout', 'finish', 'workshop', 'reserve', 'interface', 'motion', 'open-deck'].map(name => read('src/' + name + '.css')).join('\n\n');
+const modules = ['audio', 'cards', 'game', 'table', 'score-engine', 'scoring', 'shop', 'workshop', 'reserve', 'guide', 'multiplayer', 'feedback', 'motion', 'session', 'controls', 'collection', 'theater-rules', 'theater'];
+const css = ['table', 'layout', 'finish', 'workshop', 'reserve', 'interface', 'motion', 'open-deck', 'theater'].map(name => read('src/' + name + '.css')).join('\n\n');
 const js = modules.map(name => '// ── ' + name + ' ──\n' + read('src/js/' + name + '.js')).join('\n\n');
 const html = read('src/page.html').replace('/* STYLES */', () => css)
   .replace('<!-- ART -->', () => read('src/jester.svg'))

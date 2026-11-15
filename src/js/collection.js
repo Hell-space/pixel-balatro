@@ -69,6 +69,7 @@ function nativeBack(){
   if($('tutBox').style.display==='block'){tutEnd();return false;}
   const top=activeDialog();
   if(top?.id==='ovStart')return true;
+  if(top?.id==='ovTheater'){theaterBack();return false;}
   if(top?.id==='ovSetup'){hide('ovSetup');show('ovStart');return false;}
   if(top?.id==='ovMpLobby'){mpCancel();return false;}
   if(top?.id==='ovRestart'){hide('ovRestart');show('ovStart');return false;}

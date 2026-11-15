@@ -1105,6 +1105,162 @@ button:disabled {cursor:default}
   #openTopReadout {left:50px;bottom:6px;gap:0}
   #openTopNote {font-size:11px}
 }
+
+/* A theater ticket at the title screen leads to an aubergine stage and ivory score stubs. */
+#theaterBtn {
+  color:#ffebcb;background:linear-gradient(102deg,#663342,#442838);
+  border-color:#be8277;box-shadow:0 3px #352032;font-weight:750;
+}
+#theaterBtn>span {color:#ffc685;margin-right:.35em}
+#menuTheaterBtn {background:#503445;color:#ffe9cf;border-color:#9a747e}
+#ovTheater {
+  --ink:#261d2e;--cream:#fff0d8;--gold:#ffd292;--faint:#cebdc8;--rim:#685462;
+  padding:16px;background:
+    radial-gradient(ellipse at 50% 15%,#563345 0%,transparent 66%),
+    repeating-linear-gradient(103deg,#261d2d 0 25px,#2b202f 25px 43px,#271f2c 44px 62px);
+  color:var(--cream);font-family:var(--ui);
+}
+#ovTheater .theaterBox {
+  width:min(800px,100%);max-width:100%!important;max-height:100%;padding:0;
+  display:flex;flex-direction:column;overflow:hidden;text-align:left;
+  border:1px solid #8e7076;border-radius:10px;
+  background:linear-gradient(124deg,#342536 0%,#2c2232 65%,#302435);
+  box-shadow:0 12px 45px #160f2180,0 3px #1c1621;
+}
+.theaterHead {flex:none;padding:14px 25px 15px;border-bottom:1px solid var(--rim)}
+.theaterNav,.theaterTitleRow,.actJokerHead,.actHandHead,.actClue,.theaterActions {display:flex;align-items:center}
+.theaterNav {min-height:35px;gap:10px;color:var(--faint);font-size:12px}
+.theaterNav button,.actJokerHead button,.actClue button {
+  appearance:none;background:transparent;color:var(--gold);border:1px solid #87717d;border-radius:4px;
+  min-height:36px;padding:5px 10px;font:600 12px/1.3 var(--ui);cursor:pointer;
+}
+.theaterNav button {border:0;padding:5px 2px;min-height:36px}
+#theaterPosition {margin-left:auto;font-variant-numeric:tabular-nums}
+#theaterReset {border-left:1px solid var(--rim);border-radius:0;padding-left:12px}
+.theaterTitleRow {justify-content:space-between;margin-top:3px;gap:12px}
+#ovTheater h2 {color:var(--cream);margin:0;text-shadow:none;letter-spacing:.07em;font:800 clamp(25px,4.5vw,38px)/1.3 var(--ui)}
+#ovTheater h2:focus {outline:none}
+.theaterRosette {font:32px/1 Georgia,serif;color:#df9d81}
+.theaterScroll {min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#88687b transparent;padding:19px 25px 22px}
+#theaterBills {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.programTicket {
+  position:relative;display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;
+  gap:10px;min-height:78px;width:100%;padding:9px 12px 9px 8px;text-align:left;
+  background:#3e2e3e;color:var(--cream);border:1px solid #705969;border-radius:5px;cursor:pointer;
+}
+.programTicket:hover,.programTicket:focus-visible {border-color:var(--gold);background:#50394a}
+.ticketMark {display:grid;place-content:center;text-align:center;align-self:stretch;border-right:1px dashed #9b7c83;font:700 28px/1.15 Georgia,serif;color:#f1bf80;padding-right:7px}
+.programTicket.blue .ticketMark {color:#b3c4ee}.programTicket.rose .ticketMark {color:#f0a6ae}
+.ticketText {min-width:0;display:grid;gap:5px}
+.ticketText strong {font-size:17px;line-height:1.3}.ticketText small {color:var(--faint);font-size:12px;line-height:1.35}
+.ticketEnd {color:var(--gold);font-size:12px;line-height:1.35;text-align:right}
+.ticketEnd:empty {display:none}
+.dailyTicket,.dailyTicket:hover,.dailyTicket:focus-visible {
+  grid-template-columns:65px 1fr auto;color:#382537;
+  background:repeating-linear-gradient(-55deg,#fff9ed28 0 2px,transparent 2px 8px),linear-gradient(95deg,#dca97a,#f7dfae 52%,#ebc397);
+  border-color:#f3cf9a;min-height:92px;margin-bottom:15px;
+}
+.dailyTicket .ticketMark {border-color:#886c5b;color:#4a2b3b}.dailyTicket .ticketMark small {font:700 11px/1.4 var(--ui)}
+.dailyTicket .ticketMark b {font:700 29px/1.1 Georgia,serif}
+.dailyTicket .ticketText strong {font-size:22px}.dailyTicket .ticketText small,.dailyTicket .ticketEnd {color:#5c4050}
+.theaterLedger {
+  display:grid;grid-template-columns:1.45fr 1fr 1fr;margin-bottom:11px;
+  background:#241d2b;border:1px solid #79616d;border-radius:4px;
+}
+.theaterLedger>div {min-width:0;padding:9px 12px}
+.theaterLedger>div+div {border-left:1px dashed #735f6c}
+.theaterLedger span,.theaterLedger strong {display:block}
+.theaterLedger span {font:12px/1.45 var(--ui);color:var(--faint)}
+.theaterLedger strong {font:700 clamp(15px,2.7vw,22px)/1.4 var(--mono);color:#ece0cf;white-space:nowrap}
+#actScore {display:inline-block;color:var(--gold)}
+.actJokerHead,.actHandHead {justify-content:space-between;gap:6px;min-height:29px;margin:6px 0}
+#ovTheater h3 {font:700 14px/1.4 var(--ui);letter-spacing:.03em;color:var(--cream);margin:0}
+#actJokers {display:flex;gap:8px}
+.actJoker {
+  flex:1 1 0;min-width:0;display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border:1px solid #7b607e;border-left:3px solid #b995cd;border-radius:4px;
+  background:linear-gradient(115deg,#493449,#392c3e);
+}
+.actJoker:nth-child(2) {border-left-color:#dea48a}
+.actJokerIcon {flex:none;font-size:25px}
+.actJokerBody {flex:1;min-width:0}
+.actJokerName {display:flex;align-items:baseline;justify-content:space-between;gap:3px}
+.actJokerEffect {flex:none;color:#ffda91;font:700 12px/1.3 var(--mono)}
+.actJoker.triggered {border-color:#b99b71;border-left-color:#ffd58a}
+.actJoker strong,.actJoker small {display:block}
+.actJoker strong {font:700 14px/1.5 var(--ui);color:#fff0d9}
+.actJoker small {font:12px/1.5 var(--ui);color:#dfd1d9;overflow-wrap:anywhere}
+.actClue {justify-content:space-between;gap:10px;margin:10px 0;min-height:39px}
+#ovTheater .actClue p {margin:0;color:#dfcdd3;font:13px/1.55 var(--ui)}
+.actClue button {flex:none;border:0;text-decoration:underline;text-underline-offset:3px;padding:4px;min-width:46px}
+#actStock {color:var(--gold);font:600 13px/1.5 var(--ui);margin-top:10px}
+.actHandHead {border-top:1px solid var(--rim);padding-top:8px;margin:2px 0 9px}
+#actHandInfo {font-size:12px;color:var(--faint)}
+#actHand {display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;padding:5px 2px}
+#actHand .card {
+  width:100%;min-width:0;height:auto;aspect-ratio:5 / 7;max-height:110px;
+  box-shadow:0 2px 0 #150e1d,0 2px 5px #170e1c77;border-color:#a49580;
+}
+#actHand .card.sel {transform:translateY(-5px);border-color:#c8953f;box-shadow:0 0 0 2px #ffdc92,0 4px 8px #12091555}
+#actHand .card.sel.actKicker {box-shadow:0 0 0 2px #ac98bc;border-color:#806d8c}
+#actHand .card .enhancements .en {position:static}
+.theaterActions {flex:none;gap:8px;padding:12px 25px;background:#29202e;border-top:1px solid var(--rim)}
+#actPreview {display:grid;gap:3px;flex:1 1 100px;min-width:0}
+#actHandName {color:var(--cream);font:700 16px/1.3 var(--ui)}
+#actFormula {color:var(--gold);font:700 14px/1.3 var(--mono);min-height:1.3em}
+.theaterPrimary,.theaterSecondary {
+  flex:none;min-height:43px;min-width:95px;padding:7px 14px;
+  font:750 15px/1.4 var(--ui);border:1px solid;border-radius:5px;cursor:pointer;
+}
+.theaterPrimary {background:#f1c387;color:#342336;border-color:#ffe1af;box-shadow:0 2px 0 #916d56}
+.theaterSecondary {background:#423342;color:#fae7d4;border-color:#947887;box-shadow:0 2px 0 #1f1823}
+.theaterPrimary:disabled,.theaterSecondary:disabled {color:#aa99a4;background:#403541;box-shadow:none;border-color:#5f4c5a;cursor:default}
+.theaterReceipt {
+  text-align:center;margin:0 auto;max-width:520px;padding:22px 22px 12px;border-radius:3px;
+  color:#3c2a36;background:repeating-linear-gradient(115deg,#ffffff10 0 2px,transparent 2px 6px),linear-gradient(120deg,#f6e6c7,#ead2b3);
+  border:1px solid #f2d8ad;box-shadow:0 4px 0 #120e1952;
+}
+.actVerdict {display:inline-block;border:2px double currentColor;transform:rotate(-3deg);padding:3px 13px;color:#8c4547;font-weight:850;letter-spacing:.08em}
+#ovTheater[data-outcome="miss"] .actVerdict {color:#65576b}
+#actFinalScore {display:block;margin:11px 0 3px;font:850 clamp(28px,5vw,42px)/1.3 var(--ui);color:#3b2933}
+#ovTheater .theaterReceipt p {margin:4px 0;color:#654e55;font:13px/1.6 var(--ui)}
+#actHistory {border-top:1px dashed #967a71;border-bottom:1px dashed #967a71;margin:14px 0 7px;padding:3px 0}
+.actHistoryRow {display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:6px 0}
+.actHistoryRow small {display:block;font:12px/1.6 var(--ui);color:#71575c}
+.actHistoryRow strong {text-align:right;font:700 14px/1.5 var(--mono)}
+#actResultActions {justify-content:flex-end}
+@media(max-width:600px) {
+  #ovTheater {padding:8px}
+  .theaterHead {padding:7px 13px 10px}.theaterRosette {font-size:25px}
+  .theaterScroll {padding:10px 13px 12px}
+  #theaterBills {grid-template-columns:1fr;gap:7px}
+  .programTicket {min-height:60px;grid-template-columns:43px 1fr auto;gap:9px;padding-block:7px}
+  .dailyTicket {min-height:75px;grid-template-columns:50px 1fr auto;margin-bottom:9px}
+  .theaterLedger {margin-bottom:5px}.theaterLedger>div {padding:6px 8px}
+  #actJokers {gap:5px}.actJoker {padding:5px 6px;gap:4px;align-items:flex-start}
+  .actJokerIcon {font-size:18px}.actJoker strong {font-size:13px}.actJoker small {font-size:11px}
+  .actClue {margin:4px 0;min-height:42px}.actJokerHead,.actHandHead {min-height:22px}
+  #actHand {grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+  #actHand .card {width:min(100%,clamp(49px,9vh,76px));height:auto;max-height:none;justify-self:center}
+  .theaterActions {padding:9px 13px}.theaterPrimary,.theaterSecondary {min-width:65px;padding:7px 10px}
+  #actFormula {font-size:12px}
+  .theaterReceipt {padding:18px 12px 10px}
+}
+@media(min-width:601px) and (max-height:470px) {
+  #ovTheater {padding:4px 10px}
+  .theaterHead {display:flex;align-items:center;flex-direction:row-reverse;justify-content:space-between;gap:12px;padding:4px 14px}
+  .theaterNav {gap:10px}.theaterNav button {min-height:32px}
+  .theaterTitleRow {margin:0}.theaterRosette {display:none}#ovTheater h2 {font-size:21px}
+  .theaterScroll {padding:6px 14px 9px}
+  .theaterLedger {margin-bottom:4px}.theaterLedger>div {display:flex;align-items:center;justify-content:space-between;padding:3px 8px}.theaterLedger strong {font-size:16px}
+  .actJokerHead,.actHandHead {min-height:20px;margin:2px 0}.actJokerHead button {min-height:27px}
+  .actJoker {padding:3px 7px}.actJokerIcon {font-size:17px}.actJoker small {font-size:11px}
+  .actClue {margin:2px 0;min-height:24px}.actClue button {min-height:27px}
+  #actStock {margin-top:3px}.actHandHead {padding-top:3px}
+  #actHand .card {height:55px;max-width:57px;justify-self:center}
+  .theaterActions {padding:5px 14px}.theaterPrimary,.theaterSecondary {min-height:36px}
+  #actPreview {display:flex;align-items:center;gap:12px}
+}
 </style>
 </head>
 <body>
@@ -1213,10 +1369,50 @@ button:disabled {cursor:default}
   <div class="titleActions">
     <button class="pxbtn" id="resumeBtn" hidden onclick="resumeGame()">继续游戏</button>
     <button class="pxbtn" id="newBtn" onclick="startSolo(false)">开始游戏</button>
+    <button class="pxbtn" id="theaterBtn" onclick="openTheater()"><span aria-hidden="true">♠</span> 残局剧场</button>
     <div><button class="pxbtn gray" onclick="startSolo(true)">新手教学</button>
     <button class="pxbtn gray" onclick="openMpLobby()">多人对战</button></div>
     <button class="collectionLink" onclick="openCollection()">卡牌图鉴 / 通关记录</button>
   </div>
+</div></div>
+
+<div class="ov" id="ovTheater"><div class="box theaterBox">
+  <header class="theaterHead">
+    <div class="theaterNav"><button id="theaterBackBtn" onclick="theaterBack()">‹ 返回标题</button>
+      <span id="theaterPosition"></span><button id="theaterReset" onclick="replayTheater()" hidden>↻ 重演</button></div>
+    <div class="theaterTitleRow"><h2 id="theaterHeading" tabindex="-1">残局剧场</h2><span class="theaterRosette" aria-hidden="true">✷</span></div>
+  </header>
+  <section id="theaterProgram" class="theaterScroll" aria-label="节目单">
+    <div id="dailyTicket"></div><div id="theaterBills"></div>
+  </section>
+  <section id="theaterStage" class="theaterScroll" aria-label="当前残局" hidden>
+    <div class="theaterLedger">
+      <div><span>当前 / 过关分</span><strong><b id="actScore">0</b> / <b id="actGoal"></b></strong></div>
+      <div><span>满堂彩</span><strong id="actEncore"></strong></div>
+      <div><span>剩余出牌</span><strong id="actHands"></strong></div>
+    </div>
+    <div class="actJokerHead"><h3>在场小丑</h3><button id="actSwap" onclick="swapTheaterJokers()" hidden>⇄ 对调次序</button></div>
+    <div id="actJokers"></div>
+    <div id="actStock" hidden></div>
+    <div class="actClue"><p id="actClueText" aria-live="polite"></p><button id="actHint" onclick="theaterHint()">看提示</button></div>
+    <div class="actHandHead"><h3>手牌</h3><span id="actHandInfo"></span></div>
+    <div id="actHand" role="group" aria-label="残局手牌"></div>
+  </section>
+  <footer id="actControls" class="theaterActions" hidden>
+    <div id="actPreview" aria-live="polite"><strong id="actHandName"></strong><span id="actFormula"></span></div>
+    <button id="actDiscard" class="theaterSecondary" onclick="submitTheater('discard')" hidden>弃牌</button>
+    <button id="actPlay" class="theaterPrimary" onclick="submitTheater('play')">出牌</button>
+  </footer>
+  <section id="theaterResult" class="theaterScroll" aria-label="本场结算" hidden>
+    <div class="theaterReceipt">
+      <div id="actVerdict" class="actVerdict"></div><strong id="actFinalScore"></strong><p id="actMargin"></p>
+      <div id="actHistory"></div><p id="actRecord" role="status"></p>
+    </div>
+  </section>
+  <footer id="actResultActions" class="theaterActions" hidden>
+    <button id="actRetry" class="theaterSecondary" onclick="replayTheater()">↻ 原牌重演</button>
+    <button id="actContinue" class="theaterPrimary" onclick="continueTheater()"></button>
+  </footer>
 </div></div>
 
 <div class="ov" id="ovSetup"><div class="box setupBox dialogBox">
@@ -1238,6 +1434,7 @@ button:disabled {cursor:default}
       <button class="sbtn" onclick="hide('ovMenu'); openDeck()">剩余牌库</button>
       <button class="sbtn" onclick="hide('ovMenu'); openInfo()">本局信息</button>
       <button class="sbtn" onclick="hide('ovMenu'); openCollection()">图鉴与记录</button>
+      <button class="sbtn" id="menuTheaterBtn" onclick="openTheater()" hidden>残局剧场</button>
       <button class="sbtn" id="lastScoreBtn" onclick="hide('ovMenu');openScore()">计分明细</button>
       <button class="sbtn" onclick="hide('ovMenu'); tutStart()">新手教程</button>
     </div>
@@ -1741,9 +1938,9 @@ function msg(t, warn) {
 
 // ================= 盲注流程 =================
 const randOf = a => a[Math.floor(Math.random() * a.length)];
-function shuffle(a) {
+function shuffle(a, random = Math.random) {
   for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = Math.floor(random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
@@ -2002,7 +2199,7 @@ function moveTip(x,y) {
 function hideTip() { tipEl().style.display='none'; }
 document.addEventListener('pointerdown',hideTip,true);
 const EDNAME = ['', '✨ 闪箔 (+50 筹码)', '📽️ 全息 (+10 倍率)', '🌈 多彩 (×1.5 倍率)'];
-function cardTipHTML(c) {
+function cardTipHTML(c, state = S) {
   let h = '<span class="tn">' + rankName(c.rank) + ' ' + (c.wild ? '🌈 百搭花色' : SUITS[c.suit]) + '</span><br>筹码 ' + (chipVal(c) + c.bonus);
   if (c.wild) h += '<br>视为所有花色，点数不变';
   if (c.bonus) h += '<br>奖励：计分时 +' + c.bonus + ' 筹码';
@@ -2013,7 +2210,7 @@ function cardTipHTML(c) {
   if (c.ed) h += '<br>' + EDNAME[c.ed];
   if (c.seal === 'red') h += '<br>🔴 红蜡封：重复触发计分或留手效果';
   if (c.seal === 'gold') h += '<br>🟡 金蜡封：计分时 +$3';
-  if (isDebuffed(c)) h += '<br><span class="rc2">⚠️ 被 Boss 禁用！</span>';
+  if (isDebuffed(c,state)) h += '<br><span class="rc2">⚠️ 被 Boss 禁用！</span>';
   return h;
 }
 function jokerTipHTML(j) {
@@ -2038,12 +2235,12 @@ function facePrint(c) {
   return '<span class="pips" aria-hidden="true">'+PIPS[r===14?1:r].map(([x,y])=>
     '<i class="'+(r===14?'acePip':'')+'" style="left:'+x+'%;top:'+y+'%">'+suit+'</i>').join('')+'</span>';
 }
-function cardEl(c, interactive = false) {
+function cardEl(c, interactive = false, state = S) {
   const d = document.createElement(interactive ? 'button' : 'div');
   d.dataset.cardId=String(c.id);
   d.className = 'card ' + (RED(c.suit) ? 'red' : 'blk') + (c.wild ? ' wild' : '') +
     (c.steel ? ' steel' : '') + (c.glass ? ' glass' : '') + (c.goldc ? ' goldc' : '') +
-    (isDebuffed(c) ? ' debuff' : '');
+    (isDebuffed(c,state) ? ' debuff' : '');
   if (c.sel) d.classList.add('sel');
   if (c.justDealt) { d.classList.add('dealt'); c.justDealt = false; }
   let en = '';
@@ -2055,7 +2252,7 @@ function cardEl(c, interactive = false) {
   if (c.ed) en += '<span class="edfx ' + ['', 'f', 'h', 'p'][c.ed] + '"></span>';
   d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2" aria-hidden="true">' + cornerSuit(c) + '</span>' +
     '<span class="st" aria-hidden="true">' + cornerSuit(c) + '</span>' + facePrint(c) + en;
-  bindTip(d, () => cardTipHTML(c));
+  bindTip(d, () => cardTipHTML(c,state));
   return d;
 }
 // One entry point for taps, swipes, keys and hints keeps the five-card limit consistent.
@@ -4406,6 +4603,7 @@ let owned=null, sellConfirm=false;
 function openMenu() {
   $('lastScoreBtn').disabled=!S?.lastResult;
   $('returnTitleBtn').disabled=!!S?.busy&&!MP.over;
+  $('menuTheaterBtn').hidden=MP.on || S?.screen!=='play' || !!S.busy;
   show('ovMenu');
 }
 function openOwned(kind,key) {
@@ -4585,6 +4783,7 @@ function nativeBack(){
   if($('tutBox').style.display==='block'){tutEnd();return false;}
   const top=activeDialog();
   if(top?.id==='ovStart')return true;
+  if(top?.id==='ovTheater'){theaterBack();return false;}
   if(top?.id==='ovSetup'){hide('ovSetup');show('ovStart');return false;}
   if(top?.id==='ovMpLobby'){mpCancel();return false;}
   if(top?.id==='ovRestart'){hide('ovRestart');show('ovStart');return false;}
@@ -4595,6 +4794,344 @@ function nativeBack(){
   if(top?.id==='ovRewardHands'){closeRewardHands();return false;}
   openMenu();return false;
 }
+
+// ── theater-rules ──
+// Each bill is a small, self-contained deal. The live run and its save slot are never needed.
+const THEATER_BILLS = [
+  {id:'short', title:'午夜短场', mark:'Ⅲ', theme:'ochre', hands:1, goal:600, encore:1380,
+    cards:['♠K','♥K','♣K','♦Q','♠J','♥10','♣9','♦2'], jokers:['half'],
+    brief:'三位国王和一条顺子，都赶着上台。',
+    hints:['半张小丑看的是你送上台的总张数。','试着只打国王，再加一张杂牌比较预览。']},
+  {id:'chalk', title:'黑板擦痕', mark:'♣', theme:'blue', hands:1, goal:300, encore:360,
+    cards:['♠A','♣A','♥9','♦9','♥2','♠K','♣Q','♠4'], jokers:['blackboard'],
+    brief:'黑板上剩下什么，决定这手两对值多少钱。',
+    hints:['先选两对，再看看手里剩下了什么颜色。','有一张红牌自己不计分，却能让整手倍率翻三倍。']},
+  {id:'queen', title:'王后留座', mark:'Q', theme:'rose', hands:1, goal:2500, encore:3920,
+    cards:['♠Q','♥Q','♣Q','♠K','♠10','♠8','♠5','♠2'], effects:{'♠Q':{seal:'red'}}, jokers:['moon'],
+    brief:'六张黑桃里有一张红蜡封王后。给谁留个座位？',
+    hints:['射月会数留在手中的 Q。','红蜡封也会重复留手效果。用黑桃 2 换下同花里的 Q 试试。']},
+  {id:'duet', title:'错位双簧', mark:'×', theme:'blue', hands:1, goal:2000, encore:2592,
+    cards:['♠8','♥8','♣8','♦4','♠4','♣K','♦Q','♠2'], jokers:['trio','jolly'], canSwap:true,
+    brief:'两位搭档都会上场，由你决定谁先开口。',
+    hints:['同一手葫芦能同时触发这两张小丑。','对调小丑，观察先加倍率再乘倍率的差别。']},
+  {id:'sleeve', title:'袖口藏王牌', mark:'A', theme:'rose', hands:1, discards:1, goal:1500, encore:2448,
+    cards:['♣A','♦A','♠K','♥K','♣8','♥6','♠4','♦2'], stock:['♦K','♠A'], jokers:['scholar'],
+    brief:'袖口里先是 K，再是 A。你只有一次弃牌机会。',
+    hints:['一次可以弃多张，补牌区会从左到右发牌。','两个葫芦的牌型相同，学者更喜欢其中一种。']},
+  {id:'dusk', title:'黄昏谢幕', mark:'Ⅱ', theme:'ochre', hands:2, goal:3750, encore:3886,
+    cards:['♥Q','♥J','♥9','♥6','♥2','♠K','♣K','♦K'], jokers:['dusk','lusty'],
+    brief:'八张牌分两幕打完。黄昏只等最后一手。',
+    hints:['把两手合起来算。第一手就打出最贵的牌，可能少听一轮掌声。','最后一手的红桃能重复增加筹码和倍率，先把三张 K 打出去。']},
+];
+
+function createTheaterRun(bill) {
+  const cards = bill.cards.concat(bill.stock || []).map((code,index) => ({
+    code, id:index+1, suit:SUITS.indexOf(code[0]),
+    rank:Number(code.slice(1)) || {A:14,K:13,Q:12,J:11}[code.slice(1)],
+    bonus:0, multB:0, seal:null, ed:0, sel:false, ...bill.effects?.[code],
+  }));
+  return {
+    bill, hand:cards.slice(0,bill.cards.length), stock:cards.slice(bill.cards.length),
+    jokers:bill.jokers.map((id,i) => ({...JDEFS.find(j=>j.id===id), uid:i+1})),
+    levels:{}, playCounts:{}, blindPlayed:[], boss:null, screen:'play', score:0,
+    handsLeft:bill.hands, discLeft:bill.discards || 0, history:[], finished:false,
+  };
+}
+
+function theaterPreview(run) {
+  const cards=run.hand.filter(c=>c.sel);
+  return cards.length ? scoreHand({...run,handsLeft:run.handsLeft-1},cards) : null;
+}
+
+function actInTheater(run, action) {
+  if (run.finished || !['play','discard'].includes(action)) return false;
+  const selected=run.hand.filter(c=>c.sel);
+  if (!selected.length || selected.length>5) return false;
+  if (action==='discard') {
+    if (run.discLeft<=0 || !run.stock.length) return false;
+    run.discLeft--;
+    run.history.push({action,cards:selected.map(c=>c.code)});
+  } else {
+    const result=theaterPreview(run);
+    run.handsLeft--;
+    run.score+=result.total;
+    run.blindPlayed.push(result.hand.key);
+    run.playCounts[result.hand.key]=(run.playCounts[result.hand.key]||0)+1;
+    run.history.push({action,name:HANDS[result.hand.key].name,cards:selected.map(c=>c.code),
+      chips:result.chips,mult:result.mult,total:result.total});
+  }
+  run.hand=run.hand.filter(c=>!c.sel);
+  if (run.handsLeft>0) run.hand.push(...run.stock.splice(0,selected.length));
+  run.finished=run.handsLeft===0 || !run.hand.length;
+  return true;
+}
+
+function theaterDayKey(date = new Date()) {
+  return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+}
+
+function dailyTheaterBill(day) {
+  let seed=Number(day.replace(/-/g,''));
+  function random() {
+    seed=(seed+0x6d2b79f5)>>>0;
+    let value=Math.imul(seed^(seed>>>15),seed|1);
+    value^=value+Math.imul(value^(value>>>7),value|61);
+    return ((value^(value>>>14))>>>0)/4294967296;
+  }
+  const programs=[
+    {jokers:['duo','jolly'], ranks:[8,8], clue:'加倍率和乘倍率都会响应对子。'},
+    {jokers:['baron','moon'], ranks:[13,12,12], clue:'试试把 K 和 Q 留在观众席。'},
+    {jokers:['blackboard','half'], ranks:[7,7], clue:'上台的张数、留下的颜色都算数。'},
+    {jokers:['trio','jolly'], ranks:[6,6,6], clue:'三条同样能触发写着「含对子」的小丑。'},
+  ];
+  const program=programs[Math.floor(random()*programs.length)];
+  const deck=shuffle(SUITS.flatMap(suit=>Array.from({length:13},(_,i)=>suit+rankName(i+2))),random);
+  const cards=program.ranks.map(rank=>deck.splice(deck.findIndex(code=>code.slice(1)===String(rankName(rank))),1)[0]);
+  cards.push(...deck.slice(0,8-cards.length));
+  const bonusCard=cards[Math.floor(random()*cards.length)];
+  shuffle(cards,random);
+  const bill={id:'daily-'+day,title:'每日加演',mark:'✦',theme:'ochre',day,hands:1,cards,jokers:program.jokers,
+    effects:{[bonusCard]:{bonus:30}},canSwap:true,
+    brief:'今天有一张牌额外加 30 筹码。你能把它用在最好的一手吗？',
+    hints:[program.clue,'先定出牌，再对调两张小丑，对照同一手的分数。']};
+  // Score both possible joker orders with the production solver. Each day's top score is attainable.
+  const run=createTheaterRun(bill);
+  const original=bestSelection(run).total;
+  run.jokers.reverse();
+  bill.encore=Math.max(original,bestSelection(run).total);
+  bill.goal=Math.max(1,Math.floor(bill.encore*0.72/10)*10);
+  return bill;
+}
+
+// ── theater ──
+// The theater runs alongside the title screen and keeps each best score in its own slot.
+const THEATER_BEST_KEY='pixel-balatro.theater.best.v1.';
+const theaterSessionBests=new Map();
+let theaterRun=null, theaterDaily=null, theaterView='program', theaterFocusId=null, programScroll=0;
+let theaterHintLevel=0, theaterAnimating=false, theaterFromMenu=false;
+
+function theaterBest(id) {
+  let best=theaterSessionBests.get(id)||0;
+  try {
+    const saved=Number(localStorage.getItem(THEATER_BEST_KEY+id));
+    if (Number.isSafeInteger(saved) && saved>best) best=saved;
+  } catch {}
+  return best;
+}
+function recordTheaterBest(run) {
+  const best=Math.max(theaterBest(run.bill.id),run.score);
+  theaterSessionBests.set(run.bill.id,best);
+  try {localStorage.setItem(THEATER_BEST_KEY+run.bill.id,String(best));return '个人最高 '+fmt(best)+' 分';}
+  catch {return '本次最高 '+fmt(best)+' 分 · 本机存储不可用';}
+}
+function switchTheaterView(view) {
+  theaterView=view;
+  $('theaterProgram').hidden=view!=='program';
+  $('theaterStage').hidden=$('actControls').hidden=view!=='stage';
+  $('theaterResult').hidden=$('actResultActions').hidden=view!=='result';
+  $('theaterReset').hidden=view!=='stage';
+  $('theaterBackBtn').textContent=view!=='program'?'‹ 节目单':theaterFromMenu?'‹ 牌桌菜单':'‹ 返回标题';
+  $('ovTheater').dataset.view=view;
+  hideTip();
+}
+function makeTheaterTicket(bill) {
+  const ticket=document.createElement('button');
+  const best=theaterBest(bill.id);
+  ticket.className='programTicket '+bill.theme+(bill.day?' dailyTicket':'');
+  ticket.dataset.bill=bill.id;
+  const status=best>=bill.encore?'✷ 满堂彩':best>=bill.goal?'✓ 已过关':best?'最高 '+fmt(best):'';
+  const mark=bill.day?'<small>'+Number(bill.day.slice(5,7))+' 月</small><b>'+bill.day.slice(8)+'</b>':bill.mark;
+  const info=bill.day?'每天一副新牌':bill.hands+' 手'+(bill.discards?' · 可弃牌':'');
+  ticket.innerHTML='<span class="ticketMark" aria-hidden="true">'+mark+'</span><span class="ticketText">'+
+    '<strong>'+bill.title+'</strong><small>'+info+' · '+fmt(bill.goal)+' 分</small></span>'+
+    '<span class="ticketEnd">'+(status||'›')+'</span>';
+  ticket.onclick=()=>startTheaterBill(bill);
+  return ticket;
+}
+function renderTheaterProgram(restoreFocus) {
+  theaterRun=null;theaterAnimating=false;
+  const day=theaterDayKey();
+  if (theaterDaily?.day!==day) theaterDaily=dailyTheaterBill(day);
+  switchTheaterView('program');
+  $('theaterHeading').textContent='残局剧场';
+  const cleared=THEATER_BILLS.filter(b=>theaterBest(b.id)>=b.goal).length;
+  $('theaterPosition').textContent='已过 '+cleared+' / '+THEATER_BILLS.length+' 幕';
+  $('dailyTicket').replaceChildren(makeTheaterTicket(theaterDaily));
+  $('theaterBills').replaceChildren(...THEATER_BILLS.map(makeTheaterTicket));
+  $('theaterProgram').scrollTop=programScroll;
+  if (restoreFocus) {
+    const previous=[...$('theaterProgram').querySelectorAll('button')].find(b=>b.dataset.bill===theaterFocusId);
+    (previous||$('theaterHeading')).focus({preventScroll:true});
+  }
+}
+function openTheater() {
+  const origin=activeDialog()?.id;
+  if (origin!=='ovStart' && (origin!=='ovMenu'||MP.on||S?.screen!=='play'||S.busy)) return;
+  theaterFromMenu=origin==='ovMenu';
+  theaterFocusId=null;programScroll=0;
+  renderTheaterProgram(false);show('ovTheater');
+}
+function startTheaterBill(bill) {
+  if (theaterView==='program') {
+    programScroll=$('theaterProgram').scrollTop;
+    const today=theaterDayKey();
+    if (bill.day && bill.day!==today) {
+      theaterDaily=dailyTheaterBill(today);
+      bill=theaterDaily;
+    }
+  }
+  theaterFocusId=bill.id;
+  theaterRun=createTheaterRun(bill);
+  theaterHintLevel=0;theaterAnimating=false;
+  initAudio();switchTheaterView('stage');
+  $('theaterHeading').textContent=bill.title;
+  $('theaterPosition').textContent=bill.day?bill.day:'第 '+(THEATER_BILLS.indexOf(bill)+1)+' / '+THEATER_BILLS.length+' 幕';
+  $('actGoal').textContent=fmt(bill.goal);$('actEncore').textContent=fmt(bill.encore);
+  renderTheaterStage();
+  $('theaterStage').scrollTop=0;$('theaterHeading').focus({preventScroll:true});
+}
+function replayTheater() {
+  if (theaterRun) startTheaterBill(theaterRun.bill);
+}
+function theaterBack() {
+  if (theaterView!=='program') {renderTheaterProgram(true);return;}
+  hide('ovTheater');
+  const trigger=$(theaterFromMenu?'menuTheaterBtn':'theaterBtn');
+  queueMicrotask(()=>trigger.focus({preventScroll:true}));
+}
+function nextTheaterBill() {
+  if (!theaterRun || theaterRun.bill.day) return null;
+  return THEATER_BILLS[THEATER_BILLS.indexOf(theaterRun.bill)+1] || null;
+}
+function continueTheater() {
+  if (theaterView!=='result') return;
+  if (theaterRun.score<theaterRun.bill.goal) {replayTheater();return;}
+  const next=nextTheaterBill();
+  if (next) startTheaterBill(next); else renderTheaterProgram(true);
+}
+function renderTheaterClue() {
+  const bill=theaterRun.bill;
+  $('actClueText').textContent=theaterHintLevel?bill.hints[theaterHintLevel-1]:bill.brief;
+  $('actHint').textContent=['看提示','再提示','收起'][theaterHintLevel];
+}
+function theaterHint() {
+  if (theaterView!=='stage' || theaterAnimating) return;
+  theaterHintLevel=(theaterHintLevel+1)%3;
+  renderTheaterClue();
+}
+function renderTheaterJokers() {
+  const run=theaterRun;
+  $('actJokers').replaceChildren(...run.jokers.map((j,i)=>{
+    const el=document.createElement('div');el.className='actJoker';
+    el.innerHTML='<span class="actJokerIcon" aria-hidden="true">'+j.ic+'</span><span class="actJokerBody"><span class="actJokerName"><strong>'+j.name+
+      '</strong><em class="actJokerEffect"></em></span><small>'+j.desc+'</small></span>';
+    if (run.bill.canSwap) el.setAttribute('aria-label','第 '+(i+1)+' 张，'+j.name+'，'+j.desc);
+    return el;
+  }));
+  $('actSwap').hidden=!run.bill.canSwap;
+}
+function swapTheaterJokers() {
+  if (theaterView!=='stage' || theaterAnimating || !theaterRun.bill.canSwap) return;
+  theaterRun.jokers.reverse();sfxSel();renderTheaterJokers();renderTheaterSelection();
+  feedback($('actJokers'),[{opacity:.45},{opacity:1}],180,true);
+}
+function toggleTheaterCard(card) {
+  if (theaterAnimating || theaterView!=='stage' || !theaterRun.hand.includes(card)) return;
+  if (!card.sel && theaterRun.hand.filter(c=>c.sel).length>=5) {
+    $('actHandInfo').textContent='最多选 5 张，先放回一张';return;
+  }
+  card.sel=!card.sel;sfxSel();renderTheaterSelection();
+}
+function renderTheaterStage() {
+  const run=theaterRun;
+  $('actScore').textContent=fmt(run.score);$('actHands').textContent=run.handsLeft+' 手';
+  renderTheaterJokers();renderTheaterClue();
+  const stock=$('actStock');
+  stock.hidden=!run.bill.stock;
+  if (run.bill.stock) stock.textContent=run.stock.length?'补牌顺序　'+run.stock.map(c=>c.code).join(' → '):'补牌区已空';
+  $('actHand').replaceChildren(...run.hand.map(card=>{
+    const el=cardEl(card,true,run);
+    el.setAttribute('aria-label',cardLabel(card)+(card.seal==='red'?'，红蜡封':'')+(card.bonus?'，加 '+card.bonus+' 筹码':''));
+    el.onclick=()=>toggleTheaterCard(card);
+    return el;
+  }));
+  $('actDiscard').hidden=!run.bill.discards;
+  renderTheaterSelection();
+}
+function renderTheaterSelection() {
+  const run=theaterRun,selected=run.hand.filter(c=>c.sel),preview=theaterPreview(run);
+  const scoring=new Set(preview?.hand.scoring || []);
+  [...$('actHand').children].forEach((el,i)=>{
+    const c=run.hand[i];
+    el.setAttribute('aria-pressed',String(c.sel));
+    el.classList.toggle('sel',c.sel);el.classList.toggle('actKicker',c.sel&&!scoring.has(c));
+  });
+  const last=run.history[run.history.length-1];
+  const lastMove=last?.action==='play'?'上手 '+fmt(last.total)+' 分':last?'已弃 '+last.cards.length+' 张':'';
+  $('actHandInfo').textContent=(lastMove?lastMove+' · ':'')+'已选 '+selected.length+' / 5';
+  $('actHandName').textContent=preview?HANDS[preview.hand.key].name:'选 1–5 张牌';
+  $('actFormula').textContent=preview?fmt(preview.chips)+' × '+fmtM(preview.mult)+' = '+fmt(preview.total):'';
+  $('actPlay').disabled=!selected.length||theaterAnimating;
+  $('actDiscard').textContent='弃牌 · '+run.discLeft;
+  $('actDiscard').disabled=!selected.length||!run.discLeft||!run.stock.length||theaterAnimating;
+  [...$('actJokers').children].forEach((el,i)=>{
+    const j=run.jokers[i],hits=preview?.events.filter(e=>e.kind==='joker'&&e.id===j.uid)||[];
+    let effect=hits.length>1?hits.length+' 次':hits[0]?.text.replace(/ (倍率|筹码)$/,'')||'';
+    if (preview && j.id==='dusk' && run.handsLeft===1) effect='再计一次';
+    el.classList.toggle('triggered',!!effect);el.querySelector('.actJokerEffect').textContent=effect;
+  });
+}
+async function submitTheater(action) {
+  if (theaterView!=='stage' || theaterAnimating) return;
+  const run=theaterRun;
+  if (!actInTheater(run,action)) return;
+  theaterAnimating=true;$('actPlay').disabled=$('actDiscard').disabled=true;
+  const played=action==='play',last=run.history[run.history.length-1];
+  if (played) {
+    $('actScore').textContent=fmt(run.score);sfxTick(last.chips);
+    feedback($('actScore'),[{transform:'scale(1.25)',color:'#ffdd8f'},{transform:'scale(1)'}],300,true);
+  } else sfxDeal();
+  for (const el of $('actHand').querySelectorAll('.sel')) {
+    feedback(el,[{opacity:1},{transform:played?'translateY(-12px)':'translateY(10px)',opacity:.2}],220,true);
+  }
+  await sleep(260);
+  if (theaterRun!==run) return;
+  theaterAnimating=false;
+  if (run.finished) showTheaterResult();
+  else {
+    renderTheaterStage();
+    $('theaterHeading').focus({preventScroll:true});
+  }
+}
+function showTheaterResult() {
+  const run=theaterRun,won=run.score>=run.bill.goal,perfect=run.score>=run.bill.encore;
+  const record=recordTheaterBest(run);
+  switchTheaterView('result');
+  $('ovTheater').dataset.outcome=perfect?'encore':won?'won':'miss';
+  $('actVerdict').textContent=perfect?'✷ 满堂彩':won?'✓ 过关':'差一点';
+  $('actFinalScore').textContent=fmt(run.score)+' 分';
+  $('actMargin').textContent=perfect?'拿到了本场最高分':won?'距满堂彩还差 '+fmt(run.bill.encore-run.score)+' 分':'距过关还差 '+fmt(run.bill.goal-run.score)+' 分';
+  $('actHistory').replaceChildren(...run.history.map(step=>{
+    const row=document.createElement('div');row.className='actHistoryRow';
+    const value=step.action==='play'?fmt(step.chips)+' × '+fmtM(step.mult)+' = '+fmt(step.total):'弃牌';
+    row.innerHTML='<span><b>'+(step.name||'换牌')+'</b><small>'+step.cards.join(' ')+'</small></span><strong>'+value+'</strong>';
+    return row;
+  }));
+  $('actRecord').textContent=record;
+  $('actRetry').hidden=!won;
+  $('actContinue').textContent=won?(nextTheaterBill()?'下一幕 →':'返回节目单'):'↻ 原牌重演';
+  $('theaterResult').scrollTop=0;$('actContinue').focus({preventScroll:true});
+  if(won) sfxWin(); else sfxBad();
+}
+document.getElementById('ovTheater').addEventListener('keydown',e=>{
+  if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return;
+  if (e.key==='Escape') {e.preventDefault();e.stopPropagation();theaterBack();return;}
+  if (theaterView!=='stage' || theaterAnimating) return;
+  const i='12345678'.indexOf(e.key);
+  if (i>=0 && theaterRun.hand[i]) {e.preventDefault();toggleTheaterCard(theaterRun.hand[i]);}
+  else if (e.key.toLowerCase()==='x') {e.preventDefault();submitTheater('discard');}
+  else if (e.key==='Enter' && !e.target.closest('button')) {e.preventDefault();submitTheater('play');}
+});
 </script>
 </body>
 </html>

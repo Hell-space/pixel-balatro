@@ -30,7 +30,7 @@ function moveTip(x,y) {
 function hideTip() { tipEl().style.display='none'; }
 document.addEventListener('pointerdown',hideTip,true);
 const EDNAME = ['', '✨ 闪箔 (+50 筹码)', '📽️ 全息 (+10 倍率)', '🌈 多彩 (×1.5 倍率)'];
-function cardTipHTML(c) {
+function cardTipHTML(c, state = S) {
   let h = '<span class="tn">' + rankName(c.rank) + ' ' + (c.wild ? '🌈 百搭花色' : SUITS[c.suit]) + '</span><br>筹码 ' + (chipVal(c) + c.bonus);
   if (c.wild) h += '<br>视为所有花色，点数不变';
   if (c.bonus) h += '<br>奖励：计分时 +' + c.bonus + ' 筹码';
@@ -41,7 +41,7 @@ function cardTipHTML(c) {
   if (c.ed) h += '<br>' + EDNAME[c.ed];
   if (c.seal === 'red') h += '<br>🔴 红蜡封：重复触发计分或留手效果';
   if (c.seal === 'gold') h += '<br>🟡 金蜡封：计分时 +$3';
-  if (isDebuffed(c)) h += '<br><span class="rc2">⚠️ 被 Boss 禁用！</span>';
+  if (isDebuffed(c,state)) h += '<br><span class="rc2">⚠️ 被 Boss 禁用！</span>';
   return h;
 }
 function jokerTipHTML(j) {
@@ -66,12 +66,12 @@ function facePrint(c) {
   return '<span class="pips" aria-hidden="true">'+PIPS[r===14?1:r].map(([x,y])=>
     '<i class="'+(r===14?'acePip':'')+'" style="left:'+x+'%;top:'+y+'%">'+suit+'</i>').join('')+'</span>';
 }
-function cardEl(c, interactive = false) {
+function cardEl(c, interactive = false, state = S) {
   const d = document.createElement(interactive ? 'button' : 'div');
   d.dataset.cardId=String(c.id);
   d.className = 'card ' + (RED(c.suit) ? 'red' : 'blk') + (c.wild ? ' wild' : '') +
     (c.steel ? ' steel' : '') + (c.glass ? ' glass' : '') + (c.goldc ? ' goldc' : '') +
-    (isDebuffed(c) ? ' debuff' : '');
+    (isDebuffed(c,state) ? ' debuff' : '');
   if (c.sel) d.classList.add('sel');
   if (c.justDealt) { d.classList.add('dealt'); c.justDealt = false; }
   let en = '';
@@ -83,7 +83,7 @@ function cardEl(c, interactive = false) {
   if (c.ed) en += '<span class="edfx ' + ['', 'f', 'h', 'p'][c.ed] + '"></span>';
   d.innerHTML = '<span class="rk">' + rankName(c.rank) + '</span><span class="st2" aria-hidden="true">' + cornerSuit(c) + '</span>' +
     '<span class="st" aria-hidden="true">' + cornerSuit(c) + '</span>' + facePrint(c) + en;
-  bindTip(d, () => cardTipHTML(c));
+  bindTip(d, () => cardTipHTML(c,state));
   return d;
 }
 // One entry point for taps, swipes, keys and hints keeps the five-card limit consistent.

@@ -88,6 +88,7 @@ let owned=null, sellConfirm=false;
 function openMenu() {
   $('lastScoreBtn').disabled=!S?.lastResult;
   $('returnTitleBtn').disabled=!!S?.busy&&!MP.over;
+  $('menuTheaterBtn').hidden=MP.on || S?.screen!=='play' || !!S.busy;
   show('ovMenu');
 }
 function openOwned(kind,key) {

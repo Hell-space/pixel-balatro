@@ -1,0 +1,155 @@
+/* A theater ticket at the title screen leads to an aubergine stage and ivory score stubs. */
+#theaterBtn {
+  color:#ffebcb;background:linear-gradient(102deg,#663342,#442838);
+  border-color:#be8277;box-shadow:0 3px #352032;font-weight:750;
+}
+#theaterBtn>span {color:#ffc685;margin-right:.35em}
+#menuTheaterBtn {background:#503445;color:#ffe9cf;border-color:#9a747e}
+#ovTheater {
+  --ink:#261d2e;--cream:#fff0d8;--gold:#ffd292;--faint:#cebdc8;--rim:#685462;
+  padding:16px;background:
+    radial-gradient(ellipse at 50% 15%,#563345 0%,transparent 66%),
+    repeating-linear-gradient(103deg,#261d2d 0 25px,#2b202f 25px 43px,#271f2c 44px 62px);
+  color:var(--cream);font-family:var(--ui);
+}
+#ovTheater .theaterBox {
+  width:min(800px,100%);max-width:100%!important;max-height:100%;padding:0;
+  display:flex;flex-direction:column;overflow:hidden;text-align:left;
+  border:1px solid #8e7076;border-radius:10px;
+  background:linear-gradient(124deg,#342536 0%,#2c2232 65%,#302435);
+  box-shadow:0 12px 45px #160f2180,0 3px #1c1621;
+}
+.theaterHead {flex:none;padding:14px 25px 15px;border-bottom:1px solid var(--rim)}
+.theaterNav,.theaterTitleRow,.actJokerHead,.actHandHead,.actClue,.theaterActions {display:flex;align-items:center}
+.theaterNav {min-height:35px;gap:10px;color:var(--faint);font-size:12px}
+.theaterNav button,.actJokerHead button,.actClue button {
+  appearance:none;background:transparent;color:var(--gold);border:1px solid #87717d;border-radius:4px;
+  min-height:36px;padding:5px 10px;font:600 12px/1.3 var(--ui);cursor:pointer;
+}
+.theaterNav button {border:0;padding:5px 2px;min-height:36px}
+#theaterPosition {margin-left:auto;font-variant-numeric:tabular-nums}
+#theaterReset {border-left:1px solid var(--rim);border-radius:0;padding-left:12px}
+.theaterTitleRow {justify-content:space-between;margin-top:3px;gap:12px}
+#ovTheater h2 {color:var(--cream);margin:0;text-shadow:none;letter-spacing:.07em;font:800 clamp(25px,4.5vw,38px)/1.3 var(--ui)}
+#ovTheater h2:focus {outline:none}
+.theaterRosette {font:32px/1 Georgia,serif;color:#df9d81}
+.theaterScroll {min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#88687b transparent;padding:19px 25px 22px}
+#theaterBills {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.programTicket {
+  position:relative;display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;
+  gap:10px;min-height:78px;width:100%;padding:9px 12px 9px 8px;text-align:left;
+  background:#3e2e3e;color:var(--cream);border:1px solid #705969;border-radius:5px;cursor:pointer;
+}
+.programTicket:hover,.programTicket:focus-visible {border-color:var(--gold);background:#50394a}
+.ticketMark {display:grid;place-content:center;text-align:center;align-self:stretch;border-right:1px dashed #9b7c83;font:700 28px/1.15 Georgia,serif;color:#f1bf80;padding-right:7px}
+.programTicket.blue .ticketMark {color:#b3c4ee}.programTicket.rose .ticketMark {color:#f0a6ae}
+.ticketText {min-width:0;display:grid;gap:5px}
+.ticketText strong {font-size:17px;line-height:1.3}.ticketText small {color:var(--faint);font-size:12px;line-height:1.35}
+.ticketEnd {color:var(--gold);font-size:12px;line-height:1.35;text-align:right}
+.ticketEnd:empty {display:none}
+.dailyTicket,.dailyTicket:hover,.dailyTicket:focus-visible {
+  grid-template-columns:65px 1fr auto;color:#382537;
+  background:repeating-linear-gradient(-55deg,#fff9ed28 0 2px,transparent 2px 8px),linear-gradient(95deg,#dca97a,#f7dfae 52%,#ebc397);
+  border-color:#f3cf9a;min-height:92px;margin-bottom:15px;
+}
+.dailyTicket .ticketMark {border-color:#886c5b;color:#4a2b3b}.dailyTicket .ticketMark small {font:700 11px/1.4 var(--ui)}
+.dailyTicket .ticketMark b {font:700 29px/1.1 Georgia,serif}
+.dailyTicket .ticketText strong {font-size:22px}.dailyTicket .ticketText small,.dailyTicket .ticketEnd {color:#5c4050}
+.theaterLedger {
+  display:grid;grid-template-columns:1.45fr 1fr 1fr;margin-bottom:11px;
+  background:#241d2b;border:1px solid #79616d;border-radius:4px;
+}
+.theaterLedger>div {min-width:0;padding:9px 12px}
+.theaterLedger>div+div {border-left:1px dashed #735f6c}
+.theaterLedger span,.theaterLedger strong {display:block}
+.theaterLedger span {font:12px/1.45 var(--ui);color:var(--faint)}
+.theaterLedger strong {font:700 clamp(15px,2.7vw,22px)/1.4 var(--mono);color:#ece0cf;white-space:nowrap}
+#actScore {display:inline-block;color:var(--gold)}
+.actJokerHead,.actHandHead {justify-content:space-between;gap:6px;min-height:29px;margin:6px 0}
+#ovTheater h3 {font:700 14px/1.4 var(--ui);letter-spacing:.03em;color:var(--cream);margin:0}
+#actJokers {display:flex;gap:8px}
+.actJoker {
+  flex:1 1 0;min-width:0;display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border:1px solid #7b607e;border-left:3px solid #b995cd;border-radius:4px;
+  background:linear-gradient(115deg,#493449,#392c3e);
+}
+.actJoker:nth-child(2) {border-left-color:#dea48a}
+.actJokerIcon {flex:none;font-size:25px}
+.actJokerBody {flex:1;min-width:0}
+.actJokerName {display:flex;align-items:baseline;justify-content:space-between;gap:3px}
+.actJokerEffect {flex:none;color:#ffda91;font:700 12px/1.3 var(--mono)}
+.actJoker.triggered {border-color:#b99b71;border-left-color:#ffd58a}
+.actJoker strong,.actJoker small {display:block}
+.actJoker strong {font:700 14px/1.5 var(--ui);color:#fff0d9}
+.actJoker small {font:12px/1.5 var(--ui);color:#dfd1d9;overflow-wrap:anywhere}
+.actClue {justify-content:space-between;gap:10px;margin:10px 0;min-height:39px}
+#ovTheater .actClue p {margin:0;color:#dfcdd3;font:13px/1.55 var(--ui)}
+.actClue button {flex:none;border:0;text-decoration:underline;text-underline-offset:3px;padding:4px;min-width:46px}
+#actStock {color:var(--gold);font:600 13px/1.5 var(--ui);margin-top:10px}
+.actHandHead {border-top:1px solid var(--rim);padding-top:8px;margin:2px 0 9px}
+#actHandInfo {font-size:12px;color:var(--faint)}
+#actHand {display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;padding:5px 2px}
+#actHand .card {
+  width:100%;min-width:0;height:auto;aspect-ratio:5 / 7;max-height:110px;
+  box-shadow:0 2px 0 #150e1d,0 2px 5px #170e1c77;border-color:#a49580;
+}
+#actHand .card.sel {transform:translateY(-5px);border-color:#c8953f;box-shadow:0 0 0 2px #ffdc92,0 4px 8px #12091555}
+#actHand .card.sel.actKicker {box-shadow:0 0 0 2px #ac98bc;border-color:#806d8c}
+#actHand .card .enhancements .en {position:static}
+.theaterActions {flex:none;gap:8px;padding:12px 25px;background:#29202e;border-top:1px solid var(--rim)}
+#actPreview {display:grid;gap:3px;flex:1 1 100px;min-width:0}
+#actHandName {color:var(--cream);font:700 16px/1.3 var(--ui)}
+#actFormula {color:var(--gold);font:700 14px/1.3 var(--mono);min-height:1.3em}
+.theaterPrimary,.theaterSecondary {
+  flex:none;min-height:43px;min-width:95px;padding:7px 14px;
+  font:750 15px/1.4 var(--ui);border:1px solid;border-radius:5px;cursor:pointer;
+}
+.theaterPrimary {background:#f1c387;color:#342336;border-color:#ffe1af;box-shadow:0 2px 0 #916d56}
+.theaterSecondary {background:#423342;color:#fae7d4;border-color:#947887;box-shadow:0 2px 0 #1f1823}
+.theaterPrimary:disabled,.theaterSecondary:disabled {color:#aa99a4;background:#403541;box-shadow:none;border-color:#5f4c5a;cursor:default}
+.theaterReceipt {
+  text-align:center;margin:0 auto;max-width:520px;padding:22px 22px 12px;border-radius:3px;
+  color:#3c2a36;background:repeating-linear-gradient(115deg,#ffffff10 0 2px,transparent 2px 6px),linear-gradient(120deg,#f6e6c7,#ead2b3);
+  border:1px solid #f2d8ad;box-shadow:0 4px 0 #120e1952;
+}
+.actVerdict {display:inline-block;border:2px double currentColor;transform:rotate(-3deg);padding:3px 13px;color:#8c4547;font-weight:850;letter-spacing:.08em}
+#ovTheater[data-outcome="miss"] .actVerdict {color:#65576b}
+#actFinalScore {display:block;margin:11px 0 3px;font:850 clamp(28px,5vw,42px)/1.3 var(--ui);color:#3b2933}
+#ovTheater .theaterReceipt p {margin:4px 0;color:#654e55;font:13px/1.6 var(--ui)}
+#actHistory {border-top:1px dashed #967a71;border-bottom:1px dashed #967a71;margin:14px 0 7px;padding:3px 0}
+.actHistoryRow {display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:6px 0}
+.actHistoryRow small {display:block;font:12px/1.6 var(--ui);color:#71575c}
+.actHistoryRow strong {text-align:right;font:700 14px/1.5 var(--mono)}
+#actResultActions {justify-content:flex-end}
+@media(max-width:600px) {
+  #ovTheater {padding:8px}
+  .theaterHead {padding:7px 13px 10px}.theaterRosette {font-size:25px}
+  .theaterScroll {padding:10px 13px 12px}
+  #theaterBills {grid-template-columns:1fr;gap:7px}
+  .programTicket {min-height:60px;grid-template-columns:43px 1fr auto;gap:9px;padding-block:7px}
+  .dailyTicket {min-height:75px;grid-template-columns:50px 1fr auto;margin-bottom:9px}
+  .theaterLedger {margin-bottom:5px}.theaterLedger>div {padding:6px 8px}
+  #actJokers {gap:5px}.actJoker {padding:5px 6px;gap:4px;align-items:flex-start}
+  .actJokerIcon {font-size:18px}.actJoker strong {font-size:13px}.actJoker small {font-size:11px}
+  .actClue {margin:4px 0;min-height:42px}.actJokerHead,.actHandHead {min-height:22px}
+  #actHand {grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+  #actHand .card {width:min(100%,clamp(49px,9vh,76px));height:auto;max-height:none;justify-self:center}
+  .theaterActions {padding:9px 13px}.theaterPrimary,.theaterSecondary {min-width:65px;padding:7px 10px}
+  #actFormula {font-size:12px}
+  .theaterReceipt {padding:18px 12px 10px}
+}
+@media(min-width:601px) and (max-height:470px) {
+  #ovTheater {padding:4px 10px}
+  .theaterHead {display:flex;align-items:center;flex-direction:row-reverse;justify-content:space-between;gap:12px;padding:4px 14px}
+  .theaterNav {gap:10px}.theaterNav button {min-height:32px}
+  .theaterTitleRow {margin:0}.theaterRosette {display:none}#ovTheater h2 {font-size:21px}
+  .theaterScroll {padding:6px 14px 9px}
+  .theaterLedger {margin-bottom:4px}.theaterLedger>div {display:flex;align-items:center;justify-content:space-between;padding:3px 8px}.theaterLedger strong {font-size:16px}
+  .actJokerHead,.actHandHead {min-height:20px;margin:2px 0}.actJokerHead button {min-height:27px}
+  .actJoker {padding:3px 7px}.actJokerIcon {font-size:17px}.actJoker small {font-size:11px}
+  .actClue {margin:2px 0;min-height:24px}.actClue button {min-height:27px}
+  #actStock {margin-top:3px}.actHandHead {padding-top:3px}
+  #actHand .card {height:55px;max-width:57px;justify-self:center}
+  .theaterActions {padding:5px 14px}.theaterPrimary,.theaterSecondary {min-height:36px}
+  #actPreview {display:flex;align-items:center;gap:12px}
+}

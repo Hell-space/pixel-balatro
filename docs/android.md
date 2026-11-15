@@ -4,13 +4,13 @@
 
 ## 安装
 
-本地明牌牌组版位于 `outputs/PixelBalatro-1.8.0-android.apk`。传到手机后从文件管理器打开，按系统提示安装。包名为 `io.github.hellspace.pixelbalatro`，版本 1.8.0，versionCode 10800。
+残局剧场版安装包为 `PixelBalatro-1.9.0-android.apk`。下载到手机后从文件管理器打开，按系统提示安装。包名为 `io.github.hellspace.pixelbalatro`，版本 1.9.0，versionCode 10900。
 
-手机端打开 v1.8.0 发布页，在 Assets 中选择 `PixelBalatro-1.8.0-android.apk`。[发布页](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.8.0) · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.8.0/PixelBalatro-1.8.0-android.apk)
+手机端打开 v1.9.0 发布页，在 Assets 中选择 `PixelBalatro-1.9.0-android.apk`。[发布页](https://github.com/Hell-space/pixel-balatro/releases/tag/v1.9.0) · [直接下载 APK](https://github.com/Hell-space/pixel-balatro/releases/download/v1.9.0/PixelBalatro-1.9.0-android.apk)
 
-已安装 1.3.x 至 1.7.1 的设备可直接用同签名安装包覆盖升级，保留进度和设置。升级后进入「开始游戏」，选「明牌牌组」即可体验新玩法。
+已安装 1.3.x 至 1.8.0 的设备可用同签名安装包覆盖升级，保留进度和设置。安装 1.9.0 后，点标题页的「残局剧场」即可开一场短局。
 
-最低 Android 8（API 26），使用系统 Android WebView 渲染。1.8.0 已校验 APK 签名、版本及内置 HTML 的一致性，实体手机尚待验证。以往版本的模拟器记录见下文。
+最低 Android 8（API 26），使用系统 Android WebView 渲染。1.9.0 已校验 APK 签名、版本及内置 HTML 的一致性，实体手机尚待验证。以往版本的模拟器记录见下文。
 
 返回键会依次关闭图鉴、菜单等界面；对局中返回键打开菜单，在标题页返回键离开应用。支持横竖屏、后台静音和自动存档。出牌动画被中断时，恢复至出牌前的稳定状态；不要把强行结束进程当作正常退出方法。
 

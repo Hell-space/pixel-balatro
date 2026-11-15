@@ -92,10 +92,50 @@
   <div class="titleActions">
     <button class="pxbtn" id="resumeBtn" hidden onclick="resumeGame()">继续游戏</button>
     <button class="pxbtn" id="newBtn" onclick="startSolo(false)">开始游戏</button>
+    <button class="pxbtn" id="theaterBtn" onclick="openTheater()"><span aria-hidden="true">♠</span> 残局剧场</button>
     <div><button class="pxbtn gray" onclick="startSolo(true)">新手教学</button>
     <button class="pxbtn gray" onclick="openMpLobby()">多人对战</button></div>
     <button class="collectionLink" onclick="openCollection()">卡牌图鉴 / 通关记录</button>
   </div>
+</div></div>
+
+<div class="ov" id="ovTheater"><div class="box theaterBox">
+  <header class="theaterHead">
+    <div class="theaterNav"><button id="theaterBackBtn" onclick="theaterBack()">‹ 返回标题</button>
+      <span id="theaterPosition"></span><button id="theaterReset" onclick="replayTheater()" hidden>↻ 重演</button></div>
+    <div class="theaterTitleRow"><h2 id="theaterHeading" tabindex="-1">残局剧场</h2><span class="theaterRosette" aria-hidden="true">✷</span></div>
+  </header>
+  <section id="theaterProgram" class="theaterScroll" aria-label="节目单">
+    <div id="dailyTicket"></div><div id="theaterBills"></div>
+  </section>
+  <section id="theaterStage" class="theaterScroll" aria-label="当前残局" hidden>
+    <div class="theaterLedger">
+      <div><span>当前 / 过关分</span><strong><b id="actScore">0</b> / <b id="actGoal"></b></strong></div>
+      <div><span>满堂彩</span><strong id="actEncore"></strong></div>
+      <div><span>剩余出牌</span><strong id="actHands"></strong></div>
+    </div>
+    <div class="actJokerHead"><h3>在场小丑</h3><button id="actSwap" onclick="swapTheaterJokers()" hidden>⇄ 对调次序</button></div>
+    <div id="actJokers"></div>
+    <div id="actStock" hidden></div>
+    <div class="actClue"><p id="actClueText" aria-live="polite"></p><button id="actHint" onclick="theaterHint()">看提示</button></div>
+    <div class="actHandHead"><h3>手牌</h3><span id="actHandInfo"></span></div>
+    <div id="actHand" role="group" aria-label="残局手牌"></div>
+  </section>
+  <footer id="actControls" class="theaterActions" hidden>
+    <div id="actPreview" aria-live="polite"><strong id="actHandName"></strong><span id="actFormula"></span></div>
+    <button id="actDiscard" class="theaterSecondary" onclick="submitTheater('discard')" hidden>弃牌</button>
+    <button id="actPlay" class="theaterPrimary" onclick="submitTheater('play')">出牌</button>
+  </footer>
+  <section id="theaterResult" class="theaterScroll" aria-label="本场结算" hidden>
+    <div class="theaterReceipt">
+      <div id="actVerdict" class="actVerdict"></div><strong id="actFinalScore"></strong><p id="actMargin"></p>
+      <div id="actHistory"></div><p id="actRecord" role="status"></p>
+    </div>
+  </section>
+  <footer id="actResultActions" class="theaterActions" hidden>
+    <button id="actRetry" class="theaterSecondary" onclick="replayTheater()">↻ 原牌重演</button>
+    <button id="actContinue" class="theaterPrimary" onclick="continueTheater()"></button>
+  </footer>
 </div></div>
 
 <div class="ov" id="ovSetup"><div class="box setupBox dialogBox">
@@ -117,6 +157,7 @@
       <button class="sbtn" onclick="hide('ovMenu'); openDeck()">剩余牌库</button>
       <button class="sbtn" onclick="hide('ovMenu'); openInfo()">本局信息</button>
       <button class="sbtn" onclick="hide('ovMenu'); openCollection()">图鉴与记录</button>
+      <button class="sbtn" id="menuTheaterBtn" onclick="openTheater()" hidden>残局剧场</button>
       <button class="sbtn" id="lastScoreBtn" onclick="hide('ovMenu');openScore()">计分明细</button>
       <button class="sbtn" onclick="hide('ovMenu'); tutStart()">新手教程</button>
     </div>
